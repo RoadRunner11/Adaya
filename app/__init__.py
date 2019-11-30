@@ -1,6 +1,6 @@
 from flask import Flask
 from app.helper.app_context import AppContext as AC
-from app.api import API
+from flask_jwt_extended import JWTManager
 
 
 def create_app(config_object):
@@ -19,17 +19,17 @@ def create_app(config_object):
     ac = AC()
     ac.db.init_app(app)
     ac.bcrypt.init_app(app)
-
+    ac.jwt.init_app(app)
     # register blueprints
+    from app.api import API
     for name in API:
         BP = API[name]
         app.register_blueprint(
             BP['route'], url_prefix=BP['url_prefix'])
     return app
 
+
 app = create_app('config.dev')
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0")
-
-from app import middleware

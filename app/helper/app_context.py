@@ -2,6 +2,8 @@ from flask_bcrypt import Bcrypt
 from app.helper import SingletonMetaClass
 from flask_sqlalchemy import SQLAlchemy
 import logging
+from flask_jwt_extended import JWTManager
+
 
 class AppContext(metaclass=SingletonMetaClass):
     """
@@ -17,3 +19,4 @@ class AppContext(metaclass=SingletonMetaClass):
         self.logger.setLevel(logging.DEBUG)
         self.db = SQLAlchemy()
         self.bcrypt = Bcrypt()
+        self.jwt = JWTManager()

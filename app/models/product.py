@@ -12,6 +12,7 @@ class Product(db.Model, DBMixin):
     price = db.Column(db.Numeric(10,2))
     stock = db.Column(db.Integer, nullable=False)
     category_id = db.Column(db.Integer, db.ForeignKey('product_category.id'))
+    
 
     def __init__(self, title):
         self.title = title
