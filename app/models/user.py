@@ -24,6 +24,8 @@ class User(db.Model, DBMixin):
     articles = db.relationship('Article', backref='user', lazy='dynamic')
     orders = db.relationship('Order', backref='user', lazy='dynamic')
     output_column = ['email', 'role.name']
+    detail_output_column = ['email', 'firstname', 'lastname', 'address1',
+                            'address2', 'city', 'post_code', 'country', 'phone', 'enabled', 'role.name']
 
     def __init__(self, email, password):
         '''
@@ -37,11 +39,15 @@ class User(db.Model, DBMixin):
         self.password = AC().bcrypt.generate_password_hash(password)
 
     @classmethod
-    def get_user_by_email(cls, email, page=None, per_page=None):
+    def get_user_by_email(cls, email, valid_only=True, page=None, per_page=None):
         query = User.email == email
         users = cls.get(query, page, per_page)
         if len(users) > 0:
-            return users[0]
+            user = users[0]
+            if valid_only:
+                if user.enabled:
+                    return user
+            return user
         return None
 
     @classmethod
@@ -54,11 +60,11 @@ class User(db.Model, DBMixin):
     def authenticate(email, password):
         """
         authenticate verifies user's password
-        
+
         Args:
             email (string): [description]
             password (string): [description]
-        
+
         Returns:
             User: user object
         """
@@ -71,11 +77,11 @@ class User(db.Model, DBMixin):
     def authorisation(email, permitted_roles):
         """
         authorisation verifies user's role without checking user's password
-        
+
         Args:
             email (string): [description]
             permitted_roles ([string]): [description]
-        
+
         Returns:
             boolean: does user have permission
         """

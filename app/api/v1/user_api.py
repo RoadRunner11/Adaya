@@ -5,7 +5,7 @@ from app.models import User
 from app.helper.enum import ErrorMessages,Roles
 from app.helper.utility import res
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from app.decorators.authorisation import permitted_roles
+from app.decorators.authorisation import permitted_roles,user_only
 
 
 @api_v1.route('/users/token', methods=['POST'])
@@ -26,8 +26,14 @@ def login():
 
 
 @api_v1.route('/users', methods=['GET'])
-@jwt_required
+@user_only
 def get_user():
+    """
+    get_user retruns user info for my account page
+    
+    Returns:
+        (json string, status)
+    """
     email = get_jwt_identity()
     user = User.get_user_by_email(email)
-    return res(user.as_dict())
+    return res(user.as_dict(User.detail_output_column))

@@ -22,11 +22,17 @@ class DBMixin():
         db.session.delete(self)
         db.session.commit()
 
-    def as_dict(self, output_column=[]):
+    def as_dict(self, output_column=output_column):
+        """
+        as_dict turns this SQLAlchemy object into dictionary 
+        
+        Args:
+            output_column ([string], optional): columns for export. Defaults to self.output_column.
+        
+        Returns:
+            dict: [description]
+        """
         output = {}
-        # Use default self.output_column if output_column is empty
-        output_column = output_column if len(
-            output_column) > 0 else self.output_column
         # Use all columns if self.output_column is empty
         output_column = output_column if len(output_column) > 0 else [
             c.name for c in self.__table__.columns]
