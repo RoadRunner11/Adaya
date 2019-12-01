@@ -2,16 +2,16 @@ from flask import jsonify, request
 from flask_jwt_extended import create_access_token
 from app.api.v1 import api_v1
 from app.models import User
-from app.helper.enum import ErrorMessages,Roles
-from app.helper.utility import res
+from app.helpers.enum import Messages,Roles
+from app.helpers.utility import res
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.decorators.authorisation import permitted_roles,user_only
 
 
 @api_v1.route('/users/token', methods=['POST'])
-def login():
+def request_token():
     """
-    login takes in email and password, returns the authentication token 
+    request_token takes in email and password, returns the authentication token 
 
     Returns:
         [type]: [description]
@@ -22,12 +22,12 @@ def login():
     if user:
         token = create_access_token(identity=user.email)
         return res(token)
-    return res('', ErrorMessages.AUTHENTICATION_FAILED, 400)
+    return res('', Messages.AUTHENTICATION_FAILED, 400)
 
 
 @api_v1.route('/users', methods=['GET'])
 @user_only
-def get_user():
+def get_current_user():
     """
     get_user retruns user info for my account page
     
@@ -36,4 +36,4 @@ def get_user():
     """
     email = get_jwt_identity()
     user = User.get_user_by_email(email)
-    return res(user.as_dict(User.detail_output_column))
+    return res(user.as_dict())

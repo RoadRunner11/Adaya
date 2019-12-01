@@ -1,5 +1,5 @@
 import re
-from flask import jsonify
+from flask import jsonify, has_request_context
 
 def res(body='OK', error='', status=200):
     """
@@ -14,3 +14,17 @@ def res(body='OK', error='', status=200):
         (json string, int): response object to client
     """
     return jsonify(body=body, error=error), status
+
+def parse_int(chars):
+    """
+    parse_int converts string number to integer
+    
+    Args:
+        chars (string):
+    
+    Returns:
+        int: default to None
+    """
+    if chars:
+        return int(chars) if chars.isdigit() else None
+    return None

@@ -1,5 +1,5 @@
 from app import create_app
-from app.helper.app_context import AppContext as AC
+from app.helpers.app_context import AppContext as AC
 from app.models import User,Role
 
 db = AC().db

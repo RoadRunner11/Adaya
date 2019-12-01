@@ -1,5 +1,5 @@
 from flask import Flask
-from app.helper.app_context import AppContext as AC
+from app.helpers.app_context import AppContext as AC
 from flask_jwt_extended import JWTManager
 
 

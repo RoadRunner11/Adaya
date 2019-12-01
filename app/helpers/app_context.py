@@ -1,5 +1,5 @@
 from flask_bcrypt import Bcrypt
-from app.helper import SingletonMetaClass
+from app.helpers import SingletonMetaClass
 from flask_sqlalchemy import SQLAlchemy
 import logging
 from flask_jwt_extended import JWTManager

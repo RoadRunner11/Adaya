@@ -1,4 +1,4 @@
-from app.helper.app_context import AppContext as AC
+from app.helpers.app_context import AppContext as AC
 
 db = AC().db
 

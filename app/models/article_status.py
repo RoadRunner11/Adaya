@@ -1,4 +1,4 @@
-from app.helper.app_context import AppContext as AC
+from app.helpers.app_context import AppContext as AC
 from app.models.db_mixin import DBMixin
 
 db = AC().db

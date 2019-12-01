@@ -1,4 +1,4 @@
-from app.helper.app_context import AppContext as AC
+from app.helpers.app_context import AppContext as AC
 from app.models.db_mixin import DBMixin
 from app.models.role import Role
 
@@ -17,17 +17,17 @@ class User(db.Model, DBMixin):
     post_code = db.Column(db.String(255))
     country = db.Column(db.String(255))
     phone = db.Column(db.String(255))
-    enabled = db.Column(db.Boolean, default=True)
+    enabled = db.Column(db.Integer, default=1)
     token = db.Column(db.String(255))
     role_id = db.Column(db.Integer, db.ForeignKey('role.id'), default=1)
     role = db.relationship('Role')
     articles = db.relationship('Article', backref='user', lazy='dynamic')
     orders = db.relationship('Order', backref='user', lazy='dynamic')
-    output_column = ['email', 'role.name']
-    detail_output_column = ['email', 'firstname', 'lastname', 'address1',
-                            'address2', 'city', 'post_code', 'country', 'phone', 'enabled', 'role.name']
+    output_column = ['id', 'email', 'firstname', 'lastname', 'address1',
+                     'address2', 'city', 'post_code', 'country', 'phone', 'enabled', 'role.name']
+    not_updatable_columns = ['id']
 
-    def __init__(self, email, password):
+    def __init__(self, email=' ', password=' '):
         '''
         __init__ initiates the user as well as hashing the password by using bcrypt
 
@@ -37,6 +37,33 @@ class User(db.Model, DBMixin):
         '''
         self.email = email
         self.password = AC().bcrypt.generate_password_hash(password)
+
+    def update_from_dict(self, obj_dict, not_updatable_columns=[]):
+        """
+        update_from_dict updates self by using dict
+        
+        Args:
+            obj_dict (dict):
+            not_updatable_columns (list, optional): columns that won't be updated
+        
+        Returns:
+            [type]: [description]
+        """
+        not_updatable_columns = not_updatable_columns if len(
+            not_updatable_columns) > 0 else self.not_updatable_columns
+        flag = False
+        if obj_dict:
+            for key in obj_dict:
+                if hasattr(self, key):
+                    if key in not_updatable_columns:
+                        continue
+                    if key == 'password':
+                        setattr(self, key, AC().bcrypt.generate_password_hash(
+                            obj_dict[key]))
+                    else:
+                        setattr(self, key, obj_dict[key])
+                    flag = True
+        return flag
 
     @classmethod
     def get_user_by_email(cls, email, valid_only=True, page=None, per_page=None):
