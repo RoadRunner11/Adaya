@@ -61,11 +61,11 @@ class DBMixin():
     def update_from_dict(self, obj_dict, not_updatable_columns=[]):
         """
         update_from_dict updates self by using dict
-        
+
         Args:
             obj_dict (dict):
             not_updatable_columns (list, optional): columns that won't be updated
-        
+
         Returns:
             [type]: [description]
         """
@@ -114,5 +114,21 @@ class DBMixin():
         return output
 
     @classmethod
-    def get(cls, query=True, page=1, per_page=10, error_out=False):
-        return cls.query.filter(query).paginate(page, per_page, error_out).items
+    def get(cls, query=True, page=1, per_page=10, order_query=None, error_out=False):
+        """
+        get default get query
+        
+        Args:
+            query (bool, optional): example - 
+            page (int, optional): which page. Defaults to 1.
+            per_page (int, optional): how many items for each return. Defaults to 10.
+            order_query ([type], optional): example db.desc(Post.post_date) or db.asc
+            error_out (bool, optional): [description]. Defaults to False.
+        
+        Returns:
+            [type]: [description]
+        """
+        query = cls.query.filter(query)
+        if order_query:
+            query = query.order_by(order_query)
+        return query.paginate(page, per_page, error_out).items

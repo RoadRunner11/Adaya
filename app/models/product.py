@@ -18,7 +18,14 @@ class Product(db.Model, DBMixin):
         self.title = title
 
     @classmethod
-    def get_products_by_category(cls, category_id, page=None, per_page=None):
-        # filter by category
+    def get_products_by_category(cls, category_id, page=None, per_page=None, sort_by=None, is_desc=None):
+        # default sort by time
+        sort = db.desc(Product.created_time)
+        if sort_by != None:
+            if sort_by == 'price':
+                # only support sorting by price
+                sort = db.asc(Product.price)
+                if is_desc:
+                    sort = db.desc(Product.created_time)
         query = Product.category_id == category_id
-        return cls.get(query, page, per_page)
+        return cls.get(query, page, per_page, sort)
