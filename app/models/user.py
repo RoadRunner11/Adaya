@@ -17,12 +17,12 @@ class User(db.Model, DBMixin):
     post_code = db.Column(db.String(255))
     country = db.Column(db.String(255))
     phone = db.Column(db.String(255))
-    enabled = db.Column(db.Integer, default=1)
     token = db.Column(db.String(255))
     role_id = db.Column(db.Integer, db.ForeignKey('role.id'), default=1)
     role = db.relationship('Role')
-    articles = db.relationship('Article', backref='user', lazy='dynamic')
-    orders = db.relationship('Order', backref='user', lazy='dynamic')
+    articles = db.relationship('Article', lazy='dynamic')
+    orders = db.relationship('Order', lazy='dynamic')
+    
     output_column = ['id', 'email', 'firstname', 'lastname', 'address1',
                      'address2', 'city', 'post_code', 'country', 'phone', 'enabled', 'role.name']
     not_updatable_columns = ['id']
@@ -66,22 +66,16 @@ class User(db.Model, DBMixin):
         return flag
 
     @classmethod
-    def get_user_by_email(cls, email, valid_only=True, page=None, per_page=None):
-        query = User.email == email
-        users = cls.get(query, page, per_page)
-        if len(users) > 0:
-            user = users[0]
-            if valid_only:
-                if user.enabled:
-                    return user
-            return user
-        return None
+    def get_user_by_email(cls, email, page=None, per_page=None):
+        filter_query = cls.email == email
+        user = cls.get(filter_query, page, per_page).first()
+        return user if user else None
 
     @classmethod
     def get_users_by_role(cls, role, page=None, per_page=None):
         # How to filter by roles
-        query = User.role.has(Role.name == role)
-        return cls.get(query, page, per_page)
+        filter_query = cls.role.has(Role.name == role)
+        return cls.get(filter_query, page, per_page)
 
     @staticmethod
     def authenticate(email, password):

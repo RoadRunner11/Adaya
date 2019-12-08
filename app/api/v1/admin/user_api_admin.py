@@ -1,7 +1,7 @@
 from app.models import User
 from app.api.v1 import api_v1
 from app.helpers import Messages, Responses
-from app.helpers.utility import res, parse_int
+from app.helpers.utility import res, parse_int, get_page_from_args
 from flask import jsonify, request
 from flask_jwt_extended import create_access_token
 from app.decorators.authorisation import admin_only
@@ -20,11 +20,10 @@ def get_users(email=None):
     Returns:
         [type]: [description]
     """
-    page = parse_int(request.args.get('page')) or 1
-    per_page = parse_int(request.args.get('per_page')) or 10
-    users = [User.get_user_by_email(email)] if email else User.get(
+    page, per_page = get_page_from_args()
+    items = [User.get_user_by_email(email)] if email else User.get(
         page=page, per_page=per_page)
-    return res([user.as_dict() for user in users])
+    return res([item.as_dict() for item in items])
 
 
 @api_v1.route('/connect/users/<string:email>', methods=['PUT'])
@@ -39,12 +38,12 @@ def update_user(email):
     Returns:
         (string,int): user info if update succesful, otherwise response no need to update
     """
-    user = User.get_user_by_email(email)
-    if not user:
+    item = User.get_user_by_email(email)
+    if not item:
         return Responses.NOT_EXIST()
     json_dict = request.json
-    if len(user.update(json_dict)) > 0:
-        return res(user.as_dict())
+    if len(item.update(json_dict)) > 0:
+        return Responses.OPERATION_FAILED()
     return Responses.SUCCESS()
 
 
@@ -52,12 +51,12 @@ def update_user(email):
 @admin_only
 def add_user():
     json_dict = request.json
-    user = User()
-    user.update_from_dict(json_dict)
-    existing_user = User.get_user_by_email(json_dict['email'])
-    if existing_user:
+    item = User()
+    item.update_from_dict(json_dict)
+    existing_item = User.get_user_by_email(json_dict['email'])
+    if existing_item:
         return Responses.OBJECT_EXIST()
-    error = user.update()
+    error = item.update()
     if len(error) > 0:
         return Responses.OPERATION_FAILED()
-    return res(user.as_dict())
+    return res(item.as_dict())
