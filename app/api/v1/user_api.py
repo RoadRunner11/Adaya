@@ -2,7 +2,7 @@ from flask import jsonify, request
 from flask_jwt_extended import create_access_token
 from app.api.v1 import api_v1
 from app.models import User
-from app.helpers.enum import Messages,Roles
+from app.helpers.enum import Messages,Roles,Responses
 from app.helpers.utility import res
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.decorators.authorisation import permitted_roles,user_only
@@ -16,13 +16,15 @@ def request_token():
     Returns:
         [type]: [description]
     """
+    if request.json is None:
+        return Responses.OPERATION_FAILED()
     email = request.json.get('email', None)
     password = request.json.get('password', None)
     user = User.authenticate(email, password)
     if user:
         token = create_access_token(identity=user.email)
         return res(token)
-    return res('', Messages.AUTHENTICATION_FAILED, 400)
+    return Responses.AUTHENTICATION_FAILED()
 
 
 @api_v1.route('/users', methods=['GET'])

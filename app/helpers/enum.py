@@ -29,3 +29,6 @@ class Responses:
     @staticmethod
     def OPERATION_FAILED():
         return res('', Messages.OPERATION_FAILED, 400)
+    @staticmethod
+    def AUTHENTICATION_FAILED():
+        return res('', Messages.AUTHENTICATION_FAILED, 400)
