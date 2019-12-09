@@ -32,10 +32,10 @@ class Order(db.Model, DBMixin):
                 sort_query = db.desc(cls.created_time)
                 if not is_desc:
                     sort_query = db.asc(cls.created_time)
-            if sort_by == 'amount':
-                sort_query = db.desc(cls.amount)
+            if sort_by == 'total_price':
+                sort_query = db.desc(cls.total_price)
                 if not is_desc:
-                    sort_query = db.asc(cls.amount)
+                    sort_query = db.asc(cls.total_price)
         filter_queries = []
         if user_id != None:
             filter_queries.append(cls.user_id == user_id)
@@ -49,6 +49,6 @@ class Order(db.Model, DBMixin):
         products_freeze = []
         for product in self.products:
             total_price += product.price
-            products_freeze.append(product.as_dict(['id','title','description','price','image']))
+            products_freeze.append(product.as_dict(['id','name','description','price','image']))
         self.total_price = total_price
         self.products_freeze = json.dumps(products_freeze)

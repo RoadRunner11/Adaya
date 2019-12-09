@@ -1,6 +1,7 @@
 import re
 from flask import jsonify, has_request_context, request
-
+import string
+import random
 
 def res(body='OK', error='', status=200):
     """
@@ -46,3 +47,9 @@ def get_page_from_args(default_page=1, default_per_page=10):
     page = parse_int(request.args.get('page')) or default_page
     per_page = parse_int(request.args.get('per_page')) or default_per_page
     return page, per_page
+
+
+def randomString(stringLength=10):
+    """Generate a random string of fixed length """
+    letters = string.ascii_lowercase
+    return ''.join(random.choice(letters) for i in range(stringLength))

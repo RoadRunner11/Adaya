@@ -27,9 +27,3 @@ def create_app(config_object):
         app.register_blueprint(
             BP['route'], url_prefix=BP['url_prefix'])
     return app
-
-
-app = create_app('config.dev')
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0")

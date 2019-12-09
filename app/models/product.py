@@ -7,7 +7,7 @@ db = AC().db
 class Product(db.Model, DBMixin):
     __tablename__ = 'product'
 
-    title = db.Column(db.String(255), nullable=False)
+    name = db.Column(db.String(255), nullable=False)
     description = db.Column(db.Text)
     price = db.Column(db.Numeric(10, 2),default=0)
     image = db.Column(db.String(255))
@@ -16,11 +16,11 @@ class Product(db.Model, DBMixin):
         'product_category.id'), default=1)
     category = db.relationship('ProductCategory')
 
-    output_column = ['id', 'title', 'description','image',
+    output_column = ['id', 'name', 'description','image',
                      'price', 'stock', 'category.name','enabled']
 
-    def __init__(self, title=' '):
-        self.title = title
+    def __init__(self, name=' '):
+        self.name = name
 
     @classmethod
     def get_items(cls, category_id=None, page=None, per_page=None, sort_by=None, is_desc=None):
