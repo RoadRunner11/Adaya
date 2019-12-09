@@ -1,5 +1,5 @@
 import pytest
-from app.models import Product, Order
+from app.models import Product, Order, User
 
 
 @pytest.fixture(scope='module')
@@ -16,3 +16,8 @@ def new_order(new_product):
     order.products.append(new_product)
     order.products.append(new_product)
     return order
+
+@pytest.fixture(scope='module')
+def new_user():
+    user = User('abcdefg@gmail.com','1q2w3e4r')
+    return user

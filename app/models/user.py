@@ -22,7 +22,7 @@ class User(db.Model, DBMixin):
     role = db.relationship('Role')
     articles = db.relationship('Article', lazy='dynamic')
     orders = db.relationship('Order', lazy='dynamic')
-    
+
     output_column = ['id', 'email', 'firstname', 'lastname', 'address1',
                      'address2', 'city', 'post_code', 'country', 'phone', 'enabled', 'role.name']
     not_updatable_columns = ['id']
@@ -41,11 +41,11 @@ class User(db.Model, DBMixin):
     def update_from_dict(self, obj_dict, not_updatable_columns=[]):
         """
         update_from_dict updates self by using dict
-        
+
         Args:
             obj_dict (dict):
             not_updatable_columns (list, optional): columns that won't be updated
-        
+
         Returns:
             [type]: [description]
         """
@@ -68,8 +68,8 @@ class User(db.Model, DBMixin):
     @classmethod
     def get_user_by_email(cls, email, page=None, per_page=None):
         filter_query = cls.email == email
-        user = cls.get(filter_query, page, per_page).first()
-        return user if user else None
+        users = cls.get(filter_query, page, per_page)
+        return users[0] if len(users) > 0 else None
 
     @classmethod
     def get_users_by_role(cls, role, page=None, per_page=None):
