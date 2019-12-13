@@ -40,11 +40,10 @@ def get_current_user():
     user = User.get_user_by_email(email)
     return res(user.as_dict())
 
-
 @api_v1.route('/users/register', methods=['POST'])
-def add_user():
+def create_user():
     """
-    adds a new user
+    creates a new user
     
     """
     json_dict = request.json
@@ -52,4 +51,6 @@ def add_user():
     error = item.update(json_dict)
     if len(error) > 0:
         return Responses.OPERATION_FAILED()
-    return res(item.as_dict())      
+    return res(item.as_dict())    
+
+  
