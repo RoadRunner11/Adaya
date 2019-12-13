@@ -1,5 +1,5 @@
 {
-    "python.pythonPath": "c:\\Users\\luoha\\Documents\\Projects\\SporuleWebAPI\\venv\\Scripts\\python.exe",
+    "python.pythonPath": "env\\Scripts\\python.exe",
     "autoDocstring.docstringFormat":"google",
     "autoDocstring.startOnNewLine":true,
     "autoDocstring.includeName":true,

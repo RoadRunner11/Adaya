@@ -39,3 +39,17 @@ def get_current_user():
     email = get_jwt_identity()
     user = User.get_user_by_email(email)
     return res(user.as_dict())
+
+
+@api_v1.route('/users/register', methods=['POST'])
+def add_user():
+    """
+    adds a new user
+    
+    """
+    json_dict = request.json
+    item = User()
+    error = item.update(json_dict)
+    if len(error) > 0:
+        return Responses.OPERATION_FAILED()
+    return res(item.as_dict())      
