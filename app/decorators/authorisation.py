@@ -44,8 +44,8 @@ def user_only(function):
     return wrapper
 
 
-@permitted_roles([Roles.ADMIN])
 def admin_only(function):
+    @permitted_roles([Roles.ADMIN])
     @wraps(function)
     def wrapper(*args, **kwargs):
         return function(*args, **kwargs)
