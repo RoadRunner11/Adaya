@@ -41,9 +41,9 @@ def get_current_user():
     return res(user.as_dict())
 
 @api_v1.route('/users', methods=['POST'])
-def create_user():
+def register_user():
     """
-    creates a new user
+    registers a new user
     
     """
     json_dict = request.json
