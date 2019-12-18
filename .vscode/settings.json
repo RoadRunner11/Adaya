@@ -1,5 +1,5 @@
 {
-    "python.pythonPath": "env\\Scripts\\python.exe",
+    "python.pythonPath": "venv\\Scripts\\python.exe",
     "autoDocstring.docstringFormat":"google",
     "autoDocstring.startOnNewLine":true,
     "autoDocstring.includeName":true,

@@ -40,7 +40,7 @@ def get_current_user():
     user = User.get_user_by_email(email)
     return res(user.as_dict())
 
-@api_v1.route('/users/register', methods=['POST'])
+@api_v1.route('/users', methods=['POST'])
 def create_user():
     """
     creates a new user
@@ -48,6 +48,10 @@ def create_user():
     """
     json_dict = request.json
     item = User()
+    item.update_from_dict(json_dict)
+    existing_item = User.get_user_by_email(json_dict['email'])
+    if existing_item:
+        return Responses.OBJECT_EXIST()
     error = item.update(json_dict)
     if len(error) > 0:
         return Responses.OPERATION_FAILED()
