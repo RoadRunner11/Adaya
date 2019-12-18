@@ -10,3 +10,14 @@ def test_request_token(test_client, init_database, admin_user):
     response = test_client.post(
         '/users/token', json={'email': admin_user.email, 'password': admin_user.password})
     assert response.status_code == 200
+
+
+def create_user(test_client, init_database, new_user):    
+    response = test_client.post(
+        '/users', json={'email': new_user.email, 'password': new_user.password})
+    assert response.status_code == 200
+
+    response = test_client.post(
+        '/users', data=dict(email=new_user.email, password=new_user.password))
+    assert response.status_code == 400
+
