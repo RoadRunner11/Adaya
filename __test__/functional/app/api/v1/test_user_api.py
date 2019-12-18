@@ -12,7 +12,7 @@ def test_request_token(test_client, init_database, admin_user):
     assert response.status_code == 200
 
 
-def create_user(test_client, init_database, new_user):    
+def register_user(test_client, init_database, new_user):    
     response = test_client.post(
         '/users', json={'email': new_user.email, 'password': new_user.password})
     assert response.status_code == 200
