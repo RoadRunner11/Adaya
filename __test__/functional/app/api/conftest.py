@@ -12,6 +12,8 @@ def admin_user():
 @pytest.fixture(scope='module')
 def new_member():
     user = User()
-    user.email = 'hao@gmail.com'
+    user.email = 'cret@gmail.com'
     user.password = '1q2w3e4r'
+    user.role_id = 2
+    user.lastname = 'Analytics'
     return user

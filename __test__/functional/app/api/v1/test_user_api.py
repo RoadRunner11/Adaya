@@ -12,12 +12,20 @@ def test_request_token(test_client, init_database, admin_user):
     assert response.status_code == 200
 
 
-def register_user(test_client, init_database, new_user):    
+def test_register_user(test_client, init_database, new_member):    
     response = test_client.post(
-        '/users', json={'email': new_user.email, 'password': new_user.password})
+        '/users', json={'email': new_member.email, 'password': new_member.password})
     assert response.status_code == 200
 
+    assert 'member' in response.json['body'].values()
+
     response = test_client.post(
-        '/users', data=dict(email=new_user.email, password=new_user.password))
-    assert response.status_code == 400
+        '/users', json={'email': new_member.email, 'password': new_member.password})
+    assert response.status_code == 409
+
+def test_update_user_info(test_client, init_database, new_member):    
+    info = 'http://127.0.0.1:5000/users/cret@gmail.com'
+    response = test_client.put(
+        info, json={'lastname': new_member.lastname })
+    assert response.status_code == 200
 

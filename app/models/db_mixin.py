@@ -55,7 +55,7 @@ class DBMixin():
         error = ''
         flag = True
         if obj_dict:
-            flag = self.update_from_dict(obj_dict)
+            flag = self.update_from_dict(obj_dict, not_updatable_columns)
         if flag or force_insert:
             # update the object in database
             error = self.insert()
