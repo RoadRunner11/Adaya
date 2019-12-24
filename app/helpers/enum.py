@@ -3,9 +3,9 @@ from app.helpers.utility import res
 
 class Messages:
     AUTHENTICATION_FAILED = 'Authentication failed, please try again'
-    AUTHORISATION_FAILED = 'You do not have enough permission'
+    AUTHORISATION_FAILED = 'You do not have the required permission'
     NOT_ENOUGH_INFO = 'Information you provided is not accurate'
-    NOT_EXIST = 'Not able to find the record'
+    NOT_EXIST = 'Record not found'
     OBJECT_EXIST = 'Object exists'
     SUCCESS = 'Operation Success'
     OPERATION_FAILED = 'Operation Failed'
