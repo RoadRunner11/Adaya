@@ -31,7 +31,7 @@ def request_token():
 @user_only
 def get_current_user():
     """
-    get_user retruns user info for my account page
+    get_user returns user info for my account page
     
     Returns:
         (json string, status)
