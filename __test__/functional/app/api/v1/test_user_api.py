@@ -14,16 +14,17 @@ def test_request_token(test_client, init_database, admin_user):
 
 def test_register_user(test_client, init_database, new_member):    
     response = test_client.post(
-        '/users', json={'email': new_member.email, 'password': new_member.password})
+        '/users', json={'email': new_member.email, 'password': new_member.password, 'role_id':new_member.role_id})
     assert response.status_code == 200
 
+    # role should still be 'member' even if role_id is set to admin
     assert 'member' in response.json['body'].values()
 
     response = test_client.post(
         '/users', json={'email': new_member.email, 'password': new_member.password})
     assert response.status_code == 409
 
-def test_update_user_info(test_client, init_database, new_member):    
+def test_update_user_information(test_client, init_database, new_member):    
     info = 'http://127.0.0.1:5000/users/cret@gmail.com'
     response = test_client.put(
         info, json={'lastname': new_member.lastname })

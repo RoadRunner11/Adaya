@@ -58,7 +58,7 @@ def register_user():
     return res(item.as_dict())    
 
 @api_v1.route('/users/<string:email>', methods=['PUT'])
-def update_user_info(email):
+def update_user_information(email):
     """
     updates user by using email
 
