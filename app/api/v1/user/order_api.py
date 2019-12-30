@@ -24,7 +24,7 @@ def create_order():
     return res(item.as_dict())
 
 @api_v1.route('/orders/<int:id>', methods=['PUT'])
-#@user_only
+@user_only
 def update_user_order(id):
     item = Order.query.get(id)
     if not item:
@@ -43,7 +43,7 @@ def update_user_order(id):
     return Responses.SUCCESS()
 
 @api_v1.route('/orders/<int:id>', methods=['GET'])
-#@user_only
+@user_only
 def get_user_orders(id=None):
     page, per_page = get_page_from_args()
     sort_by = request.args.get('sort_by')

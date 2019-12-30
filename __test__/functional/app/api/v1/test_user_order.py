@@ -11,14 +11,33 @@ def test_member_order(test_client, init_database, member_order):
     
 
      assert response.status_code == 200
+
      assert second_response.status_code == 200
 
      # ensure no products are sent back if more than 4 in order
      assert len(response.json['body']['products'] ) == 0
-
-     assert len(second_response.json['body']['products'] ) == 2
      
+     # number of produts
+     assert len(second_response.json['body']['products'] ) == 2
 
+def test_update_member_order(test_client, init_database, member_order):  
+    response = test_client.post(
+       '/orders', json={'product_ids':[member_order.products[0].id, member_order.products[1].id, member_order.products[2].id,
+                        member_order.products[3].id], 'user_id': member_order.user_id})
+    
+    # check order created succesfully
+    assert response.status_code == 200
+
+    # update the order
+    info = 'http://127.0.0.1:5000/orders/11'
+    
+    update_response = test_client.put(
+       info, json={'product_ids':[member_order.products[3].id, member_order.products[4].id], 'user_id': member_order.user_id})
+    
+    # check the order updated
+    assert update_response.status_code == 200
+    
+    
     
    
   
