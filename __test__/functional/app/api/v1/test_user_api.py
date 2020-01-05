@@ -24,8 +24,7 @@ def test_register_user(test_client, init_database, new_member):
     assert response.status_code == 409
 
 def test_update_user_info(test_client, init_database, new_member):    
-    info = 'http://127.0.0.1:5000/users/cret@gmail.com'
     response = test_client.put(
-        info, json={'lastname': new_member.lastname })
+        '/users/abc@gmail.com', json={'lastname': new_member.lastname })
     assert response.status_code == 200
 
