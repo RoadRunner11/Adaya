@@ -11,7 +11,7 @@ from app.decorators.authorisation import user_only
 def create_order():
     json_dict = request.json
     item = Order()
-    #product_ids = json_dict['product_ids']
+    product_ids = json_dict['product_ids']
     #item.product_ids = product_ids
 
    # if item.check_quantity_products(MAX_NO_PRODUCTS):
