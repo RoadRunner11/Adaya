@@ -28,12 +28,10 @@ def test_update_member_order(test_client, init_database, member_order):
     # check order created succesfully
     assert response.status_code == 200
 
-    # update the order
-    info = 'http://127.0.0.1:5000/orders/11'
-    
+    # update the order    
     update_response = test_client.put(
-       info, json={'product_ids':[member_order.products[3].id, member_order.products[4].id], 'user_id': member_order.user_id})
-    
+       '/orders/11', json={'product_ids':[member_order.products[3].id, member_order.products[4].id], 'user_id': member_order.user_id})
+       
     # check the order updated
     assert update_response.status_code == 200
     

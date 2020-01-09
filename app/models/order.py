@@ -52,3 +52,27 @@ class Order(db.Model, DBMixin):
             products_freeze.append(product.as_dict(['id','name','description','price','image']))
         self.total_price = total_price
         self.products_freeze = json.dumps(products_freeze)
+        
+    def check_quantity_products(self, max_number):
+        """
+            Checks the number of products in the order 
+            to ensure it is not beyond permitted number per order.
+        """
+        if len(self.products) > max_number:
+            return False
+    
+    def check_stock(self):
+        for product in self.products:
+            if product.stock > 0:
+                continue
+            else:
+                return False
+    
+    def check_order_status(self):
+        if self.status_id == 1:
+            return False
+
+    #def check_apply_promotion_code():
+        # info on percentage of discount based on promotion code
+
+        # reduce total cost using the percentage

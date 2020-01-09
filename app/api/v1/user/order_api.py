@@ -4,16 +4,20 @@ from app.helpers import Messages, Responses
 from app.helpers.utility import res, parse_int, get_page_from_args
 from flask import jsonify, request
 from app.decorators.authorisation import user_only
+#from config.dev import MAX_NO_PRODUCTS
 
 @api_v1.route('/orders', methods=['POST'])
-#@user_only
+@user_only
 def create_order():
     json_dict = request.json
     item = Order()
-    product_ids = json_dict['product_ids']
+    #product_ids = json_dict['product_ids']
+    #item.product_ids = product_ids
+
+   # if item.check_quantity_products(MAX_NO_PRODUCTS):
+        #return Responses.OPERATION_FAILED()
+
     if product_ids:
-        # Allow max of 4 products per order
-        if len(product_ids) <= 4:
             if type(product_ids) == list:
                 products = [Product.query.get(id)
                             for id in json_dict['product_ids']]
@@ -29,6 +33,13 @@ def update_user_order(id):
     item = Order.query.get(id)
     if not item:
         return Responses.NOT_EXIST()
+
+    if (item.check_order_status()):
+        return Responses.OPERATION_FAILED()
+    
+    if item.check_stock():
+        return Responses.OPERATION_FAILED()
+
     json_dict = request.json
     product_ids = json_dict['product_ids']
     if product_ids:
@@ -38,7 +49,7 @@ def update_user_order(id):
                         for id in json_dict['product_ids']]
             item.products = products
             item.calculate_cost()
-    if len(item.update(json_dict,force_insert=True)) > 0:
+    if len(item.update(json_dict,force_insert=False)) > 0:
         return Responses.OPERATION_FAILED()
     return Responses.SUCCESS()
 
