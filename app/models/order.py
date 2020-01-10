@@ -1,5 +1,8 @@
 from app.helpers.app_context import AppContext as AC
 from app.models.db_mixin import DBMixin
+from app.models import Product
+#from app.models import coupon
+#from app.helpers.valuesconfig import *
 import json
 
 db = AC().db
@@ -44,11 +47,17 @@ class Order(db.Model, DBMixin):
         return cls.get(filter_queries, page, per_page, sort_query)
     
 
-    def calculate_cost(self):
+    def calculate_cost(self, coupon_check=False):
         total_price = 0
         products_freeze = []
-        for product in self.products:
-            total_price += product.price
+        for product in self.products:    
+            #if coupon_check:              
+            # if(Coupon.product_id == product.id):
+            #     if(Coupon.fixed_amount > 0):
+            #         product.price -= Coupon.fixed_amount 
+            #     else:
+            #         product.price *= (percent - Coupon.percent_off)
+            total_price += product.price 
             products_freeze.append(product.as_dict(['id','name','description','price','image']))
         self.total_price = total_price
         self.products_freeze = json.dumps(products_freeze)
@@ -59,7 +68,7 @@ class Order(db.Model, DBMixin):
             to ensure it is not beyond permitted number per order.
         """
         if len(self.products) > max_number:
-            return False
+            return True
     
     def check_stock(self):
         for product in self.products:
@@ -71,8 +80,17 @@ class Order(db.Model, DBMixin):
     def check_order_status(self):
         if self.status_id == 1:
             return False
+    
+    def get_product_from_id(self, product_id):
+        product = Product.query.get(product_id)
+        return product
 
-    #def check_apply_promotion_code():
-        # info on percentage of discount based on promotion code
-
-        # reduce total cost using the percentage
+    def get_products_from_id(self, product_ids):        
+        if type(product_ids) == list:  
+            products = []
+            for id in product_ids:
+                products.append(self.get_product_from_id(id))
+            return products
+        else:
+            product = self.get_product_from_id(product_ids)   
+            return product                       
