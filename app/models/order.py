@@ -1,8 +1,7 @@
 from app.helpers.app_context import AppContext as AC
 from app.models.db_mixin import DBMixin
+from app.models.voucher import Voucher 
 from app.models import Product
-#from app.models import coupon
-#from app.helpers.valuesconfig import *
 import json
 
 db = AC().db
@@ -12,7 +11,9 @@ class Order(db.Model, DBMixin):
     __tablename__ = 'order'
 
     products = db.relationship('Product', secondary='product_order',
-                               backref=db.backref('orders', lazy='dynamic'))
+                               backref=db.backref('orders', lazy='dynamic')) 
+    orders = db.relationship('Voucher', secondary='voucher_order',
+                               backref=db.backref('orders', lazy='dynamic'))  
     products_freeze = db.Column(db.Text)
     payment_ref = db.Column(db.String(255))
     total_price = db.Column(db.Numeric(10, 2))
@@ -20,8 +21,10 @@ class Order(db.Model, DBMixin):
         'user.id'), nullable=False, default=1)
     status_id = db.Column(db.Integer, db.ForeignKey(
         'order_status.id'), default=1)
+
     user = db.relationship('User')
     status = db.relationship('OrderStatus')
+    
 
     output_column = ['id', 'products', 'products_freeze','payment_ref',
                      'total_price', 'user.email', 'status.name', 'enabled']
@@ -47,20 +50,32 @@ class Order(db.Model, DBMixin):
         return cls.get(filter_queries, page, per_page, sort_query)
     
 
-    def calculate_cost(self, coupon_check=False):
+    def calculate_cost(self):
         total_price = 0
         products_freeze = []
-        for product in self.products:    
-            #if coupon_check:              
-            # if(Coupon.product_id == product.id):
-            #     if(Coupon.fixed_amount > 0):
-            #         product.price -= Coupon.fixed_amount 
-            #     else:
-            #         product.price *= (percent - Coupon.percent_off)
+        for product in self.products:
             total_price += product.price 
             products_freeze.append(product.as_dict(['id','name','description','price','image']))
         self.total_price = total_price
         self.products_freeze = json.dumps(products_freeze)
+    
+    def calculate_discounted_cost(self):
+        total_price = 0
+        products_freeze = []
+        voucher_products_id = Voucher.get_voucher_product_ids(self.vouchers)
+
+        for product in self.products:               
+            if(product.id in voucher_products_id):
+                voucher = Voucher.get_voucher_by_product_id(product.id)
+                if(voucher.discount_fixed_amount > 0):
+                    product.price -= voucher.discount_fixed_amount 
+                else:
+                    product.price *= (1 - (voucher.discount_percent_off/100))
+            total_price += product.price 
+            products_freeze.append(product.as_dict(['id','name','description','price','image']))
+        self.total_price = total_price
+        self.products_freeze = json.dumps(products_freeze)
+
         
     def check_quantity_products(self, max_number):
         """

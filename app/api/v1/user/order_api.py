@@ -1,11 +1,9 @@
-from app.models import Order, Product
+from app.models import Order, Product, ConfigValues, Voucher
 from app.api.v1 import api_v1
 from app.helpers import Messages, Responses
 from app.helpers.utility import res, parse_int, get_page_from_args
 from flask import jsonify, request
 from app.decorators.authorisation import user_only
-#from app.models import coupon
-#from app.helpers.valuesconfig import *
 
 @api_v1.route('/orders', methods=['POST'])
 #@user_only
@@ -18,15 +16,20 @@ def create_order():
         products = item.get_products_from_id(product_ids)
         item.products = products
     
-    if item.check_quantity_products(4):
-        return Responses.OPERATION_FAILED()
+    max_number = int(ConfigValues.get_config_value('max_no_products_per_order'))
+
+    if item.check_quantity_products(max_number):
+       return Responses.OPERATION_FAILED()
     
-    # coupon_code = json_dict['coupon_code']
-    # if coupon_code:
-    #     valid = coupon.Coupon.validate_coupon(coupon_code)
-    #     if valid:
-    #         item.calculate_cost(valid)
-    item.calculate_cost()
+    if 'voucher_codes' in json_dict.keys():
+        voucher_codes = json_dict['voucher_codes']    
+        vouchers = Voucher.get_vouchers(voucher_codes)
+        valid = Voucher.validate_voucher(vouchers)
+        if valid:
+            item.vouchers = vouchers
+            item.calculate_discounted_cost()
+    else:    
+        item.calculate_cost()
 
     if len(item.update(json_dict,force_insert=True)) > 0:
         return Responses.OPERATION_FAILED()

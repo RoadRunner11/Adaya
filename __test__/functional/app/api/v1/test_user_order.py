@@ -1,7 +1,8 @@
 from app.models import Order
 from app.helpers.app_context import AppContext as AC
 
-def test_member_order(test_client, init_database, member_order):     
+def test_member_order(test_client, init_database, member_order): 
+    # how to mock the config value from db and getting voucher from db
      response = test_client.post(
        '/orders', json={'product_ids':[member_order.products[0].id, member_order.products[1].id, member_order.products[2].id,
                         member_order.products[3].id, member_order.products[4].id], 'user_id': member_order.user_id})
@@ -9,6 +10,10 @@ def test_member_order(test_client, init_database, member_order):
      second_response = test_client.post(
        '/orders', json={'product_ids':[member_order.products[0].id, member_order.products[1].id], 'user_id': member_order.user_id})
     
+     third_response = test_client.post(
+       '/orders', json={'product_ids':[member_order.products[0].id, member_order.products[1].id], 'user_id': member_order.user_id, 
+                        'voucher_codes':[member_order.vouchers[0].name]})
+
      # should fail if more than 4 products in order
      assert response.status_code == 400
 
@@ -16,6 +21,8 @@ def test_member_order(test_client, init_database, member_order):
      
      # number of produts
      assert len(second_response.json['body']['products'] ) == 2
+
+     assert third_response.json['body']['total_price'] == 230
 
 def test_update_member_order(test_client, init_database, member_order):  
     response = test_client.post(

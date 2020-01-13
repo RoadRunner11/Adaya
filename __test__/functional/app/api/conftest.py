@@ -2,6 +2,8 @@ import pytest
 from app.models import User
 from app.models import Order
 from app.models import Product
+from app.models import Voucher
+import datetime
 
 @pytest.fixture(scope='module')
 def admin_user():
@@ -41,8 +43,14 @@ def member_order():
     fifth_product.price = 620
     fifth_product.id = 6
 
+    voucher = Voucher('CLEM10')
+    voucher.product_id = 4
+    voucher.discount_fixed_amount = 100
+    voucher.redeem_by = datetime.date(2020, 4, 20)
+
     order = Order()
     order.products = []
+    order.vouchers = []
     order.user_id = 43
     order.id = 43
     
@@ -52,5 +60,7 @@ def member_order():
     order.products.append(third_product)
     order.products.append(fourth_product)
     order.products.append(fifth_product)
+    order.vouchers.append(voucher)
+    
 
     return order

@@ -1,8 +1,9 @@
 from app import create_app
 from app.helpers.app_context import AppContext as AC
-from app.models import User, Role, Product, ProductCategory, Article, ArticleCategory, ArticleStatus,OrderStatus,Order
+from app.models import User, Role, Product, ProductCategory, Article, ArticleCategory, ArticleStatus,OrderStatus,Order,ConfigValues, Voucher
 import random
 import string
+import datetime
 
 db = AC().db
 
@@ -23,9 +24,16 @@ if __name__ == "__main__":
         user = User("abc@gmail.com", "1q2w3e4r")
         user2 = User("abcd@gmail.com", "1q2w3e4r")
         user.role = admin
+        configvalues = ConfigValues('max_no_products_per_order', 4)
+        voucher = Voucher('HAO20')
+        voucher.discount_fixed_amount = 5
+        voucher.product_id = 3
+        voucher.redeem_by = datetime.date(2020, 4, 13)
+        db.session.add(configvalues)
         db.session.add(member)
         db.session.add(user)
         db.session.add(user2)
+        db.session.add(voucher)
         food_category = ProductCategory('food')
         clothes_category = ProductCategory('cloth')
         food_article = ArticleCategory('food-article')
