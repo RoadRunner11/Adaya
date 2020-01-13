@@ -16,7 +16,7 @@ pipeline {
         }
         stage('test') {
             steps {
-                sh 'pytest --cov=app ./'
+                sh 'pytest --cov-report xml --cov=app ./'
             }
         }
     }
