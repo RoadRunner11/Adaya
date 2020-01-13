@@ -27,4 +27,3 @@ def test_update_user_info(test_client, init_database, new_member):
     response = test_client.put(
         '/users/abc@gmail.com', json={'lastname': new_member.lastname })
     assert response.status_code == 200
-
