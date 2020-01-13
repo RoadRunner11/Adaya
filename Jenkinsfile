@@ -7,6 +7,7 @@ pipeline {
         stage("prebuild"){
             steps{
                 sh """
+                git clean -fdx
                 echo "installing dependencies"
                 pip install -r requirements.txt
                 """
