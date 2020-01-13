@@ -9,6 +9,8 @@ pipeline {
         }
         stage('build') {
             steps {
+                echo 'Resolving the environments'
+                pip3 install - r requirements.txt
                 sh 'python --version'
             }
         }
