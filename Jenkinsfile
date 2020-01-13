@@ -1,17 +1,18 @@
 pipeline {
-    agent { docker { image 'python:3.6.0' } }
+    agent { docker { image 'python:3.8.0' } }
     stages {
-        stage("prepare environment"){
+        stage("prebuild"){
             steps{
                 sh """
+                echo "installing dependencies"
                 sudo pip install -r requirements.txt
                 """
             }
             
         }
-        stage('build') {
+        stage('test') {
             steps {
-                sh 'python --version'
+                sh 'pytest --cov=app ./'
             }
         }
     }
