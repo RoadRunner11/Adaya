@@ -105,3 +105,4 @@ venv.bak/
 
 # coverage report
 coverage.xml
+cobertura-coverage.xml

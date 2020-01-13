@@ -16,7 +16,7 @@ pipeline {
         }
         stage('test') {
             steps {
-                sh 'pytest --cov-report xml --cov=app ./'
+                sh 'pytest --cov-report xml:cobertura-coverage.xml --cov=app ./'
             }
         }
     }
