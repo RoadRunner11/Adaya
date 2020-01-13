@@ -4,13 +4,11 @@ pipeline {
         stage('prepare') {
             steps {
                 echo 'Resolving the environments'
-                pip3 install - r requirements.txt
+                pip install - r requirements.txt
             }
         }
         stage('build') {
             steps {
-                echo 'Resolving the environments'
-                pip3 install - r requirements.txt
                 sh 'python --version'
             }
         }
