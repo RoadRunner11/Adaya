@@ -6,6 +6,7 @@ from flask import jsonify, request
 from app.decorators.authorisation import user_only
 
 @api_v1.route('/products', methods=['GET'])
+@api_v1.route('/connect/products/<int:id>', methods=['GET'])
 @user_only
 def get_products(id=None):
     """
