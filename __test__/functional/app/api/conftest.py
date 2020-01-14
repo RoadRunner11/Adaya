@@ -43,10 +43,8 @@ def member_order():
     fifth_product.price = 620
     fifth_product.id = 6
 
-    voucher = Voucher('CLEM10')
-    voucher.product_id = 4
-    voucher.discount_fixed_amount = 100
-    voucher.redeem_by = datetime.date(2020, 4, 20)
+    voucher = Voucher('HAO20')
+    voucher.product_id = 3
 
     order = Order()
     order.products = []

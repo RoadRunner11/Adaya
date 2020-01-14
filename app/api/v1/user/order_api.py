@@ -24,6 +24,8 @@ def create_order():
     if 'voucher_codes' in json_dict.keys():
         voucher_codes = json_dict['voucher_codes']    
         vouchers = Voucher.get_vouchers(voucher_codes)
+        if not vouchers[0]:
+            return Responses.INVALID_VOUCHER()
         valid = Voucher.validate_voucher(vouchers)
         if valid:
             item.vouchers = vouchers

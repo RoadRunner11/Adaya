@@ -9,6 +9,7 @@ class Messages:
     OBJECT_EXIST = 'Object exists'
     SUCCESS = 'Operation Success'
     OPERATION_FAILED = 'Operation Failed'
+    INVALID_VOUCHER = 'Invalid voucher'
 
 
 class Roles:
@@ -32,3 +33,7 @@ class Responses:
     @staticmethod
     def AUTHENTICATION_FAILED():
         return res('', Messages.AUTHENTICATION_FAILED, 400)
+    @staticmethod
+    def INVALID_VOUCHER():
+        return res('', Messages.INVALID_VOUCHER, 400)
+

@@ -1,9 +1,10 @@
 import pytest
 from app.helpers.app_context import AppContext as AC
 from app.helpers.utility import randomString
-from app.models import User, Role, Product, ProductCategory, Article, ArticleCategory, ArticleStatus, OrderStatus, Order
+from app.models import User, Role, Product, ProductCategory, Article, ArticleCategory, ArticleStatus, OrderStatus, Order, ConfigValues, Voucher
 import random
 import string
+import datetime
 from app import create_app
 
 
@@ -27,6 +28,13 @@ def init_database():
     user = User("abc@gmail.com", "1q2w3e4r")
     user2 = User("abcd@gmail.com", "1q2w3e4r")
     user.role = admin
+    configvalues = ConfigValues('max_no_products_per_order', 4)
+    voucher = Voucher('HAO20')
+    voucher.discount_fixed_amount = 100
+    voucher.product_id = 3    
+    voucher.redeem_by = datetime.date(2020, 4, 13)
+    db.session.add(configvalues)
+    db.session.add(voucher)
     db.session.add(member)
     db.session.add(user)
     db.session.add(user2)
@@ -43,6 +51,7 @@ def init_database():
     db.session.add(clothes_category)
     for x in range(10):
         product = Product(randomString(10))
+        product.price = 100
         article = Article(randomString(10))
         order = Order()
         order.products = []
