@@ -91,6 +91,7 @@ class Order(db.Model, DBMixin):
                 continue
             else:
                 return False
+        return True
     
     def check_order_status(self):
         if self.status_id == 1:

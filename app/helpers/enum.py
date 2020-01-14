@@ -10,6 +10,7 @@ class Messages:
     SUCCESS = 'Operation Success'
     OPERATION_FAILED = 'Operation Failed'
     INVALID_VOUCHER = 'Invalid voucher'
+    NO_STOCK = 'One or more Products Unavailable'
 
 
 class Roles:
@@ -36,4 +37,7 @@ class Responses:
     @staticmethod
     def INVALID_VOUCHER():
         return res('', Messages.INVALID_VOUCHER, 400)
+    @staticmethod
+    def NO_STOCK():
+        return res('', Messages.NO_STOCK, 400)
 

@@ -52,6 +52,7 @@ def init_database():
     for x in range(10):
         product = Product(randomString(10))
         product.price = 100
+        product.stock = 2
         article = Article(randomString(10))
         order = Order()
         order.products = []

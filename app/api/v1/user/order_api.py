@@ -15,6 +15,8 @@ def create_order():
     if product_ids:
         products = item.get_products_from_id(product_ids)
         item.products = products
+        if not item.check_stock():
+            return Responses.NO_STOCK()
     
     max_number = int(ConfigValues.get_config_value('max_no_products_per_order'))
 
@@ -47,7 +49,7 @@ def update_user_order(id):
     if  item.check_order_status():
         return Responses.OPERATION_FAILED()
     
-    if  item.check_stock():
+    if not item.check_stock():
         return Responses.OPERATION_FAILED()
 
     json_dict = request.json
