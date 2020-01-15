@@ -7,8 +7,6 @@ db = AC().db
 class Voucher(db.Model, DBMixin):
     __tablename__ = 'voucher'    
 
-    # orders = db.relationship('Order', secondary='voucher_order',
-    #                            backref=db.backref('vouchers', lazy='dynamic'))
     users = db.relationship('User', secondary='user_voucher',
                                backref=db.backref('vouchers', lazy='dynamic'))
     name = db.Column(db.String(50), unique=True, nullable=False)
@@ -17,9 +15,7 @@ class Voucher(db.Model, DBMixin):
     max_redemptions = db.Column(db.Integer, default=0)
     no_of_redemptions = db.Column(db.Integer, default=0)    
     redeem_by = db.Column(db.DateTime, nullable=False)
-    #user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False, default=1)
-    product_id = db.Column(db.Integer, db.ForeignKey('product.id'), nullable=False, default=1)    
-    #user = db.relationship('User')
+    product_id = db.Column(db.Integer, db.ForeignKey('product.id'), nullable=False, default=1)  
     product = db.relationship('Product')
 
     @classmethod
@@ -44,12 +40,12 @@ class Voucher(db.Model, DBMixin):
         self.name = name
     
     @classmethod
-    def get_voucher(cls, voucher_code):
-        return Voucher.query.filter_by(name = voucher_code).first()
-
-    @classmethod
     def get_voucher_by_product_id(cls, voucher_product_id):
         return Voucher.query.filter_by(product_id = voucher_product_id).first()
+        
+    @classmethod
+    def get_voucher(cls, voucher_code):
+        return Voucher.query.filter_by(name = voucher_code).first()
 
     @classmethod
     def get_vouchers(cls, voucher_codes):

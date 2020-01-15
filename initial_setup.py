@@ -25,11 +25,15 @@ if __name__ == "__main__":
         user2 = User("abcd@gmail.com", "1q2w3e4r")
         user.role = admin
         configvalues = ConfigValues('max_no_products_per_order', 4)
+        configvalues2 = ConfigValues('min_duration_of_rental', 4)
+        configvalues3 = ConfigValues('max_duration_of_rental', 7)
         voucher = Voucher('HAO20')
         voucher.discount_fixed_amount = 5
         voucher.product_id = 3
         voucher.redeem_by = datetime.date(2020, 4, 13)
         db.session.add(configvalues)
+        db.session.add(configvalues2)
+        db.session.add(configvalues3)
         db.session.add(member)
         db.session.add(user)
         db.session.add(user2)

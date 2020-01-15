@@ -10,16 +10,14 @@ from app.decorators.authorisation import user_only
 def create_order():
     json_dict = request.json
     item = Order()
-    product_ids = json_dict['product_ids']
+    order_items = json_dict['order_items']
 
-    if product_ids:
-        products = item.get_products_from_id(product_ids)
-        item.products = products
+    if order_items:
+        item.order_items = order_items
         if not item.check_stock():
             return Responses.NO_STOCK()
     
     max_number = int(ConfigValues.get_config_value('max_no_products_per_order'))
-
     if item.check_quantity_products(max_number):
        return Responses.OPERATION_FAILED()
     
@@ -27,7 +25,7 @@ def create_order():
         voucher_codes = json_dict['voucher_codes']    
         vouchers = Voucher.get_vouchers(voucher_codes)
         if not vouchers[0]:
-            return Responses.INVALID_VOUCHER()
+            return Responses.INVALID_VOUCHER()        
         valid = Voucher.validate_voucher(vouchers)
         if valid:
             item.vouchers = vouchers
@@ -50,7 +48,7 @@ def update_user_order(id):
         return Responses.OPERATION_FAILED()
     
     if not item.check_stock():
-        return Responses.OPERATION_FAILED()
+        return Responses.NO_STOCK()
 
     json_dict = request.json
     product_ids = json_dict['product_ids']

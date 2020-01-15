@@ -1,7 +1,7 @@
 from app.helpers.app_context import AppContext as AC
 from app.models.db_mixin import DBMixin
 from app.models.voucher import Voucher 
-from app.models import Product
+from app.models import Product, ConfigValues
 import json
 
 db = AC().db
@@ -12,7 +12,9 @@ class Order(db.Model, DBMixin):
 
     products = db.relationship('Product', secondary='product_order',
                                backref=db.backref('orders', lazy='dynamic')) 
-    orders = db.relationship('Voucher', secondary='voucher_order',
+    order_items = db.relationship('OrderItems', secondary='order_items_detail',
+                               backref=db.backref('orders', lazy='dynamic')) 
+    vouchers = db.relationship('Voucher', secondary='voucher_order',
                                backref=db.backref('orders', lazy='dynamic'))  
     products_freeze = db.Column(db.Text)
     payment_ref = db.Column(db.String(255))
@@ -61,8 +63,34 @@ class Order(db.Model, DBMixin):
     
     def calculate_discounted_cost(self):
         total_price = 0
-        products_freeze = []
+        products_freeze = []    
+        min_duration = int(ConfigValues.get_config_value('min_duration_of_rental')) 
+        max_duration = int(ConfigValues.get_config_value('max_duration_of_rental')) 
+        valid_durations = [min_duration, max_duration]    
         voucher_products_id = Voucher.get_voucher_product_ids(self.vouchers)
+
+        for item in self.order_items:
+            duration = self.date_difference(item.start_date, item.end_date)
+            product = self.get_product_from_id(item.product_id)
+            
+            if not duration in (valid_durations):
+                return False
+            
+            if duration == 4:
+                product.price *= 0.6
+
+            if(product.id in voucher_products_id):
+                voucher = Voucher.get_voucher_by_product_id(product.id)
+                if(voucher.discount_fixed_amount > 0):
+                    product.price -= voucher.discount_fixed_amount 
+                else:
+                    product.price *= (1 - (voucher.discount_percent_off/100))
+            
+            total_price += product.price 
+            products_freeze.append(product.as_dict(['id','name','description','price','image']))
+
+        self.total_price = total_price
+        self.products_freeze = json.dumps(products_freeze)
 
         for product in self.products:               
             if(product.id in voucher_products_id):
@@ -82,11 +110,15 @@ class Order(db.Model, DBMixin):
             Checks the number of products in the order 
             to ensure it is not beyond permitted number per order.
         """
-        if len(self.products) > max_number:
+        quantity = 0
+        for order_item in self.order_items:
+            quantity += order_item.quantity
+        if quantity > max_number:
             return True
     
     def check_stock(self):
-        for product in self.products:
+        for item in self.order_items:
+            product = self.get_product_from_id(item.product_id)
             if product.stock > 0:
                 continue
             else:
@@ -96,7 +128,7 @@ class Order(db.Model, DBMixin):
     def check_order_status(self):
         if self.status_id == 1:
             return False
-    
+     
     def get_product_from_id(self, product_id):
         product = Product.query.get(product_id)
         return product
@@ -110,3 +142,6 @@ class Order(db.Model, DBMixin):
         else:
             product = self.get_product_from_id(product_ids)   
             return product                       
+    
+    def date_difference(self, start_date, end_date):
+        return end_date - start_date
