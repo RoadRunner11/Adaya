@@ -55,7 +55,9 @@ class Order(db.Model, DBMixin):
     def calculate_cost(self):
         total_price = 0
         products_freeze = []
-        for product in self.products:
+
+        for item in self.order_items:
+            product = self.get_product_from_id(item.product_id)
             total_price += product.price 
             products_freeze.append(product.as_dict(['id','name','description','price','image']))
         self.total_price = total_price
@@ -91,19 +93,6 @@ class Order(db.Model, DBMixin):
 
         self.total_price = total_price
         self.products_freeze = json.dumps(products_freeze)
-
-        for product in self.products:               
-            if(product.id in voucher_products_id):
-                voucher = Voucher.get_voucher_by_product_id(product.id)
-                if(voucher.discount_fixed_amount > 0):
-                    product.price -= voucher.discount_fixed_amount 
-                else:
-                    product.price *= (1 - (voucher.discount_percent_off/100))
-            total_price += product.price 
-            products_freeze.append(product.as_dict(['id','name','description','price','image']))
-        self.total_price = total_price
-        self.products_freeze = json.dumps(products_freeze)
-
         
     def check_quantity_products(self, max_number):
         """

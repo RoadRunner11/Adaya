@@ -51,11 +51,13 @@ def update_user_order(id):
         return Responses.NO_STOCK()
 
     json_dict = request.json
-    product_ids = json_dict['product_ids']
+    order_items = json_dict['order_items']
 
-    if product_ids:
-        products = item.get_products_from_id(product_ids)
-        item.products = products
+    if order_items:        
+        item.order_items = order_items
+        # ToDO: check what products been updated a
+        # if voucher been used before in initial order
+        # check if new product been added and if voucher
         item.calculate_cost()
 
     if len(item.update(json_dict,force_insert=False)) > 0:
