@@ -16,5 +16,7 @@ class OrderItems(db.Model, DBMixin):
     product = db.relationship('Product')
     order = db.relationship('Order')
 
-    def __init__(self, name):
-        self.name = name
+    output_column = ['order_id', 'quantity', 'start_date','end_date']
+
+    # def __init__(self, name):
+    #     self.name = name

@@ -1,7 +1,8 @@
 from app.helpers.app_context import AppContext as AC
 from app.models.db_mixin import DBMixin
 from app.models.voucher import Voucher 
-from app.models import Product, ConfigValues
+from app.models import Product
+from app.models.config_values import ConfigValues
 import json
 
 db = AC().db
@@ -10,10 +11,7 @@ db = AC().db
 class Order(db.Model, DBMixin):
     __tablename__ = 'order'
 
-    products = db.relationship('Product', secondary='product_order',
-                               backref=db.backref('orders', lazy='dynamic')) 
-    order_items = db.relationship('OrderItems', secondary='order_items_detail',
-                               backref=db.backref('orders', lazy='dynamic')) 
+    order_items = db.relationship('OrderItems', backref=db.backref('orders')) 
     vouchers = db.relationship('Voucher', secondary='voucher_order',
                                backref=db.backref('orders', lazy='dynamic'))  
     products_freeze = db.Column(db.Text)
@@ -28,7 +26,7 @@ class Order(db.Model, DBMixin):
     status = db.relationship('OrderStatus')
     
 
-    output_column = ['id', 'products', 'products_freeze','payment_ref',
+    output_column = ['id', 'order_items', 'products_freeze','payment_ref',
                      'total_price', 'user.email', 'status.name', 'enabled']
 
     @classmethod
@@ -57,7 +55,7 @@ class Order(db.Model, DBMixin):
         products_freeze = []
 
         for item in self.order_items:
-            product = self.get_product_from_id(item.product_id)
+            product = Product.get_product_from_id(item.product_id)
             total_price += product.price 
             products_freeze.append(product.as_dict(['id','name','description','price','image']))
         self.total_price = total_price
@@ -65,6 +63,7 @@ class Order(db.Model, DBMixin):
     
     def calculate_discounted_cost(self):
         total_price = 0
+        product_price = 0        
         products_freeze = []    
         min_duration = int(ConfigValues.get_config_value('min_duration_of_rental')) 
         max_duration = int(ConfigValues.get_config_value('max_duration_of_rental')) 
@@ -73,22 +72,19 @@ class Order(db.Model, DBMixin):
 
         for item in self.order_items:
             duration = self.date_difference(item.start_date, item.end_date)
-            product = self.get_product_from_id(item.product_id)
+            product = Product.get_product_from_id(item.product_id)
             
             if not duration in (valid_durations):
-                return False
-            
-            if duration == 4:
-                product.price *= 0.6
+                return False            
 
             if(product.id in voucher_products_id):
                 voucher = Voucher.get_voucher_by_product_id(product.id)
                 if(voucher.discount_fixed_amount > 0):
-                    product.price -= voucher.discount_fixed_amount 
+                    product_price = (product.price * duration) - voucher.discount_fixed_amount
                 else:
-                    product.price *= (1 - (voucher.discount_percent_off/100))
+                    product_price = (product.price * duration) * (1 - (voucher.discount_percent_off/100))
             
-            total_price += product.price 
+            total_price += product_price
             products_freeze.append(product.as_dict(['id','name','description','price','image']))
 
         self.total_price = total_price
@@ -107,7 +103,7 @@ class Order(db.Model, DBMixin):
     
     def check_stock(self):
         for item in self.order_items:
-            product = self.get_product_from_id(item.product_id)
+            product = Product.get_product_from_id(item.product_id)
             if product.stock > 0:
                 continue
             else:
@@ -118,19 +114,19 @@ class Order(db.Model, DBMixin):
         if self.status_id == 1:
             return False
      
-    def get_product_from_id(self, product_id):
-        product = Product.query.get(product_id)
-        return product
+    # def get_product_from_id(self, product_id):
+    #     product = Product.query.get(product_id)
+    #     return product
 
-    def get_products_from_id(self, product_ids):        
-        if type(product_ids) == list:  
-            products = []
-            for id in product_ids:
-                products.append(self.get_product_from_id(id))
-            return products
-        else:
-            product = self.get_product_from_id(product_ids)   
-            return product                       
+    # def get_products_from_id(self, product_ids):        
+    #     if type(product_ids) == list:  
+    #         products = []
+    #         for id in product_ids:
+    #             products.append(self.get_product_from_id(id))
+    #         return products
+    #     else:
+    #         product = self.get_product_from_id(product_ids)   
+    #         return product                       
     
     def date_difference(self, start_date, end_date):
         return end_date - start_date

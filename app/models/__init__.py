@@ -11,3 +11,4 @@ from app.models.article_status import ArticleStatus
 from app.models.config_values import ConfigValues
 from app.models.voucher import Voucher
 from app.models.order_items import OrderItems
+from app.models.variation import Variation

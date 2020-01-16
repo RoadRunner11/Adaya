@@ -1,8 +1,10 @@
 import pytest
 from app.helpers.app_context import AppContext as AC
 from app.helpers.utility import randomString
-from app.models import User, Role, Product, ProductCategory, Article, ArticleCategory, ArticleStatus, OrderStatus, Order, ConfigValues, Voucher
+from app.models import (User, Role, Product, ProductCategory, Article, ArticleCategory, 
+ArticleStatus, OrderStatus, Order, OrderItems, ConfigValues, Voucher)
 import random
+from random import randint
 import string
 import datetime
 from app import create_app
@@ -29,11 +31,15 @@ def init_database():
     user2 = User("abcd@gmail.com", "1q2w3e4r")
     user.role = admin
     configvalues = ConfigValues('max_no_products_per_order', 4)
+    configvalues2 = ConfigValues('min_duration_of_rental', 4)
+    configvalues3 = ConfigValues('max_duration_of_rental', 7)
     voucher = Voucher('HAO20')
     voucher.discount_fixed_amount = 100
     voucher.product_id = 3    
     voucher.redeem_by = datetime.date(2020, 4, 13)
     db.session.add(configvalues)
+    db.session.add(configvalues2)
+    db.session.add(configvalues3)
     db.session.add(voucher)
     db.session.add(member)
     db.session.add(user)
@@ -48,15 +54,21 @@ def init_database():
     db.session.add(food_article)
     db.session.add(clothes_article)
     db.session.add(food_category)
-    db.session.add(clothes_category)
+    db.session.add(clothes_category)    
     for x in range(10):
         product = Product(randomString(10))
+        product.variation_id = randint(1, 4)
         product.price = 100
         product.stock = 2
         article = Article(randomString(10))
         order = Order()
-        order.products = []
-        order.products.append(product)
+        order_item = OrderItems()
+        order_item.product_id = product.id
+        order_item.quantity = 1
+        order_item.start_date = datetime.date(2020, 4, 1)
+        order_item.end_date = datetime.date(2020, 4, 8)
+        order.order_items = []
+        order.order_items.append(order_item)
         article_category = food_article
         category = food_category
         if x % 2 == 0:
@@ -67,6 +79,7 @@ def init_database():
         article.status = status
         db.session.add(order)
         db.session.add(product)
+        db.session.add(order_item)
         db.session.add(article)
     db.session.commit()
     yield db
