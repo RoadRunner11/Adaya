@@ -22,7 +22,10 @@ def create_order():
        return Responses.OPERATION_FAILED()
     
     if 'voucher_codes' in json_dict.keys():
-        voucher_codes = json_dict['voucher_codes']    
+        voucher_codes = json_dict['voucher_codes']
+        number_vouchers_allowed = int(ConfigValues.get_config_value('max_no_of_vouchers'))
+        if len(voucher_codes) >  number_vouchers_allowed:
+            return Responses.NO_VOUCHERS_EXCEEDED()
         vouchers = Voucher.get_vouchers(voucher_codes)
         if not vouchers[0]:
             return Responses.INVALID_VOUCHER()        
@@ -32,10 +35,32 @@ def create_order():
             item.calculate_discounted_cost()
     else:    
         item.calculate_cost()
-        
+
     # TODO update stock
     if len(item.update(json_dict,force_insert=True)) > 0:
         return Responses.OPERATION_FAILED()
+    return res(item.as_dict())
+
+@api_v1.route('/orders/voucher', methods=['POST'])
+#@user_only
+def calculate_order_discount():
+    json_dict = request.json
+    item = Order()
+    order_items = json_dict['order_items']
+    if order_items:
+        item.order_items = order_items
+    if 'voucher_codes' in json_dict.keys():
+        voucher_codes = json_dict['voucher_codes']
+        number_vouchers_allowed = int(ConfigValues.get_config_value('max_no_of_vouchers'))
+        if len(voucher_codes) >  number_vouchers_allowed:
+            return Responses.NO_VOUCHERS_EXCEEDED()
+        vouchers = Voucher.get_vouchers(voucher_codes)
+        if not vouchers[0]:
+            return Responses.INVALID_VOUCHER()        
+        valid = Voucher.validate_voucher(vouchers)
+        if valid:
+            item.vouchers = vouchers
+            item.calculate_discounted_cost()
     return res(item.as_dict())
 
 @api_v1.route('/orders/<int:id>', methods=['PUT'])

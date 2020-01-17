@@ -29,10 +29,19 @@ if __name__ == "__main__":
         configvalues = ConfigValues('max_no_products_per_order', 4)
         configvalues2 = ConfigValues('min_duration_of_rental', 4)
         configvalues3 = ConfigValues('max_duration_of_rental', 7)
+        configvalues4 = ConfigValues('max_no_of_vouchers', 2)
         variation = Variation('S')
+        variation.price = 10
+        variation.stock = 1
         variation1 = Variation('M')
+        variation1.price = 20
+        variation1.stock = 1
         variation2 = Variation('L')
+        variation2.price = 30
+        variation2.stock = 1
         variation3 = Variation('XL')
+        variation3.price = 40
+        variation3.stock = 1
         voucher = Voucher('HAO20')
         voucher.discount_fixed_amount = 5
         voucher.product_id = 3
@@ -40,6 +49,7 @@ if __name__ == "__main__":
         db.session.add(configvalues)
         db.session.add(configvalues2)
         db.session.add(configvalues3)
+        db.session.add(configvalues4)
         db.session.add(variation)
         db.session.add(variation1)
         db.session.add(variation2)

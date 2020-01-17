@@ -3,6 +3,7 @@ from app.models.db_mixin import DBMixin
 from app.models.voucher import Voucher 
 from app.models import Product
 from app.models.config_values import ConfigValues
+from app.models import Variation
 import json
 
 db = AC().db
@@ -54,10 +55,13 @@ class Order(db.Model, DBMixin):
         total_price = 0
         products_freeze = []
 
-        for item in self.order_items:
-            product = Product.get_product_from_id(item.product_id)
-            total_price += product.price 
-            products_freeze.append(product.as_dict(['id','name','description','price','image']))
+        for order_item in self.order_items:
+            variation = Variation.get_variation_from_id(order_item.variation_id)
+            # decrease stock count
+            variation.stock -= 1
+            product = Product.get_product_from_id(order_item.product_id)
+            total_price += variation.price 
+            products_freeze.append(product.as_dict(['id','name','description','variation.price','image']))
         self.total_price = total_price
         self.products_freeze = json.dumps(products_freeze)
     
@@ -70,22 +74,24 @@ class Order(db.Model, DBMixin):
         valid_durations = [min_duration, max_duration]    
         voucher_products_id = Voucher.get_voucher_product_ids(self.vouchers)
 
-        for item in self.order_items:
-            duration = self.date_difference(item.start_date, item.end_date)
-            product = Product.get_product_from_id(item.product_id)
-            
+        for order_item in self.order_items:
+            duration = self.date_difference(order_item.start_date, order_item.end_date)
+            product = Product.get_product_from_id(order_item.product_id)
+            variation = Variation.get_variation_from_id(order_item.variation_id)
+            # decrease stock count
+            variation.stock -= 1
             if not duration in (valid_durations):
                 return False            
 
             if(product.id in voucher_products_id):
                 voucher = Voucher.get_voucher_by_product_id(product.id)
                 if(voucher.discount_fixed_amount > 0):
-                    product_price = (product.price * duration) - voucher.discount_fixed_amount
+                    product_price = (variation.price * duration) - voucher.discount_fixed_amount                    
                 else:
-                    product_price = (product.price * duration) * (1 - (voucher.discount_percent_off/100))
+                    product_price = (variation.price * duration) * (1 - (voucher.discount_percent_off/100))
             
             total_price += product_price
-            products_freeze.append(product.as_dict(['id','name','description','price','image']))
+            products_freeze.append(product.as_dict(['id','name','description','variation.price','image']))
 
         self.total_price = total_price
         self.products_freeze = json.dumps(products_freeze)
@@ -102,9 +108,9 @@ class Order(db.Model, DBMixin):
             return True
     
     def check_stock(self):
-        for item in self.order_items:
-            product = Product.get_product_from_id(item.product_id)
-            if product.stock > 0:
+        for order_item in self.order_items:
+            variation = Variation.get_variation_from_id(order_item.variation_id)
+            if order_item.quantity < variation.stock:
                 continue
             else:
                 return False
