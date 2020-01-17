@@ -20,15 +20,22 @@ class Responses:
     @staticmethod
     def NOT_EXIST():
         return res('', Messages.NOT_EXIST, 404)
+
     @staticmethod
     def SUCCESS():
         return res(Messages.SUCCESS)
+
     @staticmethod
     def OBJECT_EXIST():
         return res('', Messages.OBJECT_EXIST, 409)
+
     @staticmethod
     def OPERATION_FAILED():
         return res('', Messages.OPERATION_FAILED, 400)
+
     @staticmethod
     def AUTHENTICATION_FAILED():
         return res('', Messages.AUTHENTICATION_FAILED, 400)
+    @staticmethod
+    def AUTHORISATION_FAILED():
+        return res('', Messages.AUTHORISATION_FAILED, 400)

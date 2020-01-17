@@ -1,7 +1,7 @@
-from flask_jwt_extended import jwt_required, get_jwt_identity, verify_jwt_in_request
+from flask_jwt_extended import jwt_required, get_jwt_identity, verify_jwt_in_request, create_access_token, set_access_cookies
 from app.models import User
 from flask import abort, has_request_context
-from app.helpers.enum import Messages, Roles
+from app.helpers.enum import Messages, Roles, Responses
 from app.helpers.utility import res
 from functools import wraps
 
@@ -22,24 +22,26 @@ def permitted_roles(roles):
                 try:
                     verify_jwt_in_request()
                 except:
-                    return res('', Messages.AUTHENTICATION_FAILED, 403)
-                email = get_jwt_identity()
+                    return Responses.AUTHENTICATION_FAILED()
+                identity = get_jwt_identity()
+                email = User.get_email_from_identity(identity)
+                if not email:
+                    return Responses.AUTHENTICATION_FAILED()
                 # Verify if user is in the right role
                 if not User.authorisation(email, roles):
-                    return res('', Messages.AUTHORISATION_FAILED, 403)
-            return function(*args, **kwargs)
+                    return Responses.AUTHORISATION_FAILED()
+            response, status = function(*args, **kwargs)
+            set_access_cookies(response, create_access_token(
+                identity=User.generate_token_identity(email)))
+            return response, status
         return wrapper
     return decorater
 
 
 def user_only(function):
+    @permitted_roles([])
     @wraps(function)
     def wrapper(*args, **kwargs):
-        if has_request_context():
-            try:
-                verify_jwt_in_request()
-            except:
-                return res('', Messages.AUTHENTICATION_FAILED, 403)
         return function(*args, **kwargs)
     return wrapper
 
