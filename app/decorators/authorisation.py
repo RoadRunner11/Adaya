@@ -36,7 +36,7 @@ def permitted_roles(roles):
             response = function(*args, **kwargs)
             # add new token to the response header
             response[0].headers.set(
-                'new_token', create_access_token(identity=email))
+                'Authorization', create_access_token(identity=email))
             return response
         return wrapper
     return decorater
