@@ -65,6 +65,15 @@ def calculate_order_discount():
 
 @api_v1.route('/orders/<int:id>', methods=['PUT'])
 #@user_only
+def return_user_order(id):
+    # todo 
+    item = Order.query.get(id)
+    item.status_id = 1
+    # send confirmation email on receiving items, issue deposit?
+
+
+@api_v1.route('/orders/<int:id>', methods=['PUT'])
+#@user_only
 def update_user_order(id):
     item = Order.query.get(id)
     if not item:
