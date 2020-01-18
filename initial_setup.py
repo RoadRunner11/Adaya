@@ -46,6 +46,10 @@ if __name__ == "__main__":
         voucher.discount_fixed_amount = 5
         voucher.product_id = 3
         voucher.redeem_by = datetime.date(2020, 4, 13)
+        voucher2 = Voucher('LUO20')
+        voucher2.discount_fixed_amount = 20
+        voucher2.product_id = 5
+        voucher2.redeem_by = datetime.date(2020, 4, 18)
         db.session.add(configvalues)
         db.session.add(configvalues2)
         db.session.add(configvalues3)
@@ -58,6 +62,7 @@ if __name__ == "__main__":
         db.session.add(user)
         db.session.add(user2)
         db.session.add(voucher)
+        db.session.add(voucher2)
         food_category = ProductCategory('food')
         clothes_category = ProductCategory('cloth')
         food_article = ArticleCategory('food-article')

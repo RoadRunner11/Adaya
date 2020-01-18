@@ -10,9 +10,10 @@ from app.decorators.authorisation import user_only
 def create_order():
     json_dict = request.json
     item = Order()
-    order_items = json_dict['order_items']
+    order_items = json_dict['order_items']    
 
     if order_items:
+        #item.order_items = order_items
         item.populate_order_items(order_items)
         if not item.check_stock():
             return Responses.NO_STOCK()
