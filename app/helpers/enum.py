@@ -35,7 +35,7 @@ class Responses:
 
     @staticmethod
     def AUTHENTICATION_FAILED():
-        return res('', Messages.AUTHENTICATION_FAILED, 400)
+        return res('', Messages.AUTHENTICATION_FAILED, 401)
     @staticmethod
     def AUTHORISATION_FAILED():
-        return res('', Messages.AUTHORISATION_FAILED, 400)
+        return res('', Messages.AUTHORISATION_FAILED, 403)
