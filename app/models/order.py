@@ -3,7 +3,9 @@ from app.models.db_mixin import DBMixin
 from app.models.voucher import Voucher 
 from app.models import Product
 from app.models.config_values import ConfigValues
-from app.models import Variation
+from app.models.variation import Variation
+from app.models.order_items import OrderItems
+from datetime import datetime
 import json
 
 db = AC().db
@@ -60,7 +62,8 @@ class Order(db.Model, DBMixin):
             # decrease stock count
             variation.stock -= 1
             product = Product.get_product_from_id(order_item.product_id)
-            total_price += variation.price 
+            duration = self.date_difference(order_item.start_date, order_item.end_date)
+            total_price += (variation.price * duration.days)
             products_freeze.append(product.as_dict(['id','name','description','variation.price','image']))
         self.total_price = total_price
         self.products_freeze = json.dumps(products_freeze)
@@ -78,10 +81,11 @@ class Order(db.Model, DBMixin):
             duration = self.date_difference(order_item.start_date, order_item.end_date)
             product = Product.get_product_from_id(order_item.product_id)
             variation = Variation.get_variation_from_id(order_item.variation_id)
-            # decrease stock count
-            variation.stock -= 1
+            
             if not duration in (valid_durations):
                 return False            
+            # decrease stock count
+            variation.stock -= 1
 
             if(product.id in voucher_products_id):
                 voucher = Voucher.get_voucher_by_product_id(product.id)
@@ -110,7 +114,7 @@ class Order(db.Model, DBMixin):
     def check_stock(self):
         for order_item in self.order_items:
             variation = Variation.get_variation_from_id(order_item.variation_id)
-            if order_item.quantity < variation.stock:
+            if order_item.quantity <= variation.stock:
                 continue
             else:
                 return False
@@ -119,6 +123,22 @@ class Order(db.Model, DBMixin):
     def check_order_status(self):
         if self.status_id == 1:
             return False
+    
+    def populate_order_items(self, order_items):
+        for order_item in order_items:
+            _order_item = OrderItems()
+            _order_item.product_id = order_item['product_id']
+            _order_item.variation_id = order_item['variation_id']
+            _order_item.quantity = order_item['quantity']
+            _order_item.start_date = datetime.strptime(order_item['start_date'], '%d-%m-%Y')
+            _order_item.end_date = datetime.strptime(order_item['end_date'], '%d-%m-%Y')
+            self.order_items.append(_order_item)
+    
+    def set_order_items(self, order_items):
+        self.order_items.clear()
+        self.populate_order_items(order_items)
+
+
      
     # def get_product_from_id(self, product_id):
     #     product = Product.query.get(product_id)

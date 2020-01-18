@@ -18,4 +18,4 @@ class OrderItems(db.Model, DBMixin):
     order = db.relationship('Order')
     variation = db.relationship('Variation')
 
-    output_column = ['order_id', 'quantity', 'product.name' 'variation.name', 'start_date', 'end_date']
+    output_column = ['order_id', 'quantity', 'product.name', 'variation.name', 'start_date', 'end_date']

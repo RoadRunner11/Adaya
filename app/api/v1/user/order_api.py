@@ -13,7 +13,7 @@ def create_order():
     order_items = json_dict['order_items']
 
     if order_items:
-        item.order_items = order_items
+        item.populate_order_items(order_items)
         if not item.check_stock():
             return Responses.NO_STOCK()
     
@@ -36,7 +36,6 @@ def create_order():
     else:    
         item.calculate_cost()
 
-    # TODO update stock
     if len(item.update(json_dict,force_insert=True)) > 0:
         return Responses.OPERATION_FAILED()
     return res(item.as_dict())

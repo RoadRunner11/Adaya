@@ -79,7 +79,10 @@ class DBMixin():
             for key in obj_dict:
                 if key in not_updatable_columns:
                     continue
-                if hasattr(self, key):
+                if hasattr(self, key):  
+                    if key == 'order_items': 
+                        self.set_order_items(obj_dict[key])
+                        continue         
                     setattr(self, key, obj_dict[key])
                     flag = True
         return flag
