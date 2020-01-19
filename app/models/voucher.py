@@ -69,8 +69,7 @@ class Voucher(db.Model, DBMixin):
             voucher_date_status = voucher.check_voucher_date()  
             if not voucher_date_status:
                 return False      
-            
-            
+                        
             if (voucher.max_redemptions > 0):
                 voucher_redeem_status = voucher.check_voucher_redemption()
                 if not voucher_redeem_status:

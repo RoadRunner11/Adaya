@@ -2,7 +2,7 @@ import pytest
 from app.helpers.app_context import AppContext as AC
 from app.helpers.utility import randomString
 from app.models import (User, Role, Product, ProductCategory, Article, ArticleCategory, 
-ArticleStatus, OrderStatus, Order, OrderItems, ConfigValues, Voucher)
+ArticleStatus, OrderStatus, Order, OrderItem, ConfigValues, Voucher)
 import random
 from random import randint
 import string
@@ -62,7 +62,7 @@ def init_database():
         product.stock = 2
         article = Article(randomString(10))
         order = Order()
-        order_item = OrderItems()
+        order_item = OrderItem()
         order_item.product_id = product.id
         order_item.quantity = 1
         order_item.start_date = datetime.date(2020, 4, 1)

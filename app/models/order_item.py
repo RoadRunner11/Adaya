@@ -4,8 +4,8 @@ from app.models.db_mixin import DBMixin
 db = AC().db
 
 
-class OrderItems(db.Model, DBMixin):
-    __tablename__ = 'order_items'
+class OrderItem(db.Model, DBMixin):
+    __tablename__ = 'order_item'
 
     order_id = db.Column(db.Integer, db.ForeignKey('order.id'), nullable=False, default=1)
     product_id = db.Column(db.Integer, db.ForeignKey('product.id'), nullable=False, default=1)
@@ -15,7 +15,7 @@ class OrderItems(db.Model, DBMixin):
     end_date = db.Column(db.DateTime, nullable=False)
 
     product = db.relationship('Product')
-    order = db.relationship('Order')
+    #order = db.relationship('Order')
     variation = db.relationship('Variation')
 
     output_column = ['order_id', 'quantity', 'product.name', 'variation.name', 'start_date', 'end_date']

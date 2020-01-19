@@ -1,4 +1,4 @@
-from app.models import Order, Product, ConfigValues, Voucher
+from app.models import Order, Product, ConfigValues, Voucher, OrderItem
 from app.api.v1 import api_v1
 from app.helpers import Messages, Responses
 from app.helpers.utility import res, parse_int, get_page_from_args
@@ -10,13 +10,15 @@ from app.decorators.authorisation import user_only
 def create_order():
     json_dict = request.json
     item = Order()
-    order_items = json_dict['order_items']    
+    order_items_dict = json_dict['order_items']
 
-    if order_items:
-        #item.order_items = order_items
-        item.populate_order_items(order_items)
-        if not item.check_stock():
-            return Responses.NO_STOCK()
+    for order_item_dict in order_items_dict:
+        order_item = OrderItem()
+        if order_item.update_from_dict(order_item_dict):
+            item.order_items.append(order_item)
+    
+    if not item.check_stock():
+        return Responses.NO_STOCK()
     
     max_number = int(ConfigValues.get_config_value('max_no_products_per_order'))
     if item.check_quantity_products(max_number):

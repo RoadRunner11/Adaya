@@ -4,7 +4,7 @@ from app.models.voucher import Voucher
 from app.models import Product
 from app.models.config_values import ConfigValues
 from app.models.variation import Variation
-from app.models.order_items import OrderItems
+from app.models.order_item import OrderItem
 from datetime import datetime
 import json
 
@@ -14,9 +14,9 @@ db = AC().db
 class Order(db.Model, DBMixin):
     __tablename__ = 'order'
 
-    order_items = db.relationship('OrderItems', backref=db.backref('orders')) 
+    order_item = db.relationship('OrderItem', backref=db.backref('order')) 
     vouchers = db.relationship('Voucher', secondary='voucher_order',
-                               backref=db.backref('orders', lazy='dynamic'))  
+                               backref=db.backref('order', lazy='dynamic'))  
     products_freeze = db.Column(db.Text)
     payment_ref = db.Column(db.String(255))
     total_price = db.Column(db.Numeric(10, 2))
@@ -126,16 +126,12 @@ class Order(db.Model, DBMixin):
         if self.status_id == 1:
             return False
     
-    def populate_order_items(self, order_items):
-        for order_item in order_items:
-            _order_item = OrderItems()
-            _order_item.product_id = order_item['product_id']
-            _order_item.variation_id = order_item['variation_id']
-            _order_item.quantity = order_item['quantity']
-            _order_item.start_date = datetime.strptime(order_item['start_date'], '%d-%m-%Y')
-            _order_item.end_date = datetime.strptime(order_item['end_date'], '%d-%m-%Y')
-            self.order_items.append(_order_item)
-    
+    def populate_order_items(self, order_items_dict):
+         for order_item_dict in order_items_dict:
+            order_item = OrderItem()
+            if order_item.update_from_dict(order_item_dict):
+                self.order_items.append(order_item)
+
     def set_order_items(self, order_items):
         self.order_items.clear()
         self.populate_order_items(order_items)

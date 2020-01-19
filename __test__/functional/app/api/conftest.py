@@ -1,7 +1,7 @@
 import pytest
 from app.models import User
 from app.models import Order
-from app.models import OrderItems
+from app.models import OrderItem
 from app.models import Product
 from app.models import Voucher
 import datetime
@@ -29,7 +29,7 @@ def member_order():
     first_product.id = 2
     first_product.variation_id = 2
 
-    first_order_item = OrderItems()
+    first_order_item = OrderItem()
     first_order_item.product_id = first_product.id
     first_order_item.quantity = 1
     first_order_item.start_date = datetime.date(2020, 4, 1)
@@ -40,7 +40,7 @@ def member_order():
     second_product.id = 3
     second_product.variation_id = 2
 
-    second_order_item = OrderItems()
+    second_order_item = OrderItem()
     second_order_item.product_id = second_product.id
     second_order_item.quantity = 1
     second_order_item.start_date = datetime.date(2020, 4, 1)
@@ -51,7 +51,7 @@ def member_order():
     third_product.id = 4
     third_product.variation_id = 2
 
-    third_order_item = OrderItems()
+    third_order_item = OrderItem()
     third_order_item.product_id = third_product.id
     third_order_item.quantity = 1
     third_order_item.start_date = datetime.date(2020, 4, 1)
@@ -62,7 +62,7 @@ def member_order():
     fourth_product.id = 5
     fourth_product.variation_id = 2
 
-    fourth_order_item = OrderItems()
+    fourth_order_item = OrderItem()
     fourth_order_item.product_id =  fourth_product.id
     fourth_order_item.quantity = 1
     fourth_order_item.start_date = datetime.date(2020, 4, 1)
@@ -74,7 +74,7 @@ def member_order():
     fifth_product.id = 6
     fifth_product.variation_id = 2
 
-    fifth_order_item = OrderItems()
+    fifth_order_item = OrderItem()
     fifth_order_item.product_id = fifth_product.id
     fifth_order_item.quantity = 1
     fifth_order_item.start_date = datetime.date(2020, 4, 1)
