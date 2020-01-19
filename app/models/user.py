@@ -27,7 +27,7 @@ class User(db.Model, DBMixin):
 
     output_column = ['id', 'email', 'firstname', 'lastname', 'address1',
                      'address2', 'city', 'post_code', 'country', 'phone', 'enabled', 'role.name','role.id']
-    not_updatable_columns = ['id']
+    not_updatable_columns = ['id','email']
 
     def __init__(self, email=' ', password=' '):
         '''
