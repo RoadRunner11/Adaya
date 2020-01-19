@@ -19,14 +19,14 @@ class User(db.Model, DBMixin):
     country = db.Column(db.String(255))
     phone = db.Column(db.String(255))
     token = db.Column(db.String(255))
-    salt = db.Column(db.String(255),nullable=False)
+    salt = db.Column(db.String(255), nullable=False)
     role_id = db.Column(db.Integer, db.ForeignKey('role.id'), default=1)
     role = db.relationship('Role')
     articles = db.relationship('Article', lazy='dynamic')
     orders = db.relationship('Order', lazy='dynamic')
 
     output_column = ['id', 'email', 'firstname', 'lastname', 'address1',
-                     'address2', 'city', 'post_code', 'country', 'phone', 'enabled', 'role.name','role.id']
+                     'address2', 'city', 'post_code', 'country', 'phone', 'enabled', 'role.name', 'role.id']
     not_updatable_columns = ['id']
 
     def __init__(self, email=' ', password=' '):
@@ -66,6 +66,8 @@ class User(db.Model, DBMixin):
                     else:
                         setattr(self, key, obj_dict[key])
                     flag = True
+        if flag:
+            self.update_salt()
         return flag
 
     def token_identity(self):
