@@ -21,7 +21,7 @@ def permitted_roles(roles):
             if has_request_context():
                 try:
                     verify_jwt_in_request()
-                except:
+                except Exception as e:
                     return Responses.AUTHENTICATION_FAILED()
                 identity = get_jwt_identity()
                 email = User.get_email_from_identity(identity)

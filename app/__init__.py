@@ -1,7 +1,6 @@
 from flask import Flask
 from app.helpers.app_context import AppContext as AC
 from flask_jwt_extended import JWTManager
-from flask_cors import CORS
 
 
 def create_app(config_object):
@@ -13,7 +12,6 @@ def create_app(config_object):
 
     """
     app = Flask(__name__)
-    CORS(app, supports_credentials=True)
 
     # Load config profile
     app.config.from_object(config_object)
