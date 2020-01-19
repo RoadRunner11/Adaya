@@ -8,6 +8,8 @@ class Role(db.Model, DBMixin):
     __tablename__ = 'role'
     name = db.Column(db.String(50), unique=True, nullable=False)
     users = db.relationship('User', lazy='dynamic')
+    
+    output_column=['id','name']
 
     def __init__(self, name):
         self.name = name
