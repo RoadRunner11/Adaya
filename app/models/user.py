@@ -63,11 +63,10 @@ class User(db.Model, DBMixin):
                     if key == 'password':
                         setattr(self, key, AC().bcrypt.generate_password_hash(
                             obj_dict[key]))
+                        self.update_salt()
                     else:
                         setattr(self, key, obj_dict[key])
                     flag = True
-        if flag:
-            self.update_salt()
         return flag
 
     def token_identity(self):
