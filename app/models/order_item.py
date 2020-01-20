@@ -1,5 +1,6 @@
 from app.helpers.app_context import AppContext as AC
 from app.models.db_mixin import DBMixin
+from datetime import datetime
 
 db = AC().db
 
@@ -15,7 +16,35 @@ class OrderItem(db.Model, DBMixin):
     end_date = db.Column(db.DateTime, nullable=False)
 
     product = db.relationship('Product')
-    #order = db.relationship('Order')
     variation = db.relationship('Variation')
 
-    output_column = ['order_id', 'quantity', 'product.name', 'variation.name', 'start_date', 'end_date']
+    output_column = ['order_id', 'quantity', 'product.name', 'variation.name', 'variation.price', 'start_date', 'end_date']
+
+    def update_from_dict(self, obj_dict, not_updatable_columns=[]):
+        """
+        update_from_dict updates self by using dict
+
+        Args:
+            obj_dict (dict):
+            not_updatable_columns (list, optional): columns that won't be updated
+
+        Returns:
+            [type]: [description]
+        """
+        not_updatable_columns = not_updatable_columns if len(
+            not_updatable_columns) > 0 else self.not_updatable_columns
+        flag = False
+        if obj_dict:
+            for key in obj_dict:
+                if key in not_updatable_columns:
+                    continue
+                if hasattr(self, key): 
+                    if key == 'start_date':
+                        self.start_date = datetime.strptime(obj_dict[key], '%d-%m-%Y') 
+                        continue  
+                    if key == 'end_date':
+                        self.end_date = datetime.strptime(obj_dict[key], '%d-%m-%Y')    
+                        continue   
+                    setattr(self, key, obj_dict[key])
+                    flag = True
+        return flag

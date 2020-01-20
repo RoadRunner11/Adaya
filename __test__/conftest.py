@@ -2,7 +2,7 @@ import pytest
 from app.helpers.app_context import AppContext as AC
 from app.helpers.utility import randomString
 from app.models import (User, Role, Product, ProductCategory, Article, ArticleCategory, 
-ArticleStatus, OrderStatus, Order, OrderItem, ConfigValues, Voucher)
+ArticleStatus, OrderStatus, Order, OrderItem, ConfigValues, Voucher, Variation)
 import random
 from random import randint
 import string
@@ -37,10 +37,27 @@ def init_database():
     voucher.discount_fixed_amount = 100
     voucher.product_id = 3    
     voucher.redeem_by = datetime.date(2020, 4, 13)
+    variation = Variation('S')
+    variation.price = 10
+    variation.stock = 1
+    variation.id = 2
+    variation1 = Variation('M')
+    variation1.price = 20
+    variation1.stock = 1
+    variation2 = Variation('L')
+    variation2.price = 30
+    variation2.stock = 1
+    variation3 = Variation('XL')
+    variation3.price = 40
+    variation3.stock = 1   
     db.session.add(configvalues)
     db.session.add(configvalues2)
     db.session.add(configvalues3)
     db.session.add(voucher)
+    db.session.add(variation)
+    db.session.add(variation1)
+    db.session.add(variation2)
+    db.session.add(variation3)
     db.session.add(member)
     db.session.add(user)
     db.session.add(user2)
@@ -56,10 +73,8 @@ def init_database():
     db.session.add(food_category)
     db.session.add(clothes_category)    
     for x in range(10):
-        product = Product(randomString(10))
-        product.variation_id = randint(1, 4)
-        product.price = 100
-        product.stock = 2
+        product = Product('Haoluo')
+        product.variation_id = 2 #randint(1, 4)        
         article = Article(randomString(10))
         order = Order()
         order_item = OrderItem()

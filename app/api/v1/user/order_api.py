@@ -38,7 +38,7 @@ def create_order():
             item.calculate_discounted_cost()
     else:    
         item.calculate_cost()
-
+                         
     if len(item.update(json_dict,force_insert=True)) > 0:
         return Responses.OPERATION_FAILED()
     return res(item.as_dict())

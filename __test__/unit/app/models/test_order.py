@@ -1,10 +1,10 @@
 from app.models import Order
 
 
-def test_calculate_cost(new_order):
+def test_calculate_cost(test_client, init_database, new_order):
     new_order.calculate_cost()
-    assert new_order.total_price == 20
-    assert new_order.products_freeze == '[{"id": "None", "name": "name", "description": "None", "price": "10", "image": "None"}, {"id": "None", "name": "name", "description": "None", "price": "10", "image": "None"}]'
+    assert new_order.total_price == 140
+    assert new_order.products_freeze == '[{"id": "2", "name": "Haoluo", "description": "None", "variation.price": "10.00", "image": "None"}, {"id": "2", "name": "Haoluo", "description": "None", "variation.price": "10.00", "image": "None"}]'
 
 
 def test_get_items(test_client, init_database, new_order):

@@ -14,7 +14,7 @@ db = AC().db
 class Order(db.Model, DBMixin):
     __tablename__ = 'order'
 
-    order_item = db.relationship('OrderItem', backref=db.backref('order')) 
+    order_items = db.relationship('OrderItem', backref=db.backref('order')) 
     vouchers = db.relationship('Voucher', secondary='voucher_order',
                                backref=db.backref('order', lazy='dynamic'))  
     products_freeze = db.Column(db.Text)
@@ -31,6 +31,35 @@ class Order(db.Model, DBMixin):
 
     output_column = ['id', 'order_items', 'products_freeze','payment_ref',
                      'total_price', 'user.email', 'status.name', 'enabled']
+
+    def update_from_dict(self, obj_dict, not_updatable_columns=[]):
+        """
+        update_from_dict updates self by using dict
+
+        Args:
+            obj_dict (dict):
+            not_updatable_columns (list, optional): columns that won't be updated
+
+        Returns:
+            [type]: [description]
+        """
+        not_updatable_columns = not_updatable_columns if len(
+            not_updatable_columns) > 0 else self.not_updatable_columns
+        flag = False
+        if obj_dict:
+            for key in obj_dict:
+                if key in not_updatable_columns:
+                    continue
+                if key == 'order_items':
+                    count = 0
+                    for order_item_dict in obj_dict['order_items']:
+                        self.order_items[count].update_from_dict(order_item_dict) 
+                    continue               
+                       
+                if hasattr(self, key):         
+                    setattr(self, key, obj_dict[key])
+                    flag = True          
+        return flag
 
     @classmethod
     def get_items(cls, user_id=None, status_id=None, page=None, per_page=None, sort_by=None, is_desc=None):
@@ -78,6 +107,8 @@ class Order(db.Model, DBMixin):
         voucher_products_id = Voucher.get_voucher_product_ids(self.vouchers)
 
         for order_item in self.order_items:
+            #start_date = datetime.strptime(order_item.start_date, '%d-%m-%Y')
+            #end_date = datetime.strptime(order_item.end_date, '%d-%m-%Y')
             duration = self.date_difference(order_item.start_date, order_item.end_date)
             product = Product.get_product_from_id(order_item.product_id)
             variation = Variation.get_variation_from_id(order_item.variation_id)
@@ -95,7 +126,7 @@ class Order(db.Model, DBMixin):
                 else:
                     product_price = (variation.price * duration.days) * (1 - (voucher.discount_percent_off/100))
             else:
-                product_price = variation.price
+                product_price = variation.price * duration.days
             total_price += product_price
             products_freeze.append(product.as_dict(['id','name','description','variation.price','image']))
 
