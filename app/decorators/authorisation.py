@@ -1,7 +1,7 @@
-from flask_jwt_extended import jwt_required, get_jwt_identity, verify_jwt_in_request, create_access_token
+from flask_jwt_extended import jwt_required, get_jwt_identity, verify_jwt_in_request, create_access_token, set_access_cookies
 from app.models import User
 from flask import abort, has_request_context
-from app.helpers.enum import Messages, Roles
+from app.helpers.enum import Messages, Roles, Responses
 from app.helpers.utility import res
 from functools import wraps
 
@@ -21,23 +21,19 @@ def permitted_roles(roles):
             if has_request_context():
                 try:
                     verify_jwt_in_request()
-                except:
-                    return res('', Messages.AUTHENTICATION_FAILED, 401)
-                email = get_jwt_identity()
-                user = User.get_user_by_email(email)
-                # Verify if user exists or not
-                if not user:
-                    return res('', Messages.AUTHENTICATION_FAILED, 401)
+                except Exception as e:
+                    return Responses.AUTHENTICATION_FAILED()
+                identity = get_jwt_identity()
+                email = User.get_email_from_identity(identity)
+                if not email:
+                    return Responses.AUTHENTICATION_FAILED()
                 # Verify if user is in the right role
-                if len(roles) > 0:
-                    # only check if requires role is more than 0
-                    if not User.authorisation(email, roles):
-                        return res('', Messages.AUTHORISATION_FAILED, 403)
-            response = function(*args, **kwargs)
-            # add new token to the response header
-            response[0].headers.set(
-                'Authorization', create_access_token(identity=email))
-            return response
+                if not User.authorisation(email, roles):
+                    return Responses.AUTHORISATION_FAILED()
+            response, status = function(*args, **kwargs)
+            set_access_cookies(response, create_access_token(
+                identity=User.generate_token_identity(email)))
+            return response, status
         return wrapper
     return decorater
 

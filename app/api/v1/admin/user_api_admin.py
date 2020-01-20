@@ -51,12 +51,13 @@ def update_user(email):
 @admin_only
 def add_user():
     json_dict = request.json
-    item = User()
-    item.update_from_dict(json_dict)
+    if 'email' not in json_dict:
+        return Responses.OPERATION_FAILED(Messages.EMAIL_EMPTY)
     existing_item = User.get_user_by_email(json_dict['email'])
     if existing_item:
-        return Responses.OBJECT_EXIST()
-    error = item.update()
+        return Responses.OBJECT_EXIST(Messages.EMAIL_EXIST)
+    item = User()
+    error = item.insert_as_new_item(json_dict)
     if len(error) > 0:
-        return Responses.OPERATION_FAILED()
+        return Responses.OPERATION_FAILED(error)
     return res(item.as_dict())
