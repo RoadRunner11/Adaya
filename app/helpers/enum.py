@@ -9,6 +9,8 @@ class Messages:
     OBJECT_EXIST = 'Object exists'
     SUCCESS = 'Operation Success'
     OPERATION_FAILED = 'Operation Failed'
+    EMAIL_EXIST = 'Email already in use'
+    EMAIL_EMPTY = 'Email can not be empty'
 
 
 class Roles:
@@ -26,16 +28,17 @@ class Responses:
         return res(Messages.SUCCESS)
 
     @staticmethod
-    def OBJECT_EXIST():
-        return res('', Messages.OBJECT_EXIST, 409)
+    def OBJECT_EXIST(err=Messages.OBJECT_EXIST):
+        return res('', err, 409)
 
     @staticmethod
-    def OPERATION_FAILED():
-        return res('', Messages.OPERATION_FAILED, 400)
+    def OPERATION_FAILED(err=Messages.OPERATION_FAILED):
+        return res('', err, 400)
 
     @staticmethod
     def AUTHENTICATION_FAILED():
         return res('', Messages.AUTHENTICATION_FAILED, 401)
+
     @staticmethod
     def AUTHORISATION_FAILED():
         return res('', Messages.AUTHORISATION_FAILED, 403)

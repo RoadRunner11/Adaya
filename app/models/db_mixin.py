@@ -13,6 +13,7 @@ class DBMixin():
     modified_time = db.Column(
         db.DateTime, server_default=db.func.now(), onupdate=db.func.now())
     enabled = db.Column(db.Integer, default=1)
+    new_item_must_have_column = []
     output_column = []
     not_updatable_columns = ['id']
 
@@ -40,7 +41,15 @@ class DBMixin():
             error = str(e)
         return error
 
-    def update(self, obj_dict=None, not_updatable_columns=[],force_insert=False):
+    def insert_as_new_item(self, obj_dict=None, new_item_must_have_column=[]):
+        new_item_must_have_column = new_item_must_have_column if len(
+            new_item_must_have_column) > 0 else self.new_item_must_have_column
+        for column in new_item_must_have_column:
+            if column not in obj_dict:
+                return "Missing Attribute: "+str(column)
+        return self.update(obj_dict)
+
+    def update(self, obj_dict=None, not_updatable_columns=[], force_insert=False):
         """
         update updates the properties from dictionary and push to the database
 

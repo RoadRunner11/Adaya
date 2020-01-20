@@ -25,6 +25,7 @@ class User(db.Model, DBMixin):
     articles = db.relationship('Article', lazy='dynamic')
     orders = db.relationship('Order', lazy='dynamic')
 
+    new_item_must_have_column=['email','password']
     output_column = ['id', 'email', 'firstname', 'lastname', 'address1',
                      'address2', 'city', 'post_code', 'country', 'phone', 'enabled', 'role.name', 'role.id']
     not_updatable_columns = ['id']
