@@ -6,7 +6,7 @@ ArticleStatus, OrderStatus, Order, OrderItem, ConfigValues, Voucher, Variation)
 import random
 from random import randint
 import string
-import datetime
+from datetime import datetime
 from app import create_app
 
 
@@ -36,7 +36,7 @@ def init_database():
     voucher = Voucher('HAO20')
     voucher.discount_fixed_amount = 100
     voucher.product_id = 3    
-    voucher.redeem_by = datetime.date(2020, 4, 13)
+    voucher.redeem_by = datetime.strptime('13-4-2020', '%d-%m-%Y')
     variation = Variation('S')
     variation.price = 10
     variation.stock = 1
@@ -80,8 +80,8 @@ def init_database():
         order_item = OrderItem()
         order_item.product_id = product.id
         order_item.quantity = 1
-        order_item.start_date = datetime.date(2020, 4, 1)
-        order_item.end_date = datetime.date(2020, 4, 8)
+        order_item.start_date = datetime.strptime('1-4-2020', '%d-%m-%Y')
+        order_item.end_date = datetime.strptime('8-4-2020', '%d-%m-%Y')
         order.order_items = []
         order.order_items.append(order_item)
         article_category = food_article

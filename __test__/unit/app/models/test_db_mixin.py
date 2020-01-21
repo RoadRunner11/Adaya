@@ -3,15 +3,14 @@ from app.models import Product
 from app.models import Variation
 
 
-def test_as_dict(new_product):
+def test_as_dict(new_order, new_product):
     product_dict = {'name': new_product.name, 'variation_id': str(new_product.variation_id)}
     assert new_product.as_dict(
         ['name', 'variation_id']) == product_dict
-    # How to serialise the test class as json
-    # order_dict = {'products': [
-    #     item.as_dict() for item in new_order.order_items]}
-    # assert new_order.as_dict(
-    #     ['products']) == order_dict
+    order_dict = {'order_items': [
+        item.as_dict() for item in new_order.order_items]}
+    assert new_order.as_dict(
+        ['order_items']) == order_dict
 
 
 def test_update_from_dict(new_product):

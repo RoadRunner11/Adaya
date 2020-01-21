@@ -5,7 +5,7 @@ ArticleStatus,OrderStatus,Order, OrderItem ,ConfigValues, Voucher, Variation)
 import random
 from random import randint
 import string
-import datetime
+from datetime import datetime
 
 db = AC().db
 
@@ -45,11 +45,11 @@ if __name__ == "__main__":
         voucher = Voucher('HAO20')
         voucher.discount_fixed_amount = 5
         voucher.product_id = 3
-        voucher.redeem_by = datetime.date(2020, 4, 13)
+        voucher.redeem_by = datetime.strptime('13-4-2020', '%d-%m-%Y')
         voucher2 = Voucher('LUO20')
         voucher2.discount_fixed_amount = 20
         voucher2.product_id = 5
-        voucher2.redeem_by = datetime.date(2020, 4, 18)
+        voucher2.redeem_by = datetime.strptime('18-4-2020', '%d-%m-%Y')
         db.session.add(configvalues)
         db.session.add(configvalues2)
         db.session.add(configvalues3)
@@ -82,8 +82,8 @@ if __name__ == "__main__":
             order_item = OrderItem()
             order_item.product_id = product.id
             order_item.quantity = 1
-            order_item.start_date = datetime.date(2020, 4, 1)
-            order_item.end_date = datetime.date(2020, 4, 8)
+            order_item.start_date = datetime.strptime('1-4-2020', '%d-%m-%Y')
+            order_item.end_date = datetime.strptime('8-4-2020', '%d-%m-%Y')
             order.order_items = []
             order.order_items.append(order_item)
             article_category = food_article
