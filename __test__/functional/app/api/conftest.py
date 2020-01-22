@@ -42,7 +42,7 @@ def member_order():
     first_order_item = OrderItem()
     first_order_item.product_id = 2
     first_order_item.quantity = 1
-    first_order_item.variation_id = 2
+    first_order_item.variation_id = 3
     first_order_item.start_date = datetime.strptime('1-4-2020', '%d-%m-%Y').strftime('%d-%m-%Y')
     first_order_item.end_date = datetime.strptime('8-4-2020', '%d-%m-%Y').strftime('%d-%m-%Y')   
     

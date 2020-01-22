@@ -2,15 +2,16 @@ from app.models import Order
 from app.helpers.app_context import AppContext as AC
 
 def test_member_order(test_client, init_database, member_order): 
+     output_columns = ['variation_id', 'product_id', 'quantity', 'start_date', 'end_date']
      response = test_client.post(
-       '/orders', json={'order_items':[member_order.order_items[0].as_dict(), member_order.order_items[1].as_dict(), member_order.order_items[2].as_dict(),
-                        member_order.order_items[3].as_dict(), member_order.order_items[4].as_dict()], 'user_id': member_order.user_id})
+       '/orders', json={'order_items':[member_order.order_items[0].as_dict(output_columns), member_order.order_items[1].as_dict(output_columns), member_order.order_items[2].as_dict(output_columns),
+                        member_order.order_items[3].as_dict(output_columns), member_order.order_items[4].as_dict(output_columns)], 'user_id': member_order.user_id})
      
      second_response = test_client.post(
-       '/orders', json={'order_items':[member_order.order_items[0].as_dict(), member_order.order_items[1].as_dict()], 'user_id': member_order.user_id})
+       '/orders', json={'order_items':[member_order.order_items[0].as_dict(output_columns), member_order.order_items[1].as_dict(output_columns)], 'user_id': member_order.user_id})
     
      third_response = test_client.post(
-       '/orders', json={'order_items':[member_order.order_items[0].as_dict(), member_order.order_items[1].as_dict()], 'user_id': member_order.user_id, 
+       '/orders', json={'order_items':[member_order.order_items[0].as_dict(output_columns), member_order.order_items[1].as_dict(output_columns)], 'user_id': member_order.user_id, 
                         'voucher_codes':[member_order.vouchers[0].name]})
 
      # should fail if more than 4 products in order
