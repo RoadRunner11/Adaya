@@ -6,7 +6,7 @@ from flask import jsonify, request
 from app.decorators.authorisation import user_only
 
 @api_v1.route('/orders', methods=['POST'])
-@user_only
+#@user_only
 def create_order():
     json_dict = request.json
     item = Order()

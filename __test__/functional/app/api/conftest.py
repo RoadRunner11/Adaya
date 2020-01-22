@@ -21,6 +21,7 @@ def new_member():
     user.role_id = 2
     user.lastname = 'Analytics'
     return user
+
 @pytest.fixture(scope='module')
 def new_order(new_product):
     order = Order()
@@ -80,7 +81,7 @@ def member_order():
     order = Order()
     order.order_items = []
     order.vouchers = []
-    order.user_id = 43
+    order.user_id = 2
     order.id = 43
     
     order.order_items.append(first_order_item)

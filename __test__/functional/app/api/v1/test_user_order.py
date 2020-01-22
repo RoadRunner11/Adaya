@@ -1,9 +1,8 @@
-from app.models import Order
+from app.models import Order, User
 from app.helpers.app_context import AppContext as AC
 from datetime import datetime
 
 def test_member_order(test_client, init_database, member_order): 
-
   order_items = order_items_as_dict(member_order)
           
   response = test_client.post(
