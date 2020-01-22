@@ -1,8 +1,11 @@
 from app import create_app
 from app.helpers.app_context import AppContext as AC
-from app.models import User, Role, Product, ProductCategory, Article, ArticleCategory, ArticleStatus,OrderStatus,Order
+from app.models import (User, Role, Product, ProductCategory,Article, ArticleCategory, 
+ArticleStatus,OrderStatus,Order, OrderItem ,ConfigValues, Voucher, Variation)
 import random
+from random import randint
 import string
+from datetime import datetime
 
 db = AC().db
 
@@ -23,9 +26,43 @@ if __name__ == "__main__":
         user = User("abc@gmail.com", "1q2w3e4r")
         user2 = User("abcd@gmail.com", "1q2w3e4r")
         user.role = admin
+        configvalues = ConfigValues('max_no_products_per_order', 4)
+        configvalues2 = ConfigValues('min_duration_of_rental', 4)
+        configvalues3 = ConfigValues('max_duration_of_rental', 7)
+        configvalues4 = ConfigValues('max_no_of_vouchers', 2)
+        variation = Variation('S')
+        variation.price = 10
+        variation.stock = 1
+        variation1 = Variation('M')
+        variation1.price = 20
+        variation1.stock = 1
+        variation2 = Variation('L')
+        variation2.price = 30
+        variation2.stock = 1
+        variation3 = Variation('XL')
+        variation3.price = 40
+        variation3.stock = 1
+        voucher = Voucher('HAO20')
+        voucher.discount_fixed_amount = 5
+        voucher.product_id = 3
+        voucher.redeem_by = datetime.strptime('13-4-2020', '%d-%m-%Y')
+        voucher2 = Voucher('LUO20')
+        voucher2.discount_fixed_amount = 20
+        voucher2.product_id = 5
+        voucher2.redeem_by = datetime.strptime('18-4-2020', '%d-%m-%Y')
+        db.session.add(configvalues)
+        db.session.add(configvalues2)
+        db.session.add(configvalues3)
+        db.session.add(configvalues4)
+        db.session.add(variation)
+        db.session.add(variation1)
+        db.session.add(variation2)
+        db.session.add(variation3)
         db.session.add(member)
         db.session.add(user)
         db.session.add(user2)
+        db.session.add(voucher)
+        db.session.add(voucher2)
         food_category = ProductCategory('food')
         clothes_category = ProductCategory('cloth')
         food_article = ArticleCategory('food-article')
@@ -39,10 +76,16 @@ if __name__ == "__main__":
         db.session.add(clothes_category)
         for x in range(10):
             product = Product(randomString(10))
+            product.variation_id = randint(1, 4)
             article = Article(randomString(10))
             order = Order()
-            order.products = []
-            order.products.append(product)
+            order_item = OrderItem()
+            order_item.product_id = product.id
+            order_item.quantity = 1
+            order_item.start_date = datetime.strptime('1-4-2020', '%d-%m-%Y')
+            order_item.end_date = datetime.strptime('8-4-2020', '%d-%m-%Y')
+            order.order_items = []
+            order.order_items.append(order_item)
             article_category = food_article
             category = food_category
             if x % 2 == 0:
@@ -53,6 +96,7 @@ if __name__ == "__main__":
             article.status = status
             db.session.add(order)
             db.session.add(product)
+            db.session.add(order_item)
             db.session.add(article)
 
         db.session.commit()

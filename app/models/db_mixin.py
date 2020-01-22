@@ -88,7 +88,7 @@ class DBMixin():
             for key in obj_dict:
                 if key in not_updatable_columns:
                     continue
-                if hasattr(self, key):
+                if hasattr(self, key):         
                     setattr(self, key, obj_dict[key])
                     flag = True
         return flag

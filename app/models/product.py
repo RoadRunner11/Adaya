@@ -9,15 +9,14 @@ class Product(db.Model, DBMixin):
 
     name = db.Column(db.String(255), nullable=False)
     description = db.Column(db.Text)
-    price = db.Column(db.Numeric(10, 2),default=0)
     image = db.Column(db.String(255))
-    stock = db.Column(db.Integer, default=0)
-    category_id = db.Column(db.Integer, db.ForeignKey(
-        'product_category.id'), default=1)
+    variation_id = db.Column(db.Integer, db.ForeignKey('variation.id'), default=1)
+    category_id = db.Column(db.Integer, db.ForeignKey('product_category.id'), default=1)
+    
+    variation = db.relationship('Variation')
     category = db.relationship('ProductCategory')
 
-    output_column = ['id', 'name', 'description','image',
-                     'price', 'stock', 'category.name','enabled']
+    output_column = ['id', 'name', 'description','image', 'category.name','enabled']
 
     def __init__(self, name=' '):
         self.name = name
@@ -49,3 +48,19 @@ class Product(db.Model, DBMixin):
         if category_id != None:
             filter_query = cls.category_id == category_id
         return cls.get(filter_query, page, per_page, sort_query)
+    
+    @classmethod
+    def get_product_from_id(cls, product_id):
+        product = Product.query.get(product_id)
+        return product
+
+    @classmethod
+    def get_products_from_id(cls, product_ids):        
+        if type(product_ids) == list:  
+            products = []
+            for id in product_ids:
+                products.append(Product.get_product_from_id(id))
+            return products
+        else:
+            product = Product.get_product_from_id(product_ids)   
+            return product    

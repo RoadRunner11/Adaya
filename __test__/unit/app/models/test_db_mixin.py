@@ -1,22 +1,23 @@
 import json
 from app.models import Product
+from app.models import Variation
 
 
 def test_as_dict(new_order, new_product):
-    product_dict = {'name': new_product.name, 'price': str(new_product.price)}
+    product_dict = {'name': new_product.name, 'variation_id': str(new_product.variation_id)}
     assert new_product.as_dict(
-        ['name', 'price']) == product_dict
-    order_dict = {'products': [
-        item.as_dict() for item in new_order.products]}
+        ['name', 'variation_id']) == product_dict
+    order_dict = {'order_items': [
+        item.as_dict() for item in new_order.order_items]}
     assert new_order.as_dict(
-        ['products']) == order_dict
+        ['order_items']) == order_dict
 
 
 def test_update_from_dict(new_product):
-    product_dict = {'name': 'test_name', 'price': 20}
+    product_dict = {'name': 'test_name', 'variation_id': 4}
     new_product.update_from_dict(product_dict, ['name'])
     assert new_product.name == 'name'
-    assert new_product.price == 20
+    assert new_product.variation_id == 4
 
 
 def test_insert(test_client, init_database, new_product):
@@ -28,8 +29,8 @@ def test_insert(test_client, init_database, new_product):
 def test_update(test_client, init_database):
     products = Product.get_items()
     product = products[0]
-    product.update(obj_dict={'name': 'test_name', 'price': 20})
-    assert product.price == Product.query.get(product.id).price
+    product.update(obj_dict={'name': 'test_name', 'variation_id': 3})
+    assert product.variation_id == 3
 
 
 def test_get(test_client, init_database):

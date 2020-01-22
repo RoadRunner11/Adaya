@@ -27,14 +27,11 @@ def update_order(id):
     if not item:
         return Responses.NOT_EXIST()
     json_dict = request.json
-    product_ids = json_dict['product_ids']
-    if product_ids:
-        # manually go through Ids
-        if type(product_ids) == list:
-            products = [Product.query.get(id)
-                        for id in json_dict['product_ids']]
-            item.products = products
-            item.calculate_cost()
+    order_items = json_dict['order_items']
+    if order_items:
+        item.order_items = order_items
+        item.calculate_cost()
+        
     if len(item.update(json_dict,force_insert=True)) > 0:
         return Responses.OPERATION_FAILED()
     return Responses.SUCCESS()
@@ -45,13 +42,12 @@ def update_order(id):
 def add_order():
     json_dict = request.json
     item = Order()
-    product_ids = json_dict['product_ids']
-    if product_ids:
-        if type(product_ids) == list:
-            products = [Product.query.get(id)
-                        for id in json_dict['product_ids']]
-            item.products = products
-            item.calculate_cost()
+    order_items = json_dict['order_items']
+
+    if order_items:
+        item.order_items = order_items
+        item.calculate_cost()
+    
     if len(item.update(json_dict,force_insert=True)) > 0:
         return Responses.OPERATION_FAILED()
     return res(item.as_dict())

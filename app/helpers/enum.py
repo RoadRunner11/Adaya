@@ -9,6 +9,9 @@ class Messages:
     OBJECT_EXIST = 'Object exists'
     SUCCESS = 'Operation Success'
     OPERATION_FAILED = 'Operation Failed'
+    INVALID_VOUCHER = 'Invalid voucher'
+    NO_VOUCHERS_EXCEEDED = 'Number of vouchers exceeded'
+    NO_STOCK = 'One or more Products Unavailable'
     EMAIL_EXIST = 'Email already in use'
     EMAIL_EMPTY = 'Email can not be empty'
 
@@ -37,8 +40,20 @@ class Responses:
 
     @staticmethod
     def AUTHENTICATION_FAILED():
-        return res('', Messages.AUTHENTICATION_FAILED, 401)
-
+       return res('', Messages.AUTHENTICATION_FAILED, 401)
+    
     @staticmethod
     def AUTHORISATION_FAILED():
         return res('', Messages.AUTHORISATION_FAILED, 403)
+
+    @staticmethod
+    def INVALID_VOUCHER():
+        return res('', Messages.INVALID_VOUCHER, 400)
+
+    @staticmethod
+    def NO_VOUCHERS_EXCEEDED():
+        return res('', Messages.NO_VOUCHERS_EXCEEDED, 400)
+
+    @staticmethod
+    def NO_STOCK():
+        return res('', Messages.NO_STOCK, 400)        
