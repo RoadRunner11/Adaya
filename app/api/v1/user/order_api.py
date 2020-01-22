@@ -68,41 +68,13 @@ def calculate_order_discount():
         item.calculate_discounted_cost()
     return res(item.as_dict())
 
-@api_v1.route('/orders/<int:id>', methods=['PUT'])
+@api_v1.route('/orders/return/<int:id>', methods=['PUT'])
 #@user_only
 def return_user_order(id):
     # todo 
     item = Order.query.get(id)
     item.status_id = 1
-    # send confirmation email on receiving items, issue deposit?
-
-
-@api_v1.route('/orders/<int:id>', methods=['PUT'])
-#@user_only
-def update_user_order(id):
-    item = Order.query.get(id)
-    if not item:
-        return Responses.NOT_EXIST()
-
-    if  item.check_order_status():
-        return Responses.OPERATION_FAILED()
-    
-    if not item.check_stock():
-        return Responses.NO_STOCK()
-
-    json_dict = request.json
-    order_items = json_dict['order_items']
-
-    if order_items:        
-        item.order_items = order_items
-        # ToDO: check what products been updated a
-        # if voucher been used before in initial order
-        # check if new product been added and if voucher
-        item.calculate_cost()
-
-    if len(item.update(json_dict,force_insert=False)) > 0:
-        return Responses.OPERATION_FAILED()
-    return Responses.SUCCESS()
+    # send confirmation email on receiving items
 
 @api_v1.route('/orders/<int:id>', methods=['GET'])
 @user_only

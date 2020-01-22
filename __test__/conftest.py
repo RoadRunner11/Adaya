@@ -33,6 +33,7 @@ def init_database():
     configvalues = ConfigValues('max_no_products_per_order', 4)
     configvalues2 = ConfigValues('min_duration_of_rental', 4)
     configvalues3 = ConfigValues('max_duration_of_rental', 7)
+    configvalues4 = ConfigValues('max_no_of_vouchers', 2)
     voucher = Voucher('HAO20')
     voucher.discount_fixed_amount = 100
     voucher.product_id = 3    
@@ -53,6 +54,7 @@ def init_database():
     db.session.add(configvalues)
     db.session.add(configvalues2)
     db.session.add(configvalues3)
+    db.session.add(configvalues4)
     db.session.add(voucher)
     db.session.add(variation)
     db.session.add(variation1)

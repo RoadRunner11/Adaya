@@ -107,8 +107,6 @@ class Order(db.Model, DBMixin):
         voucher_products_id = Voucher.get_voucher_product_ids(self.vouchers)
 
         for order_item in self.order_items:
-            #start_date = datetime.strptime(order_item.start_date, '%d-%m-%Y')
-            #end_date = datetime.strptime(order_item.end_date, '%d-%m-%Y')
             duration = self.date_difference(order_item.start_date, order_item.end_date)
             product = Product.get_product_from_id(order_item.product_id)
             variation = Variation.get_variation_from_id(order_item.variation_id)
