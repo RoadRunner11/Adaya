@@ -6,7 +6,7 @@ from flask import jsonify, request
 from app.decorators.authorisation import user_only
 
 @api_v1.route('/orders', methods=['POST'])
-#@user_only
+@user_only
 def create_order():
     json_dict = request.json
     item = Order()
@@ -44,7 +44,7 @@ def create_order():
     return res(item.as_dict())
 
 @api_v1.route('/orders/voucher', methods=['POST'])
-#@user_only
+@user_only
 def calculate_order_discount():
     json_dict = request.json
     item = Order()
@@ -69,7 +69,7 @@ def calculate_order_discount():
     return res(item.as_dict())
 
 @api_v1.route('/orders/return/<int:id>', methods=['PUT'])
-#@user_only
+@user_only
 def return_user_order(id):
     # todo 
     item = Order.query.get(id)
