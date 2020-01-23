@@ -136,7 +136,7 @@ class User(db.Model, DBMixin):
             User: user object
         """
         user = User.get_user_by_email(email)
-        if user and user and AC().bcrypt.check_password_hash(user.password, password):
+        if user and AC().bcrypt.check_password_hash(user.password, password):
             return user
         return None
 

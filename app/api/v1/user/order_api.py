@@ -70,11 +70,10 @@ def calculate_order_discount():
 
 @api_v1.route('/orders/return/<int:id>', methods=['PUT'])
 @user_only
-def return_user_order(id):
-    # todo 
+def return_user_order(id): 
     item = Order.query.get(id)
     item.status_id = 1
-    # send confirmation email on receiving items
+    # send confirmation email on receiving items ?
 
 @api_v1.route('/orders/<int:id>', methods=['GET'])
 @user_only
