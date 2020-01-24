@@ -9,14 +9,12 @@ class Product(db.Model, DBMixin):
 
     name = db.Column(db.String(255), nullable=False)
     description = db.Column(db.Text)
-    image = db.Column(db.String(255))
-    variation_id = db.Column(db.Integer, db.ForeignKey('variation.id'), default=1)
+    image = db.Column(db.String(255))    
     category_id = db.Column(db.Integer, db.ForeignKey('product_category.id'), default=1)
-    
-    variation = db.relationship('Variation')
+        
     category = db.relationship('ProductCategory')
 
-    output_column = ['id', 'name', 'description','image', 'category.name', 'variation.name', 'variation.price', 'enabled']
+    output_column = ['id', 'name', 'description','image', 'category.name', 'enabled']
 
     def __init__(self, name=' '):
         self.name = name

@@ -15,7 +15,6 @@ def new_order(new_product):
     order = Order()
 
     order_item = OrderItem()
-    order_item.product_id = 2
     order_item.variation_id = 2
     order_item.quantity = 1
     order_item.start_date = datetime.strptime('1-4-2020', '%d-%m-%Y')

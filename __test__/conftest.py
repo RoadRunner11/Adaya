@@ -38,28 +38,32 @@ def init_database():
     voucher.discount_fixed_amount = 100
     voucher.product_id = 3    
     voucher.redeem_by = datetime.strptime('13-4-2020', '%d-%m-%Y')
-    variation = Variation('S')
-    variation.price = 10
-    variation.stock = 1
-    variation.id = 2
-    variation1 = Variation('M')
-    variation1.price = 20
-    variation1.stock = 1
-    variation2 = Variation('L')
-    variation2.price = 30
-    variation2.stock = 1
-    variation3 = Variation('XL')
-    variation3.price = 40
-    variation3.stock = 1   
+    for x in range(1, 11):
+            variation = Variation('S')
+            variation.product_id = x
+            variation.price = 10
+            variation.stock = 1
+            variation1 = Variation('M')
+            variation1.product_id = x
+            variation1.price = 20
+            variation1.stock = 1
+            variation2 = Variation('L')
+            variation2.product_id = x
+            variation2.price = 30
+            variation2.stock = 1
+            variation3 = Variation('XL')
+            variation3.product_id = x
+            variation3.price = 40
+            variation3.stock = 1
+            db.session.add(variation)
+            db.session.add(variation1)
+            db.session.add(variation2)
+            db.session.add(variation3)    
     db.session.add(configvalues)
     db.session.add(configvalues2)
     db.session.add(configvalues3)
     db.session.add(configvalues4)
     db.session.add(voucher)
-    db.session.add(variation)
-    db.session.add(variation1)
-    db.session.add(variation2)
-    db.session.add(variation3)
     db.session.add(member)
     db.session.add(user)
     db.session.add(user2)
@@ -75,13 +79,12 @@ def init_database():
     db.session.add(food_category)
     db.session.add(clothes_category)    
     for x in range(10):
-        product = Product('Haoluo')
-        product.variation_id = 2 #randint(1, 4)        
+        product = Product('Haoluo')       
         article = Article(randomString(10))
         order = Order()
         order_item = OrderItem()
-        order_item.product_id = product.id
         order_item.quantity = 1
+        order_item.variation_id = 2
         order_item.start_date = datetime.strptime('1-4-2020', '%d-%m-%Y')
         order_item.end_date = datetime.strptime('8-4-2020', '%d-%m-%Y')
         order.order_items = []

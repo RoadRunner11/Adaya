@@ -73,7 +73,8 @@ def calculate_order_discount():
 def return_user_order(id): 
     item = Order.query.get(id)
     item.status_id = 1
-    # send confirmation email on receiving items ?
+    # ToDo
+    #  send confirmation email on receiving items ?
 
 @api_v1.route('/orders/<int:id>', methods=['GET'])
 @user_only

@@ -29,8 +29,8 @@ def test_insert(test_client, init_database, new_product):
 def test_update(test_client, init_database):
     products = Product.get_items()
     product = products[0]
-    product.update(obj_dict={'name': 'test_name', 'variation_id': 3})
-    assert product.variation_id == 3
+    product.update(obj_dict={'name': 'test_name', 'description': "nice"})
+    assert product.description == 'nice'
 
 
 def test_get(test_client, init_database):

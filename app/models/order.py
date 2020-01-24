@@ -91,10 +91,10 @@ class Order(db.Model, DBMixin):
             variation = Variation.get_variation_from_id(order_item.variation_id)
             # decrease stock count
             #variation.stock -= 1
-            product = Product.get_product_from_id(order_item.product_id)
+            product = Product.get_product_from_id(variation.product_id)
             duration = self.date_difference(order_item.start_date, order_item.end_date)
             total_price += (variation.price * duration.days)
-            products_freeze.append(product.as_dict(['id','name','description','variation.price','image']))
+            products_freeze.append(product.as_dict(['id', 'name', 'description', 'variation.price', 'image']))
         self.total_price = total_price
         self.products_freeze = json.dumps(products_freeze)
     
@@ -108,9 +108,9 @@ class Order(db.Model, DBMixin):
         voucher_products_id = Voucher.get_voucher_product_ids(self.vouchers)
 
         for order_item in self.order_items:
-            duration = self.date_difference(order_item.start_date, order_item.end_date)
-            product = Product.get_product_from_id(order_item.product_id)
+            duration = self.date_difference(order_item.start_date, order_item.end_date)            
             variation = Variation.get_variation_from_id(order_item.variation_id)
+            product = Product.get_product_from_id(variation.product_id)
             product_price = 0.00
             
             if not duration.days in (valid_durations):
