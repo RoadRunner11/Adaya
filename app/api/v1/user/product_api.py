@@ -1,4 +1,4 @@
-from app.models import Product, Variation
+from app.models import Product, Variation, ProductVariations
 from app.api.v1 import api_v1
 from app.helpers import Messages, Responses
 from app.helpers.utility import res, parse_int, get_page_from_args
@@ -23,12 +23,20 @@ def user_get_products(id=None):
     category_id = parse_int(request.args.get('category'))
     items = [Product.query.get(id)] if id else Product.get_items(
         category_id=category_id, page=page, per_page=per_page, sort_by=sort_by, is_desc=is_desc)
-    variations = Variation.get_all_product_variations()
-    available_sizes = []
-
+    
+    variations = Variation.get_all_product_variations( page=page, per_page=per_page, sort_by=sort_by, is_desc=is_desc)
+    
+    all_product_variations = []
+    
     for item in items:
+        available_product_variations = []
         for variation in variations:
-            if (item.id == variation.product_id) & variation.stock > 0:
-                
+            if (item.id == variation.product_id):
+                available_product_variations.append(variation)
 
-    return res([item.as_dict() for item in items])
+        product_variations = ProductVariations(product_name=item.name, description=item.description, image=item.image, category_id=item.category_id) 
+        product_variations.variations = available_product_variations
+        
+        all_product_variations.append(product_variations)
+
+    return res([product_variation.as_dict() for product_variation in all_product_variations])
