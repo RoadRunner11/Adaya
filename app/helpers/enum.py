@@ -15,6 +15,7 @@ class Messages:
     EMAIL_EXIST = 'Email already in use'
     EMAIL_EMPTY = 'Email can not be empty'
     TOKEN_EXPIRED = 'Token has expired'
+    UNCONFIRMED_USER = 'Unconfirmed User'
 
 
 class Roles:
@@ -61,4 +62,8 @@ class Responses:
 
     @staticmethod
     def TOKEN_EXPIRED():
-        return res('', Messages.TOKEN_EXPIRED, 400)      
+        return res('', Messages.TOKEN_EXPIRED, 400)   
+
+    @staticmethod
+    def UNCONFIRMED_USER():
+        return res('', Messages.UNCONFIRMED_USER, 400)     

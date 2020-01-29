@@ -179,3 +179,16 @@ class User(db.Model, DBMixin):
         msg = Message('Confirm Email', sender='adaya@adayahouse.com', recipients=[user_email], html=email_confirmation_html)
 
         mail.send(msg)
+
+    def send_password_reset_email(self, user_email): 
+        password_reset_serializer = URLSafeTimedSerializer('Thisisasecret!')
+
+        token = password_reset_serializer.dumps(user_email, salt='password-reset')
+
+        password_reset_link = url_for('api_v1.password_reset_with_token', token=token, _external=True)
+
+        password_reset_html = render_template('email_password_reset.html', password_reset_url=password_reset_link)
+
+        msg = Message('Confirm Email', sender='adaya@adayahouse.com', recipients=[user_email], html=password_reset_html)
+
+        mail.send(msg)

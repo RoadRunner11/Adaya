@@ -96,6 +96,28 @@ def update_user_information(email):
         return Responses.OPERATION_FAILED()
     return Responses.SUCCESS()
 
+@api_v1.route('/users/password_reset', methods=['POST'])
+def password_reset():
+    json_dict = request.json
+    email = json_dict['email']
+    item = User.get_user_by_email(email)
+    if not item:
+        return Responses.NOT_EXIST()
+    if(item.email_confirmed == False):
+        return Responses.UNCONFIRMED_USER()
+    
+    item.send_password_reset_email(email)
+    
+@api_v1.route('/users/password_reset/<token>')
+def password_reset_with_token(token):
+    password_reset_serializer = URLSafeTimedSerializer('Thisisasecret!')
+    try:
+        email = password_reset_serializer.loads(token, salt='password-reset', max_age=3600)
+    except SignatureExpired:
+        return Responses.TOKEN_EXPIRED()
+    
+    #create form to take password or redirect to update user url
+
 @api_v1.route('/users/confirm_email/<token>')
 def confirm_email(token):
     confirm_serializer = URLSafeTimedSerializer('Thisisasecret!')
