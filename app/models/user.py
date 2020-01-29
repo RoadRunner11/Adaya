@@ -1,7 +1,12 @@
 from app.helpers.app_context import AppContext as AC
 from app.models.db_mixin import DBMixin
 from app.models.role import Role
+from app import mail
+import config
 import os
+from flask import url_for, render_template
+from flask_mail import Mail, Message
+from itsdangerous import URLSafeTimedSerializer
 
 db = AC().db
 
@@ -20,6 +25,8 @@ class User(db.Model, DBMixin):
     phone = db.Column(db.String(255))
     token = db.Column(db.String(255))
     salt = db.Column(db.String(255), nullable=False)
+    email_confirmed = db.Column(db.Boolean, nullable=True, default=False)
+    email_confirmed_on = db.Column(db.DateTime, nullable=True)
     role_id = db.Column(db.Integer, db.ForeignKey('role.id'), default=1)
     role = db.relationship('Role')
     articles = db.relationship('Article', lazy='dynamic')
@@ -159,3 +166,16 @@ class User(db.Model, DBMixin):
         if user and user.role.name in permitted_roles:
             return True
         return False
+    
+    def send_confirmation_email(self, user_email): 
+        confirm_serializer = URLSafeTimedSerializer('Thisisasecret!')
+
+        token = confirm_serializer.dumps(user_email, salt='email-confirm')
+
+        confirm_link = url_for('api_v1.confirm_email', token=token, _external=True)
+
+        email_confirmation_html = render_template('email_confirmation.html', confirm_url=confirm_link)
+
+        msg = Message('Confirm Email', sender='adaya@adayahouse.com', recipients=[user_email], html=email_confirmation_html)
+
+        mail.send(msg)

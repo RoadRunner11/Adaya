@@ -30,6 +30,11 @@ if __name__ == "__main__":
         configvalues2 = ConfigValues('min_duration_of_rental', 4)
         configvalues3 = ConfigValues('max_duration_of_rental', 7)
         configvalues4 = ConfigValues('max_no_of_vouchers', 2)
+        configvalues5 = ConfigValues('MAIL_USERNAME', 'adayahouseshop@gmail.com')
+        configvalues6 = ConfigValues('MAIL_PASSWORD', 'adaya1234')
+        configvalues7 = ConfigValues('MAIL_SERVER', 'smtp.gmail.com')
+        configvalues8 = ConfigValues('MAIL_PORT', 465)
+        configvalues9 = ConfigValues('MAIL_DEFAULT_SENDER', 'adayahouseshop@gmail.com')
         for x in range(1, 11):
             variation = Variation('S')
             variation.product_id = x
@@ -63,6 +68,11 @@ if __name__ == "__main__":
         db.session.add(configvalues2)
         db.session.add(configvalues3)
         db.session.add(configvalues4)
+        db.session.add(configvalues5)
+        db.session.add(configvalues6)
+        db.session.add(configvalues7)
+        db.session.add(configvalues8)
+        db.session.add(configvalues9)
         db.session.add(member)
         db.session.add(user)
         db.session.add(user2)

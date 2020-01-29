@@ -14,6 +14,7 @@ class Messages:
     NO_STOCK = 'One or more Products Unavailable'
     EMAIL_EXIST = 'Email already in use'
     EMAIL_EMPTY = 'Email can not be empty'
+    TOKEN_EXPIRED = 'Token has expired'
 
 
 class Roles:
@@ -56,4 +57,8 @@ class Responses:
 
     @staticmethod
     def NO_STOCK():
-        return res('', Messages.NO_STOCK, 400)        
+        return res('', Messages.NO_STOCK, 400)   
+
+    @staticmethod
+    def TOKEN_EXPIRED():
+        return res('', Messages.TOKEN_EXPIRED, 400)      

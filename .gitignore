@@ -55,6 +55,9 @@ coverage.xml
 .media/
 local_settings.py
 
+# mail server settings
+email_config.py
+
 # Flask stuff:
 instance/
 .webassets-cache
