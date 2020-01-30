@@ -30,6 +30,7 @@ def init_database():
     user = User("abc@gmail.com", "1q2w3e4r")
     user2 = User("abcd@gmail.com", "1q2w3e4r")
     user.role = admin
+    user2.email_confirmed = True
     configvalues = ConfigValues('max_no_products_per_order', 4)
     configvalues2 = ConfigValues('min_duration_of_rental', 4)
     configvalues3 = ConfigValues('max_duration_of_rental', 7)

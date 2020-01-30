@@ -189,6 +189,6 @@ class User(db.Model, DBMixin):
 
         password_reset_html = render_template('email_password_reset.html', password_reset_url=password_reset_link)
 
-        msg = Message('Confirm Email', sender='adaya@adayahouse.com', recipients=[user_email], html=password_reset_html)
+        msg = Message('Password Reset', sender='adaya@adayahouse.com', recipients=[user_email], html=password_reset_html)
 
         mail.send(msg)

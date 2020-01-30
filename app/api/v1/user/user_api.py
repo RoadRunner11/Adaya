@@ -65,17 +65,17 @@ def register_user():
 
     """
     json_dict = request.json
-    item = User()
-    item.update_from_dict(json_dict, ['id', 'role_id', 'role'])
-    existing_item = User.get_user_by_email(json_dict['email'])
-    if existing_item:
+    user = User()
+    user.update_from_dict(json_dict, ['id', 'role_id', 'role'])
+    existing_user = User.get_user_by_email(json_dict['email'])
+    if existing_user:
        return Responses.OBJECT_EXIST()
-    error = item.update()
+    error = user.update()
     if len(error) > 0:
         return Responses.OPERATION_FAILED()
-    item.send_confirmation_email(json_dict['email'])
+    user.send_confirmation_email(json_dict['email'])
     flash('Thanks for registering!  Please check your email to confirm your email address.', 'success')
-    return res(item.as_dict())
+    return res(user.as_dict())
 
 @api_v1.route('/users/<string:email>', methods=['PUT'])
 def update_user_information(email):
@@ -88,11 +88,14 @@ def update_user_information(email):
     Returns:
         (string,int): user info if update succesful, otherwise response no need to update
     """
-    item = User.get_user_by_email(email)
-    if not item:
+    user = User.get_user_by_email(email)
+    if not user:
         return Responses.NOT_EXIST()
+    if not user.email_confirmed:
+        return Responses.UNCONFIRMED_USER()
+    
     json_dict = request.json
-    if len(item.update(json_dict)) > 0:
+    if len(user.update(json_dict, ['password'])) > 0:
         return Responses.OPERATION_FAILED()
     return Responses.SUCCESS()
 
@@ -100,13 +103,13 @@ def update_user_information(email):
 def password_reset():
     json_dict = request.json
     email = json_dict['email']
-    item = User.get_user_by_email(email)
-    if not item:
+    user = User.get_user_by_email(email)
+    if not user:
         return Responses.NOT_EXIST()
-    if(item.email_confirmed == False):
+    if not user.email_confirmed:
         return Responses.UNCONFIRMED_USER()
     
-    item.send_password_reset_email(email)
+    user.send_password_reset_email(email)
     
 @api_v1.route('/users/password_reset/<token>')
 def password_reset_with_token(token):
@@ -114,9 +117,17 @@ def password_reset_with_token(token):
     try:
         email = password_reset_serializer.loads(token, salt='password-reset', max_age=3600)
     except SignatureExpired:
-        return Responses.TOKEN_EXPIRED()
-    
-    #create form to take password or redirect to update user url
+        return Responses.TOKEN_EXPIRED()   
+
+    # TODO
+    # create form to take password or redirect to update user url
+    json_dict = request.json
+    user = User.get_user_by_email(email)
+    user.password = json_dict['password']
+    error = user.update()
+    if len(error) > 0:
+        Responses.OPERATION_FAILED()
+    return Responses.SUCCESS()
 
 @api_v1.route('/users/confirm_email/<token>')
 def confirm_email(token):
@@ -126,13 +137,15 @@ def confirm_email(token):
     except SignatureExpired:
         return Responses.TOKEN_EXPIRED()
 
-    item = User.get_user_by_email(email)
-    if not item:
+    user = User.get_user_by_email(email)
+    if not user:
         return Responses.NOT_EXIST()
     
-    item.email_confirmed = True
-    item.email_confirmed_on = datetime.now()
-    item.update()
+    user.email_confirmed = True
+    user.email_confirmed_on = datetime.now()
+    error = user.update()
+    if len(error) > 0:
+        Responses.OPERATION_FAILED()
     return Responses.SUCCESS()
     
 # This are the next things that are needed i believe.

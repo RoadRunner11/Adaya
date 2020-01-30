@@ -27,4 +27,10 @@ def test_register_user(test_client, init_database, new_member):
 def test_update_user_info(test_client, init_database, new_member):    
     response = test_client.put(
         '/users/abc@gmail.com', json={'lastname': new_member.lastname })
-    assert response.status_code == 200
+    # should fail as email is not confirmed
+    assert response.status_code == 400
+
+    second_response = test_client.put(
+        '/users/abcd@gmail.com', json={'lastname': new_member.lastname })
+    # should pass as email is confirmed
+    assert second_response.status_code == 200
