@@ -2,6 +2,7 @@ from flask import jsonify, request, flash, Flask, request, url_for, render_templ
 from flask_jwt_extended import create_access_token, set_access_cookies, unset_jwt_cookies
 from app.api.v1 import api_v1
 from app.models import User
+from app.models.config_values import ConfigValues
 from app.helpers.enum import Messages, Roles, Responses
 from app.helpers.utility import res
 from flask_jwt_extended import jwt_required, get_jwt_identity
@@ -113,7 +114,9 @@ def password_reset():
     
 @api_v1.route('/users/password_reset/<token>')
 def password_reset_with_token(token):
-    password_reset_serializer = URLSafeTimedSerializer('Thisisasecret!')
+    secret_key = ConfigValues.get_config_value('EMAIL_PASSWORD_RESET_SECRET_KEY')
+
+    password_reset_serializer = URLSafeTimedSerializer(secret_key)
     try:
         email = password_reset_serializer.loads(token, salt='password-reset', max_age=3600)
     except SignatureExpired:
@@ -131,7 +134,9 @@ def password_reset_with_token(token):
 
 @api_v1.route('/users/confirm_email/<token>')
 def confirm_email(token):
-    confirm_serializer = URLSafeTimedSerializer('Thisisasecret!')
+    secret_key = ConfigValues.get_config_value('EMAIL_PASSWORD_RESET_SECRET_KEY')
+
+    confirm_serializer = URLSafeTimedSerializer(secret_key)
     try:
         email = confirm_serializer.loads(token, salt='email-confirm', max_age=3600)
     except SignatureExpired:

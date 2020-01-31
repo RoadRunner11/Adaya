@@ -1,6 +1,7 @@
 from app.helpers.app_context import AppContext as AC
 from app.models.db_mixin import DBMixin
 from app.models.role import Role
+from app.models.config_values import ConfigValues
 from app import mail
 import config
 import os
@@ -168,7 +169,9 @@ class User(db.Model, DBMixin):
         return False
     
     def send_confirmation_email(self, user_email): 
-        confirm_serializer = URLSafeTimedSerializer('Thisisasecret!')
+        secret_key = ConfigValues.get_config_value('EMAIL_PASSWORD_RESET_SECRET_KEY')
+
+        confirm_serializer = URLSafeTimedSerializer(secret_key)
 
         token = confirm_serializer.dumps(user_email, salt='email-confirm')
 
@@ -181,7 +184,9 @@ class User(db.Model, DBMixin):
         mail.send(msg)
 
     def send_password_reset_email(self, user_email): 
-        password_reset_serializer = URLSafeTimedSerializer('Thisisasecret!')
+        secret_key = ConfigValues.get_config_value('EMAIL_PASSWORD_RESET_SECRET_KEY')
+
+        password_reset_serializer = URLSafeTimedSerializer(secret_key)
 
         token = password_reset_serializer.dumps(user_email, salt='password-reset')
 
