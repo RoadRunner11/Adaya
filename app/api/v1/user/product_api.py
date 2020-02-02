@@ -24,7 +24,7 @@ def user_get_products(id=None):
     items = [Product.query.get(id)] if id else Product.get_items(
         category_id=category_id, page=page, per_page=per_page, sort_by=sort_by, is_desc=is_desc)
     
-    variations = Variation.get_all_product_variations( page=page, per_page=per_page, sort_by=sort_by, is_desc=is_desc)
+    variations = Variation.get_items(category_id=None, page=page, per_page=per_page, sort_by=sort_by, is_desc=is_desc)
     
     all_product_variations = []
     

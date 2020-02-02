@@ -23,8 +23,7 @@ class Variation(db.Model, DBMixin):
         return variation
 
     @classmethod
-    def get_all_product_variations(cls, page=None, per_page=None, sort_by=None, is_desc=None):
-        
+    def get_items(cls, category_id=None, page=None, per_page=None, sort_by=None, is_desc=None):   
         sort_query = db.desc(cls.created_time)
         if sort_by != None:
             if sort_by == 'price':
