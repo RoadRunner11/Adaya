@@ -35,7 +35,7 @@ if __name__ == "__main__":
         configvalues7 = ConfigValues('MAIL_SERVER', 'smtp.gmail.com')
         configvalues8 = ConfigValues('MAIL_PORT', 465)
         configvalues9 = ConfigValues('MAIL_DEFAULT_SENDER', 'adayahouseshop@gmail.com')
-        configvalues9 = ConfigValues('EMAIL_PASSWORD_RESET_SECRET_KEY', 'Thisisasecret!')
+        configvalues10 = ConfigValues('EMAIL_PASSWORD_RESET_SECRET_KEY', 'Thisisasecret!')
         for x in range(1, 11):
             variation = Variation('S')
             variation.product_id = x
@@ -74,6 +74,7 @@ if __name__ == "__main__":
         db.session.add(configvalues7)
         db.session.add(configvalues8)
         db.session.add(configvalues9)
+        db.session.add(configvalues10)
         db.session.add(member)
         db.session.add(user)
         db.session.add(user2)

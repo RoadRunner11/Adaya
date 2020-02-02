@@ -1,4 +1,4 @@
-from app.models import Product
+from app.models import Product, Variation, ProductVariations
 from app.api.v1 import api_v1
 from app.helpers import Messages, Responses
 from app.helpers.utility import res, parse_int, get_page_from_args
@@ -24,7 +24,23 @@ def get_products(id=None):
     category_id = parse_int(request.args.get('category'))
     items = [Product.query.get(id)] if id else Product.get_items(
         category_id=category_id, page=page, per_page=per_page, sort_by=sort_by, is_desc=is_desc)
-    return res([item.as_dict() for item in items])
+    
+    variations = Variation.get_all_product_variations( page=page, per_page=per_page, sort_by=sort_by, is_desc=is_desc)
+    
+    all_product_variations = []
+    
+    for item in items:
+        available_product_variations = []
+        for variation in variations:
+            if (item.id == variation.product_id):
+                available_product_variations.append(variation)
+
+        product_variations = ProductVariations(product_name=item.name, description=item.description, image=item.image, category_id=item.category_id) 
+        product_variations.variations = available_product_variations
+        
+        all_product_variations.append(product_variations)
+
+    return res([product_variation.as_dict() for product_variation in all_product_variations])
 
 
 @api_v1.route('/connect/products/<int:id>', methods=['PUT'])
@@ -34,17 +50,43 @@ def update_product(id):
     if not item:
         return Responses.NOT_EXIST()
     json_dict = request.json
-    if len(item.update(json_dict)) > 0:
+    if len(item.update(json_dict['product'])) > 0:
         return Responses.OPERATION_FAILED()
-    return Responses.SUCCESS()
+    
+    current_variations = Variation.query.filter_by(product_id=item.id).all()
 
+    variations_dict = json_dict['variations']
+    for variation_dict in variations_dict:
+        variation = Variation()
+        variation.update_from_dict(variation_dict)
+        
+        for current_variation in current_variations:
+            if variation.name == current_variation.name:
+                if len(current_variation.update(variation_dict)) > 0:
+                    return Responses.OPERATION_FAILED()
+
+    return Responses.SUCCESS()
 
 @api_v1.route('/connect/products', methods=['POST'])
 @admin_only
 def add_product():
     json_dict = request.json
     item = Product()
-    error = item.update(json_dict)
+    error = item.update(json_dict['product'])    
     if len(error) > 0:
         return Responses.OPERATION_FAILED()
-    return res(item.as_dict())
+    product = Product.query.filter_by(name = json_dict['product']['name']).first()
+    
+    variations = []
+    variations_dict = json_dict['variations']
+    
+    for variation_dict in variations_dict:
+        variation = Variation()
+        if variation.update_from_dict(variation_dict):
+            variation.product_id = product.id            
+            variations.append(variation)    
+
+    for variation in variations:
+        if len(variation.update()) > 0:
+            return Responses.OPERATION_FAILED()
+    return Responses.SUCCESS()
