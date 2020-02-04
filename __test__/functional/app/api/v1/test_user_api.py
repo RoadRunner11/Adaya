@@ -30,7 +30,14 @@ def test_update_user_info(test_client, init_database, new_member):
     # should fail as email is not confirmed
     assert response.status_code == 400
 
-    second_response = test_client.put(
+def test_update_user_info_with_confirmed_email(test_client, init_database, new_member):  
+    response = test_client.put(
         '/users/abcd@gmail.com', json={'lastname': new_member.lastname })
     # should pass as email is confirmed
-    assert second_response.status_code == 200
+    assert response.status_code == 200
+
+def test_password_reset(test_client, init_database):
+    response = test_client.post(
+        '/users/password_reset', json={'email': 'abc@gmail.com' })
+    # should fail as email is not confirmed
+    assert response.status_code == 400
