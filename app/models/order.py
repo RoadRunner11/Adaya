@@ -53,7 +53,8 @@ class Order(db.Model, DBMixin):
                 if key == 'order_items':
                     count = 0
                     for order_item_dict in obj_dict['order_items']:
-                        self.order_items[count].update_from_dict(order_item_dict) 
+                        self.order_items[count].update_from_dict(order_item_dict)
+                        count += 1 
                     continue               
                        
                 if hasattr(self, key):         
@@ -90,10 +91,10 @@ class Order(db.Model, DBMixin):
             variation = Variation.get_variation_from_id(order_item.variation_id)
             # decrease stock count
             #variation.stock -= 1
-            product = Product.get_product_from_id(order_item.product_id)
+            product = Product.get_product_from_id(variation.product_id)
             duration = self.date_difference(order_item.start_date, order_item.end_date)
             total_price += (variation.price * duration.days)
-            products_freeze.append(product.as_dict(['id','name','description','variation.price','image']))
+            products_freeze.append(product.as_dict(['id', 'name', 'description', 'variation.price', 'image']))
         self.total_price = total_price
         self.products_freeze = json.dumps(products_freeze)
     
@@ -107,9 +108,9 @@ class Order(db.Model, DBMixin):
         voucher_products_id = Voucher.get_voucher_product_ids(self.vouchers)
 
         for order_item in self.order_items:
-            duration = self.date_difference(order_item.start_date, order_item.end_date)
-            product = Product.get_product_from_id(order_item.product_id)
+            duration = self.date_difference(order_item.start_date, order_item.end_date)            
             variation = Variation.get_variation_from_id(order_item.variation_id)
+            product = Product.get_product_from_id(variation.product_id)
             product_price = 0.00
             
             if not duration.days in (valid_durations):
@@ -163,23 +164,7 @@ class Order(db.Model, DBMixin):
 
     def set_order_items(self, order_items):
         self.order_items.clear()
-        self.populate_order_items(order_items)
-
-
-     
-    # def get_product_from_id(self, product_id):
-    #     product = Product.query.get(product_id)
-    #     return product
-
-    # def get_products_from_id(self, product_ids):        
-    #     if type(product_ids) == list:  
-    #         products = []
-    #         for id in product_ids:
-    #             products.append(self.get_product_from_id(id))
-    #         return products
-    #     else:
-    #         product = self.get_product_from_id(product_ids)   
-    #         return product                       
+        self.populate_order_items(order_items)          
     
     def date_difference(self, start_date, end_date):
         return end_date - start_date

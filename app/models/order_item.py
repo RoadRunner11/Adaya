@@ -1,5 +1,5 @@
 from app.helpers.app_context import AppContext as AC
-from app.models.db_mixin import DBMixin
+from app.models.db_mixin import DBMixin 
 from datetime import datetime
 
 db = AC().db
@@ -9,16 +9,14 @@ class OrderItem(db.Model, DBMixin):
     __tablename__ = 'order_item'
 
     order_id = db.Column(db.Integer, db.ForeignKey('order.id'), nullable=False, default=1)
-    product_id = db.Column(db.Integer, db.ForeignKey('product.id'), nullable=False, default=1)
     variation_id = db.Column(db.Integer, db.ForeignKey('variation.id'), default=1)
     quantity = db.Column(db.Integer, default=0)
     start_date = db.Column(db.DateTime, nullable=False)
     end_date = db.Column(db.DateTime, nullable=False)
 
-    product = db.relationship('Product')
-    variation = db.relationship('Variation')
+    variation = db.relationship('Variation')  
 
-    output_column = ['order_id', 'quantity', 'product.name', 'variation.name', 'variation.price', 'start_date', 'end_date']
+    output_column = ['order_id', 'quantity', 'variation.product_id', 'variation.name', 'variation.price', 'start_date', 'end_date']
 
     def update_from_dict(self, obj_dict, not_updatable_columns=[]):
         """

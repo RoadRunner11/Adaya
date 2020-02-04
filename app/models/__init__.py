@@ -12,3 +12,4 @@ from app.models.config_values import ConfigValues
 from app.models.voucher import Voucher
 from app.models.order_item import OrderItem
 from app.models.variation import Variation
+from app.models.product_variations import ProductVariations

@@ -23,10 +23,10 @@ def test_member_order(test_client, init_database, member_order):
   # number of produts
   assert len(second_response.json['body']['order_items'] ) == 2
 
-  assert third_response.json['body']['total_price'] == '110.00'
+  assert third_response.json['body']['total_price'] == '350.00'
 
 def order_items_as_dict(member_order):
-  output_columns = ['variation_id', 'product_id', 'quantity', 'start_date', 'end_date']
+  output_columns = ['variation_id', 'quantity', 'start_date', 'end_date']
 
   firstoid = member_order.order_items[0].as_dict(output_columns)
   secondoid = member_order.order_items[1].as_dict(output_columns)
