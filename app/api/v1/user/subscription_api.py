@@ -20,8 +20,8 @@ def user_subscribe():
         return Responses.UNCONFIRMED_USER()
     
     subscription_type = json_dict['subscription_type']
-    subscription = SubscriptionType.get_items(name=subscription_type)
-    subscription_price = subscription.subscription_price
+    subscription = SubscriptionType.get_items(duration=subscription_type)[0]
+    subscription_price = subscription.price
 
     start_date=date.today()
     end_date = start_date + relativedelta(months=int(subscription.duration))
@@ -46,7 +46,7 @@ def confirm_user_subscription(token):
         return Responses.NOT_EXIST()
     
     subscription_type = json_dict['subscription_type']
-    subscription = SubscriptionType.get_items(name=subscription_type)
+    subscription = SubscriptionType.get_items(subscription_type)
 
     start_date=date.today()
     end_date = start_date + relativedelta(months=int(subscription.duration))

@@ -17,7 +17,7 @@ class SubscriptionType(db.Model, DBMixin):
         self.price = price
     
     @classmethod
-    def get_items(cls, name=None, page=None, per_page=None):
+    def get_items(cls, duration=None, page=None, per_page=None):
         """
         get_items
 
@@ -30,8 +30,8 @@ class SubscriptionType(db.Model, DBMixin):
             [type]: [description]
         """
         filter_query = None
-        if name != None:
-            filter_query = cls.name == name
+        if duration != None:
+            filter_query = cls.duration == duration
         return cls.get(filter_query, page, per_page)
     
     # @classmethod
