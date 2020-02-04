@@ -1,7 +1,7 @@
 from app import create_app
 from app.helpers.app_context import AppContext as AC
 from app.models import (User, Role, Product, ProductCategory,Article, ArticleCategory, 
-ArticleStatus,OrderStatus,Order, OrderItem ,ConfigValues, Voucher, Variation)
+ArticleStatus,OrderStatus,Order, OrderItem ,ConfigValues, Voucher, Variation, SubscriptionType, UserSubscription)
 import random
 from random import randint
 import string
@@ -65,6 +65,12 @@ if __name__ == "__main__":
         voucher2.discount_fixed_amount = 20
         voucher2.product_id = 5
         voucher2.redeem_by = datetime.strptime('18-4-2020', '%d-%m-%Y')
+        subscription_type = SubscriptionType(1, 10.00)
+        subscription_type2 = SubscriptionType(6, 59.99)
+        subscription_type3 = SubscriptionType(12, 99.00)
+        db.session.add(subscription_type)
+        db.session.add(subscription_type2)
+        db.session.add(subscription_type3)
         db.session.add(configvalues)
         db.session.add(configvalues2)
         db.session.add(configvalues3)

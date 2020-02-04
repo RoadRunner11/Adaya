@@ -153,6 +153,4 @@ def confirm_email(token):
         Responses.OPERATION_FAILED()
     return Responses.SUCCESS()
     
-# This are the next things that are needed i believe.
 # TODO - User to make payment for order
-# TODO - User subscription: to subscribe to service for a period(eg month, 6months, year)
