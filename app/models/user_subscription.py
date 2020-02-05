@@ -1,5 +1,6 @@
 from app.helpers.app_context import AppContext as AC
 from app.models.db_mixin import DBMixin
+from datetime import datetime
 
 db = AC().db
 
@@ -22,3 +23,13 @@ class UserSubscription(db.Model, DBMixin):
         self.start_date = start_date
         self.end_date = end_date
         self.subscription_type_id = subscription_type_id
+    
+    
+    @classmethod
+    def check_subscription_active(cls, user_id):
+        user_subscription = UserSubscription.query.filter_by(user_id = user_id).first()
+        #TODO sort list by end_date and select most recent end date for check
+        if user_subscription.end_date < datetime.datetime.now():
+            return True
+    
+    #TODO Schedule task that runs to check subscription and update flag on user

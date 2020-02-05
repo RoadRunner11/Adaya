@@ -33,7 +33,4 @@ class SubscriptionType(db.Model, DBMixin):
         if duration != None:
             filter_query = cls.duration == duration
         return cls.get(filter_query, page, per_page)
-    
-    # @classmethod
-    # def get_voucher(cls, voucher_code):
-    #     return Voucher.query.filter_by(name = voucher_code).first()
+
