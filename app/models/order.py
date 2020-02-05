@@ -1,10 +1,11 @@
 from app.helpers.app_context import AppContext as AC
 from app.models.db_mixin import DBMixin
 from app.models.voucher import Voucher 
-from app.models import Product, User, UserSubscription
+from app.models import Product, User
 from app.models.config_values import ConfigValues
 from app.models.variation import Variation
 from app.models.order_item import OrderItem
+from app.models.user_subscription import UserSubscription
 from datetime import datetime
 import json
 
