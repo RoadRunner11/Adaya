@@ -8,6 +8,11 @@ import os
 from flask import url_for, render_template
 from flask_mail import Mail, Message
 from itsdangerous import URLSafeTimedSerializer
+import time
+import sib_api_v3_sdk
+from sib_api_v3_sdk.rest import ApiException
+from pprint import pprint
+from mailin import Mailin
 
 db = AC().db
 
@@ -170,31 +175,32 @@ class User(db.Model, DBMixin):
         return False
     
     def send_confirmation_email(self, user_email): 
-        secret_key = ConfigValues.get_config_value('EMAIL_PASSWORD_RESET_SECRET_KEY')
-
-        confirm_serializer = URLSafeTimedSerializer(secret_key)
-
-        token = confirm_serializer.dumps(user_email, salt='email-confirm')
-
-        confirm_link = url_for('api_v1.confirm_email', token=token, _external=True)
-
-        email_confirmation_html = render_template('email_confirmation.html', confirm_url=confirm_link)
-
-        msg = Message('Confirm Email', sender='adaya@adayahouse.com', recipients=[user_email], html=email_confirmation_html)
-
-        mail.send(msg)
+        access_key = ConfigValues.get_config_value('SIB_KEY')
+        m = Mailin("https://api.sendinblue.com/v2.0", access_key)
+        
+        inner_to = {}
+        inner_to[user_email] = user_email
+        data = {"from" : ["adayahouse@gmail.com", "from email!"],
+            "subject" : "Adaya Email Confirmation",
+        }
+        data['to'] = inner_to
+        data['html'] = """Your account on Adaya was successfully created.
+                <br>Please click <a href={{confirm_url}} target=\"_blank\">here</a> to confirm your email address and activate your account """
+        
+        m.send_email(data)
 
     def send_password_reset_email(self, user_email): 
-        secret_key = ConfigValues.get_config_value('EMAIL_PASSWORD_RESET_SECRET_KEY')
-
-        password_reset_serializer = URLSafeTimedSerializer(secret_key)
-
-        token = password_reset_serializer.dumps(user_email, salt='password-reset')
-
-        password_reset_link = url_for('api_v1.password_reset_with_token', token=token, _external=True)
-
-        password_reset_html = render_template('email_password_reset.html', password_reset_url=password_reset_link)
-
-        msg = Message('Password Reset', sender='adaya@adayahouse.com', recipients=[user_email], html=password_reset_html)
-
-        mail.send(msg)
+        access_key = ConfigValues.get_config_value('SIB_KEY')
+        m = Mailin("https://api.sendinblue.com/v2.0", access_key)
+        
+        inner_to = {}
+        inner_to[user_email] = user_email
+        data = {"from" : ["adayahouse@gmail.com", "from email!"],
+            "subject" : "Adaya -Account Password Reset",
+        }
+        data['to'] = inner_to
+        data['html'] = """We have received your password rest request on Adaya.
+            <br><br>Please click <a href={{password_reset_url}} target=\"_blank\">here</a> to reset your password
+                <br><br>If this was not you, call 0800111111"""
+        
+        m.send_email(data)

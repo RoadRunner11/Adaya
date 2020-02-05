@@ -17,7 +17,6 @@ def create_app(config_object):
 
     # Load config profile
     app.config.from_object(config_object)
-    app.config.from_object('config.email_config')
     mail.init_app(app)
 
     # initiate plugins

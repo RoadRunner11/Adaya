@@ -26,6 +26,7 @@ if __name__ == "__main__":
         user = User("abc@gmail.com", "1q2w3e4r")
         user2 = User("abcd@gmail.com", "1q2w3e4r")
         user.role = admin
+<<<<<<< HEAD
         configvalues = ConfigValues('max_no_products_per_order', 4)
         configvalues2 = ConfigValues('min_duration_of_rental', 4)
         configvalues3 = ConfigValues('max_duration_of_rental', 7)
@@ -36,6 +37,19 @@ if __name__ == "__main__":
         configvalues8 = ConfigValues('MAIL_PORT', 465)
         configvalues9 = ConfigValues('MAIL_DEFAULT_SENDER', 'adayahouseshop@gmail.com')
         configvalues10 = ConfigValues('EMAIL_PASSWORD_RESET_SECRET_KEY', 'Thisisasecret!')
+=======
+        max_no_products_per_order = ConfigValues('max_no_products_per_order', 4)
+        min_duration_of_rental = ConfigValues('min_duration_of_rental', 4)
+        max_duration_of_rental = ConfigValues('max_duration_of_rental', 7)
+        max_no_of_vouchers = ConfigValues('max_no_of_vouchers', 2)
+        MAIL_USERNAME = ConfigValues('MAIL_USERNAME', 'adayahouseshop@gmail.com')
+        MAIL_PASSWORD = ConfigValues('MAIL_PASSWORD', 'adaya1234')
+        MAIL_SERVER = ConfigValues('MAIL_SERVER', 'smtp.gmail.com')
+        MAIL_PORT = ConfigValues('MAIL_PORT', 465)
+        MAIL_DEFAULT_SENDER = ConfigValues('MAIL_DEFAULT_SENDER', 'adayahouseshop@gmail.com')
+        EMAIL_PASSWORD_RESET_SECRET_KEY= ConfigValues('EMAIL_PASSWORD_RESET_SECRET_KEY', 'Thisisasecret!')
+        SIB_KEY = ConfigValues('SIB_KEY', 'gzryVUPZHa1GW7n6')
+>>>>>>> useremailverification
         for x in range(1, 11):
             variation = Variation('S')
             variation.product_id = x
@@ -65,6 +79,7 @@ if __name__ == "__main__":
         voucher2.discount_fixed_amount = 20
         voucher2.product_id = 5
         voucher2.redeem_by = datetime.strptime('18-4-2020', '%d-%m-%Y')
+<<<<<<< HEAD
         subscription_type = SubscriptionType(1, 10.00)
         subscription_type2 = SubscriptionType(6, 59.99)
         subscription_type3 = SubscriptionType(12, 99.00)
@@ -81,6 +96,19 @@ if __name__ == "__main__":
         db.session.add(configvalues8)
         db.session.add(configvalues9)
         db.session.add(configvalues10)
+=======
+        db.session.add(max_no_products_per_order)
+        db.session.add(min_duration_of_rental)
+        db.session.add(max_duration_of_rental)
+        db.session.add(max_no_of_vouchers)
+        db.session.add(MAIL_USERNAME)
+        db.session.add(MAIL_PASSWORD)
+        db.session.add(MAIL_SERVER)
+        db.session.add(MAIL_PORT)
+        db.session.add(MAIL_DEFAULT_SENDER)
+        db.session.add(EMAIL_PASSWORD_RESET_SECRET_KEY)
+        db.session.add(SIB_KEY)
+>>>>>>> useremailverification
         db.session.add(member)
         db.session.add(user)
         db.session.add(user2)
