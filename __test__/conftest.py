@@ -41,6 +41,7 @@ def init_database():
     MAIL_PORT = ConfigValues('MAIL_PORT', 465)
     MAIL_DEFAULT_SENDER = ConfigValues('MAIL_DEFAULT_SENDER', 'adayahouseshop@gmail.com')
     EMAIL_PASSWORD_RESET_SECRET_KEY = ConfigValues('EMAIL_PASSWORD_RESET_SECRET_KEY', 'Thisisasecret!')
+    SIB_KEY = ConfigValues('SIB_KEY', 'gzryVUPZHa1GW7n6')
     voucher = Voucher('HAO20')
     voucher.discount_fixed_amount = 100
     voucher.product_id = 3    
@@ -76,6 +77,7 @@ def init_database():
     db.session.add(MAIL_PORT)
     db.session.add(MAIL_DEFAULT_SENDER)
     db.session.add(EMAIL_PASSWORD_RESET_SECRET_KEY)
+    db.session.add(SIB_KEY)
     db.session.add(voucher)
     db.session.add(member)
     db.session.add(user)
