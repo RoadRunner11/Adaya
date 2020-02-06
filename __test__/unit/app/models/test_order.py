@@ -1,5 +1,9 @@
 from app.models import Order
 
+def test_calculate_discounted_cost(test_client, init_database, member_order):
+    member_order.calculate_discounted_cost()
+    assert member_order.total_price == 466
+    assert member_order.products_freeze == '[{"id": "1", "name": "Haoluo", "description": "None", "variation.price": "", "image": "None"}, {"id": "1", "name": "Haoluo", "description": "None", "variation.price": "", "image": "None"}, {"id": "1", "name": "Haoluo", "description": "None", "variation.price": "", "image": "None"}]'
 
 def test_calculate_cost(test_client, init_database, new_order):
     new_order.calculate_cost()

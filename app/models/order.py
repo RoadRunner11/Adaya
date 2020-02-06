@@ -125,6 +125,7 @@ class Order(db.Model, DBMixin):
 
             if(product.id in voucher_products_id):
                 voucher = Voucher.get_voucher_by_product_id(product.id)
+                #TODO update number of redemptions of voucher
                 if(voucher.discount_fixed_amount > 0):
                     product_price = (variation.price * duration.days) - voucher.discount_fixed_amount                    
                 else:
