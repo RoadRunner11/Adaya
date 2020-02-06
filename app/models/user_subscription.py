@@ -1,6 +1,7 @@
 from app.helpers.app_context import AppContext as AC
 from app.models.db_mixin import DBMixin
 from datetime import datetime
+from app.models import User
 
 db = AC().db
 
@@ -32,4 +33,14 @@ class UserSubscription(db.Model, DBMixin):
         if user_subscription.end_date < datetime.datetime.now():
             return True
     
-    #TODO Schedule task that runs to check subscription and update flag on user
+    # timeloop = Timeloop()
+
+    # @timeloop.job(interval=timedelta(seconds=60))
+    # @classmethod
+    # def Check_all_user_subsriptions(cls):
+    #     user_subscriptions = UserSubscription.query.all()
+        
+    #     for user_subscription in user_subscriptions:
+    #         if user_subscription.end_date > datetime.datetime.now():
+    #             user = User.query.filter_by(user_id = user_subscription.user_id)
+    #             user.subscribed = False

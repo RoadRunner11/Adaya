@@ -6,9 +6,12 @@ import random
 from random import randint
 import string
 from datetime import datetime
+import time
+from timeloop import Timeloop
+from datetime import timedelta
 
 db = AC().db
-
+timeloop = Timeloop()
 
 def randomString(stringLength=10):
     """Generate a random string of fixed length """
@@ -25,6 +28,7 @@ if __name__ == "__main__":
         admin = Role("admin")
         user = User("abc@gmail.com", "1q2w3e4r")
         user2 = User("abcd@gmail.com", "1q2w3e4r")
+        user2.subscribed=True
         user.role = admin
         max_no_products_per_order = ConfigValues('max_no_products_per_order', 4)
         min_duration_of_rental = ConfigValues('min_duration_of_rental', 4)
@@ -66,6 +70,13 @@ if __name__ == "__main__":
         voucher2.discount_fixed_amount = 20
         voucher2.product_id = 5
         voucher2.redeem_by = datetime.strptime('18-4-2020', '%d-%m-%Y')
+        subtype = SubscriptionType(duration=1, price=10)
+        subtype2 = SubscriptionType(duration=6, price=40)
+        usersubscription = UserSubscription()
+        usersubscription.user_id=2
+        usersubscription.start_date=datetime.now()
+        usersubscription.end_date=datetime.strptime('06-02-2020 06:33:00', '%d-%m-%Y %H:%M:%S')
+        usersubscription.subscription_type=subtype
         db.session.add(max_no_products_per_order)
         db.session.add(min_duration_of_rental)
         db.session.add(max_duration_of_rental)
@@ -82,6 +93,9 @@ if __name__ == "__main__":
         db.session.add(user2)
         db.session.add(voucher)
         db.session.add(voucher2)
+        db.session.add(subtype)
+        db.session.add(subtype2)
+        db.session.add(usersubscription)
         food_category = ProductCategory('food')
         clothes_category = ProductCategory('cloth')
         food_article = ArticleCategory('food-article')
@@ -117,3 +131,15 @@ if __name__ == "__main__":
             db.session.add(article)
 
         db.session.commit()
+    
+    timeloop.start(block=True)
+    
+
+@timeloop.job(interval=timedelta(seconds=30))
+def Check_all_user_subsriptions():
+    user_subscriptions = UserSubscription.query.all()
+    
+    for user_subscription in user_subscriptions:
+        if datetime.datetime.now() > user_subscription.end_date:
+            user = User.query.filter_by(user_id = user_subscription.user_id).first()
+            user.subscribed = False
