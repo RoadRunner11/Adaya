@@ -46,6 +46,10 @@ def init_database():
     voucher.discount_fixed_amount = 100
     voucher.product_id = 3    
     voucher.redeem_by = datetime.strptime('13-4-2020', '%d-%m-%Y')
+    voucher2 = Voucher('LUO20')
+    voucher2.discount_fixed_amount = 8.00
+    voucher2.product_id = 1    
+    voucher2.redeem_by = datetime.strptime('13-4-2020', '%d-%m-%Y')
     for x in range(1, 11):
             variation = Variation('S')
             variation.product_id = x
@@ -79,6 +83,7 @@ def init_database():
     db.session.add(EMAIL_PASSWORD_RESET_SECRET_KEY)
     db.session.add(SIB_KEY)
     db.session.add(voucher)
+    db.session.add(voucher2)
     db.session.add(member)
     db.session.add(user)
     db.session.add(user2)
