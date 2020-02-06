@@ -1,7 +1,18 @@
 from app.helpers.app_context import AppContext as AC
 from app.models.db_mixin import DBMixin
 from app.models.role import Role
+from app.models.config_values import ConfigValues
+from app import mail
+import config
 import os
+from flask import url_for, render_template
+from flask_mail import Mail, Message
+from itsdangerous import URLSafeTimedSerializer
+import time
+import sib_api_v3_sdk
+from sib_api_v3_sdk.rest import ApiException
+from pprint import pprint
+from mailin import Mailin
 
 db = AC().db
 
@@ -20,6 +31,8 @@ class User(db.Model, DBMixin):
     phone = db.Column(db.String(255))
     token = db.Column(db.String(255))
     salt = db.Column(db.String(255), nullable=False)
+    email_confirmed = db.Column(db.Boolean, nullable=True, default=False)
+    email_confirmed_on = db.Column(db.DateTime, nullable=True)
     role_id = db.Column(db.Integer, db.ForeignKey('role.id'), default=1)
     role = db.relationship('Role')
     articles = db.relationship('Article', lazy='dynamic')
@@ -159,3 +172,33 @@ class User(db.Model, DBMixin):
         if user and user.role.name in permitted_roles:
             return True
         return False
+    
+    def send_confirmation_email(self, user_email): 
+        secret_key = ConfigValues.get_config_value('EMAIL_PASSWORD_RESET_SECRET_KEY')
+
+        confirm_serializer = URLSafeTimedSerializer(secret_key)
+
+        token = confirm_serializer.dumps(user_email, salt='email-confirm')
+
+        confirm_link = url_for('api_v1.confirm_email', token=token, _external=True)
+
+        email_confirmation_html = render_template('email_confirmation.html', confirm_url=confirm_link)
+
+        msg = Message('Confirm Email', sender='adaya@adayahouse.com', recipients=[user_email], html=email_confirmation_html)
+
+        mail.send(msg)
+
+    def send_password_reset_email(self, user_email): 
+        secret_key = ConfigValues.get_config_value('EMAIL_PASSWORD_RESET_SECRET_KEY')
+
+        password_reset_serializer = URLSafeTimedSerializer(secret_key)
+
+        token = password_reset_serializer.dumps(user_email, salt='password-reset')
+
+        password_reset_link = url_for('api_v1.password_reset_with_token', token=token, _external=True)
+
+        password_reset_html = render_template('email_password_reset.html', password_reset_url=password_reset_link)
+
+        msg = Message('Password Reset', sender='adaya@adayahouse.com', recipients=[user_email], html=password_reset_html)
+
+        mail.send(msg)

@@ -1,7 +1,9 @@
 from flask import Flask
 from app.helpers.app_context import AppContext as AC
 from flask_jwt_extended import JWTManager
+from flask_mail import Mail
 
+mail = Mail()
 
 def create_app(config_object):
     """
@@ -15,6 +17,7 @@ def create_app(config_object):
 
     # Load config profile
     app.config.from_object(config_object)
+    mail.init_app(app)
 
     # initiate plugins
     ac = AC()
