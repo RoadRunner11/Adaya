@@ -11,13 +11,11 @@ from timeloop import Timeloop
 from datetime import timedelta
 
 db = AC().db
-timeloop = Timeloop()
 
 def randomString(stringLength=10):
     """Generate a random string of fixed length """
     letters = string.ascii_lowercase
     return ''.join(random.choice(letters) for i in range(stringLength))
-
 
 if __name__ == "__main__":
     app = create_app("config.dev")  # start app with config
@@ -75,7 +73,7 @@ if __name__ == "__main__":
         usersubscription = UserSubscription()
         usersubscription.user_id=2
         usersubscription.start_date=datetime.now()
-        usersubscription.end_date=datetime.strptime('06-02-2020 06:33:00', '%d-%m-%Y %H:%M:%S')
+        usersubscription.end_date=datetime.strptime('06-02-2020 05:58:00', '%d-%m-%Y %H:%M:%S')
         usersubscription.subscription_type=subtype
         db.session.add(max_no_products_per_order)
         db.session.add(min_duration_of_rental)
@@ -131,15 +129,3 @@ if __name__ == "__main__":
             db.session.add(article)
 
         db.session.commit()
-    
-    timeloop.start(block=True)
-    
-
-@timeloop.job(interval=timedelta(seconds=30))
-def Check_all_user_subsriptions():
-    user_subscriptions = UserSubscription.query.all()
-    
-    for user_subscription in user_subscriptions:
-        if datetime.datetime.now() > user_subscription.end_date:
-            user = User.query.filter_by(user_id = user_subscription.user_id).first()
-            user.subscribed = False

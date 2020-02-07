@@ -2,9 +2,12 @@ from app.helpers.app_context import AppContext as AC
 from app.models.db_mixin import DBMixin
 from datetime import datetime
 from app.models import User
+import time
+from timeloop import Timeloop
+from datetime import timedelta
 
 db = AC().db
-
+#timeloop = Timeloop()
 
 class UserSubscription(db.Model, DBMixin):
     __tablename__ = 'user_subscription'
@@ -23,7 +26,7 @@ class UserSubscription(db.Model, DBMixin):
         self.user_id = user_id
         self.start_date = start_date
         self.end_date = end_date
-        self.subscription_type_id = subscription_type_id
+        self.subscription_type_id = subscription_type_id       
     
     
     @classmethod
@@ -33,14 +36,14 @@ class UserSubscription(db.Model, DBMixin):
         if user_subscription.end_date < datetime.datetime.now():
             return True
     
-    # timeloop = Timeloop()
-
-    # @timeloop.job(interval=timedelta(seconds=60))
-    # @classmethod
-    # def Check_all_user_subsriptions(cls):
-    #     user_subscriptions = UserSubscription.query.all()
+    
+    #@timeloop.job(interval=timedelta(seconds=30))
+    @classmethod
+    def Check_all_user_subsriptions(cls):
+        user_subscriptions = UserSubscription.query.all()
         
-    #     for user_subscription in user_subscriptions:
-    #         if user_subscription.end_date > datetime.datetime.now():
-    #             user = User.query.filter_by(user_id = user_subscription.user_id)
-    #             user.subscribed = False
+        for user_subscription in user_subscriptions:
+            if datetime.now() > user_subscription.end_date:
+                user = User.query.filter_by(id = user_subscription.user_id).first()
+                user.subscribed = False
+                user.update()
