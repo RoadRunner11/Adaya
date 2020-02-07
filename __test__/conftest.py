@@ -2,7 +2,7 @@ import pytest
 from app.helpers.app_context import AppContext as AC
 from app.helpers.utility import randomString
 from app.models import (User, Role, Product, ProductCategory, Article, ArticleCategory, 
-ArticleStatus, OrderStatus, Order, OrderItem, ConfigValues, Voucher, Variation)
+ArticleStatus, OrderStatus, Order, OrderItem, ConfigValues, Voucher, Variation, SubscriptionType, UserSubscription)
 import random
 from random import randint
 import string
@@ -29,8 +29,12 @@ def init_database():
     admin = Role("admin")
     user = User("abc@gmail.com", "1q2w3e4r")
     user2 = User("abcd@gmail.com", "1q2w3e4r")
+    user3 = User("abcd3@gmail.com", "1q2w3e4r")
     user.role = admin
     user2.email_confirmed = True
+    user2.subscribed=True
+    user3.email_confirmed = True
+    user3.subscribed = True
     max_no_products_per_order = ConfigValues('max_no_products_per_order', 4)
     min_duration_of_rental = ConfigValues('min_duration_of_rental', 4)
     max_duration_of_rental = ConfigValues('max_duration_of_rental', 7)
@@ -42,6 +46,18 @@ def init_database():
     MAIL_DEFAULT_SENDER = ConfigValues('MAIL_DEFAULT_SENDER', 'adayahouseshop@gmail.com')
     EMAIL_PASSWORD_RESET_SECRET_KEY = ConfigValues('EMAIL_PASSWORD_RESET_SECRET_KEY', 'Thisisasecret!')
     SIB_KEY = ConfigValues('SIB_KEY', 'gzryVUPZHa1GW7n6')
+    subtype = SubscriptionType(duration=1, price=10)
+    subtype2 = SubscriptionType(duration=6, price=40)
+    usersubscription = UserSubscription()
+    usersubscription.user_id=2
+    usersubscription.start_date=datetime.now()
+    usersubscription.end_date=datetime.strptime('06-04-2020 05:58:00', '%d-%m-%Y %H:%M:%S')
+    usersubscription.subscription_type=subtype
+    usersubscription2 = UserSubscription()
+    usersubscription2.user_id=3
+    usersubscription2.start_date=datetime.now()
+    usersubscription2.end_date=datetime.strptime('06-01-2020 05:58:00', '%d-%m-%Y %H:%M:%S')
+    usersubscription2.subscription_type=subtype2
     voucher = Voucher('HAO20')
     voucher.discount_fixed_amount = 100
     voucher.product_id = 3    
@@ -87,6 +103,11 @@ def init_database():
     db.session.add(member)
     db.session.add(user)
     db.session.add(user2)
+    db.session.add(user3)
+    db.session.add(subtype)
+    db.session.add(subtype2)
+    db.session.add(usersubscription)
+    db.session.add(usersubscription2)
     food_category = ProductCategory('food')
     clothes_category = ProductCategory('cloth')
     food_article = ArticleCategory('food-article')

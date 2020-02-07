@@ -75,6 +75,16 @@ def new_user():
     return user
 
 @pytest.fixture(scope='module')
+def new_user():
+    user = User('abcdefg@gmail.com','1q2w3e4r')
+    return user
+
+@pytest.fixture(scope='module')
+def new_user():
+    user = User('abcdefg@gmail.com','1q2w3e4r')
+    return user
+
+@pytest.fixture(scope='module')
 def new_voucher():   
     voucher = Voucher('LUO20')
     voucher.product_id = 1
