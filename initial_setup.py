@@ -1,20 +1,21 @@
 from app import create_app
 from app.helpers.app_context import AppContext as AC
 from app.models import (User, Role, Product, ProductCategory,Article, ArticleCategory, 
-ArticleStatus,OrderStatus,Order, OrderItem ,ConfigValues, Voucher, Variation)
+ArticleStatus,OrderStatus,Order, OrderItem ,ConfigValues, Voucher, Variation, SubscriptionType, UserSubscription)
 import random
 from random import randint
 import string
 from datetime import datetime
+import time
+from timeloop import Timeloop
+from datetime import timedelta
 
 db = AC().db
-
 
 def randomString(stringLength=10):
     """Generate a random string of fixed length """
     letters = string.ascii_lowercase
     return ''.join(random.choice(letters) for i in range(stringLength))
-
 
 if __name__ == "__main__":
     app = create_app("config.dev")  # start app with config
@@ -25,6 +26,7 @@ if __name__ == "__main__":
         admin = Role("admin")
         user = User("abc@gmail.com", "1q2w3e4r")
         user2 = User("abcd@gmail.com", "1q2w3e4r")
+        user2.subscribed=True
         user.role = admin
         max_no_products_per_order = ConfigValues('max_no_products_per_order', 4)
         min_duration_of_rental = ConfigValues('min_duration_of_rental', 4)
@@ -66,6 +68,13 @@ if __name__ == "__main__":
         voucher2.discount_fixed_amount = 20
         voucher2.product_id = 5
         voucher2.redeem_by = datetime.strptime('18-4-2020', '%d-%m-%Y')
+        subtype = SubscriptionType(duration=1, price=10)
+        subtype2 = SubscriptionType(duration=6, price=40)
+        usersubscription = UserSubscription()
+        usersubscription.user_id=2
+        usersubscription.start_date=datetime.now()
+        usersubscription.end_date=datetime.strptime('06-02-2020 05:58:00', '%d-%m-%Y %H:%M:%S')
+        usersubscription.subscription_type=subtype
         db.session.add(max_no_products_per_order)
         db.session.add(min_duration_of_rental)
         db.session.add(max_duration_of_rental)
@@ -82,6 +91,9 @@ if __name__ == "__main__":
         db.session.add(user2)
         db.session.add(voucher)
         db.session.add(voucher2)
+        db.session.add(subtype)
+        db.session.add(subtype2)
+        db.session.add(usersubscription)
         food_category = ProductCategory('food')
         clothes_category = ProductCategory('cloth')
         food_article = ArticleCategory('food-article')

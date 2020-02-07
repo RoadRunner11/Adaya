@@ -33,6 +33,7 @@ class User(db.Model, DBMixin):
     salt = db.Column(db.String(255), nullable=False)
     email_confirmed = db.Column(db.Boolean, nullable=True, default=False)
     email_confirmed_on = db.Column(db.DateTime, nullable=True)
+    subscribed = db.Column(db.Boolean, nullable=True, default=0)
     role_id = db.Column(db.Integer, db.ForeignKey('role.id'), default=1)
     role = db.relationship('Role')
     articles = db.relationship('Article', lazy='dynamic')

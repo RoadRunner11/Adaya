@@ -24,6 +24,7 @@ def new_order(new_product):
     order.order_items = []
     order.order_items.append(order_item)
     order.order_items.append(order_item)
+    order.user_id = 1
     return order
 
 @pytest.fixture(scope='module')

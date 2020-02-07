@@ -14,7 +14,7 @@ class Variation(db.Model, DBMixin):
     product = db.relationship('Product')
     output_column = ['name', 'price', 'stock', 'product_id']
 
-    def __init__(self, name):
+    def __init__(self, name=''):
         self.name = name
     
     @classmethod

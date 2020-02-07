@@ -27,6 +27,7 @@ def permitted_roles(roles):
                 email = User.get_email_from_identity(identity)
                 if not email:
                     return Responses.AUTHENTICATION_FAILED()
+                #TODO add check if email is activated
                 # Verify if user is in the right role
                 if not User.authorisation(email, roles):
                     return Responses.AUTHORISATION_FAILED()

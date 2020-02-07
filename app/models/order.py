@@ -1,10 +1,11 @@
 from app.helpers.app_context import AppContext as AC
 from app.models.db_mixin import DBMixin
 from app.models.voucher import Voucher 
-from app.models import Product
+from app.models import Product, User
 from app.models.config_values import ConfigValues
 from app.models.variation import Variation
 from app.models.order_item import OrderItem
+from app.models.user_subscription import UserSubscription
 from datetime import datetime
 import json
 
@@ -86,16 +87,20 @@ class Order(db.Model, DBMixin):
     def calculate_cost(self):
         total_price = 0
         products_freeze = []
-
+        
         for order_item in self.order_items:
             variation = Variation.get_variation_from_id(order_item.variation_id)
-            # decrease stock count
+            #TODO decrease stock count
             #variation.stock -= 1
             product = Product.get_product_from_id(variation.product_id)
             duration = self.date_difference(order_item.start_date, order_item.end_date)
             total_price += (variation.price * duration.days)
             products_freeze.append(product.as_dict(['id', 'name', 'description', 'variation.price', 'image']))
         self.total_price = total_price
+        user = User.query.get(self.user_id)
+        if user.subscribed:
+            if UserSubscription.check_subscription_active(self.user_id):
+                self.total_price = 0.00
         self.products_freeze = json.dumps(products_freeze)
     
     def calculate_discounted_cost(self):

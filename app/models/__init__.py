@@ -13,3 +13,6 @@ from app.models.voucher import Voucher
 from app.models.order_item import OrderItem
 from app.models.variation import Variation
 from app.models.product_variations import ProductVariations
+from app.models.subscription_type import SubscriptionType
+from app.models.user_subscription import UserSubscription
+from app.models.user_subscription_detail import UserSubscriptionDetail

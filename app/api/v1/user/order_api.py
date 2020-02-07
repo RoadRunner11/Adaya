@@ -10,6 +10,7 @@ from app.decorators.authorisation import user_only
 def create_order():
     json_dict = request.json
     item = Order()
+    item.user_id = json_dict['user_id']
     order_items_dict = json_dict['order_items']
 
     for order_item_dict in order_items_dict:

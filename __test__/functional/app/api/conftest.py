@@ -4,6 +4,7 @@ from app.models import Order
 from app.models import OrderItem
 from app.models import Product
 from app.models import Voucher
+from app.models import Variation
 from datetime import datetime
 
 @pytest.fixture(scope='module')
@@ -21,6 +22,30 @@ def new_member():
     user.role_id = 2
     user.lastname = 'Analytics'
     return user
+
+@pytest.fixture(scope='module')
+def new_product():
+    product = Product()
+    product.name = 'Hao Trouser'
+    product.description = '1sythq2w3stre4r'
+    product.category_id = 2
+    return product
+
+@pytest.fixture(scope='module')
+def new_variation():
+    variation = Variation()
+    variation.name = 'XS'
+    variation.price = '17.99'
+    variation.stock = 2
+    return variation
+
+@pytest.fixture(scope='module')
+def new_variation2():
+    variation = Variation()
+    variation.name = 'XXS'
+    variation.price = '11.99'
+    variation.stock = 1
+    return variation
 
 @pytest.fixture(scope='module')
 def new_order(new_product):
@@ -94,3 +119,4 @@ def member_order():
     order.vouchers.append(voucher)    
 
     return order
+
