@@ -20,4 +20,5 @@ def test_get_products(test_client, init_database):
     response = test_client.get('/connect/products', json={})
 
     assert response.status_code == 200
-    assert response.json['body'] == 'Operation Success'
+    assert len(response.json['body'][0]['variations']) == 4
+    assert response.json['body'][0]['product_name'] == 'Haoluo'
