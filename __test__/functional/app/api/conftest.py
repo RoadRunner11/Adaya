@@ -94,3 +94,4 @@ def member_order():
     order.vouchers.append(voucher)    
 
     return order
+
