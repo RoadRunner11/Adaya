@@ -8,7 +8,7 @@ from app.decorators.authorisation import admin_only
 
 @api_v1.route('/connect/products', methods=['GET'])
 @api_v1.route('/connect/products/<int:id>', methods=['GET'])
-@admin_only
+#@admin_only
 def get_products(id=None):
     """
     get_products returns all product or the product with specific id
@@ -44,7 +44,7 @@ def get_products(id=None):
 
 
 @api_v1.route('/connect/products/<int:id>', methods=['PUT'])
-@admin_only
+#@admin_only
 def update_product(id):
     item = Product.query.get(id)
     if not item:
@@ -59,16 +59,19 @@ def update_product(id):
     for variation_dict in variations_dict:
         variation = Variation()
         variation.update_from_dict(variation_dict)
-        
-        for current_variation in current_variations:
-            if variation.name == current_variation.name:
-                if len(current_variation.update(variation_dict)) > 0:
-                    return Responses.OPERATION_FAILED()
 
+        if variation.name in current_variations:            
+            for current_variation in current_variations:
+                if variation.name == current_variation.name:
+                    if len(current_variation.update(variation_dict)) > 0:
+                        return Responses.OPERATION_FAILED()
+        else:
+            if len(variation.update()) > 0:
+                return Responses.OPERATION_FAILED()
     return Responses.SUCCESS()
 
 @api_v1.route('/connect/products', methods=['POST'])
-@admin_only
+#@admin_only
 def add_product():
     json_dict = request.json
     item = Product()
