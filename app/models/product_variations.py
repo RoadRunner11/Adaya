@@ -1,14 +1,16 @@
 from app.models.variation import Variation
 
 class ProductVariations(object):
-    product_name = "" 
+    id = 0
+    name = "" 
     description = "" 
     image = "" 
     category_id = 0
     variations = []
 
-    def __init__(self, product_name=None, description=None, image=None, category_id=0):
-        self.product_name = product_name
+    def __init__(self, id=0,name=None, description=None, image=None, category_id=0):
+        self.id = id
+        self.name = name
         self.description = description
         self.image = image
         self.category_id = category_id
@@ -16,7 +18,7 @@ class ProductVariations(object):
     def as_dict(self):   
         output = {}
 
-        output_column = ['product_name', 'description', 'image', 'category_id', 'variations']
+        output_column = ['id','name', 'description', 'image', 'category_id', 'variations']
 
         for column in output_column:
             output[column] = getattr(self, column)

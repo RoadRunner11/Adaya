@@ -34,7 +34,7 @@ def user_get_products(id=None):
             if (item.id == variation.product_id):
                 available_product_variations.append(variation)
 
-        product_variations = ProductVariations(product_name=item.name, description=item.description, image=item.image, category_id=item.category_id) 
+        product_variations = ProductVariations(id=item.id, name=item.name, description=item.description, image=item.image, category_id=item.category_id) 
         product_variations.variations = available_product_variations
         
         all_product_variations.append(product_variations)
