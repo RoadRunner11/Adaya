@@ -35,7 +35,7 @@ def get_products(id=None):
             if (item.id == variation.product_id):
                 available_product_variations.append(variation)
 
-        product_variations = ProductVariations(id=item.id, name=item.name, description=item.description, image=item.image, category_id=item.category_id) 
+        product_variations = ProductVariations(product=item) 
         product_variations.variations = available_product_variations
         
         all_product_variations.append(product_variations)
@@ -53,21 +53,21 @@ def update_product(id):
     if len(item.update(json_dict['product'])) > 0:
         return Responses.OPERATION_FAILED()
     
-    current_variations = Variation.query.filter_by(product_id=item.id).all()
+    # current_variations = Variation.query.filter_by(product_id=item.id).all()
 
-    variations_dict = json_dict['variations']
-    for variation_dict in variations_dict:
-        variation = Variation()
-        variation.update_from_dict(variation_dict)
+    # variations_dict = json_dict['variations']
+    # for variation_dict in variations_dict:
+    #     variation = Variation()
+    #     variation.update_from_dict(variation_dict)
 
-        if variation.name in current_variations:            
-            for current_variation in current_variations:
-                if variation.name == current_variation.name:
-                    if len(current_variation.update(variation_dict)) > 0:
-                        return Responses.OPERATION_FAILED()
-        else:
-            if len(variation.update()) > 0:
-                return Responses.OPERATION_FAILED()
+    #     if variation.name in current_variations:            
+    #         for current_variation in current_variations:
+    #             if variation.name == current_variation.name:
+    #                 if len(current_variation.update(variation_dict)) > 0:
+    #                     return Responses.OPERATION_FAILED()
+    #     else:
+    #         if len(variation.update()) > 0:
+    #             return Responses.OPERATION_FAILED()
     return Responses.SUCCESS()
 
 @api_v1.route('/connect/products', methods=['POST'])
