@@ -33,4 +33,4 @@ class Variation(db.Model, DBMixin):
                     sort_query = db.asc(cls.created_time)
         filter_query = None
         
-        return cls.get(filter_query, page, per_page, sort_query)
+        return cls.get(filter_query, page, 100, sort_query)
