@@ -31,7 +31,7 @@ class Order(db.Model, DBMixin):
     
 
     output_column = ['id', 'order_items', 'products_freeze','payment_ref',
-                     'total_price', 'user.email', 'status.name', 'enabled']
+                     'total_price', 'vouchers', 'user.email', 'user.firstname', 'user.lastname', 'status.name', 'enabled']
 
     def update_from_dict(self, obj_dict, not_updatable_columns=[]):
         """

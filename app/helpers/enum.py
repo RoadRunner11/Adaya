@@ -11,6 +11,8 @@ class Messages:
     OPERATION_FAILED = 'Operation Failed'
     INVALID_VOUCHER = 'Invalid voucher'
     NO_VOUCHERS_EXCEEDED = 'Number of vouchers exceeded'
+    VOUCHER_NAME_EMPTY = 'Voucher name cannot be empty'
+    VOUCHER_EXISTS = 'Voucher name already in use'
     NO_STOCK = 'One or more Products Unavailable'
     EMAIL_EXIST = 'Email already in use'
     EMAIL_EMPTY = 'Email can not be empty'
@@ -55,6 +57,14 @@ class Responses:
     @staticmethod
     def NO_VOUCHERS_EXCEEDED():
         return res('', Messages.NO_VOUCHERS_EXCEEDED, 400)
+
+    @staticmethod
+    def VOUCHER_NAME_EMPTY():
+        return res('', Messages.VOUCHER_NAME_EMPTY, 400)
+
+    @staticmethod
+    def VOUCHER_EXISTS():
+        return res('', Messages.VOUCHER_EXISTS, 400)
 
     @staticmethod
     def NO_STOCK():

@@ -8,7 +8,7 @@ from app.decorators.authorisation import admin_only
 
 @api_v1.route('/connect/orders', methods=['GET'])
 @api_v1.route('/connect/orders/<int:id>', methods=['GET'])
-@admin_only
+#@admin_only
 def get_orders(id=None):
     page, per_page = get_page_from_args()
     sort_by = request.args.get('sort_by')
