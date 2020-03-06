@@ -40,6 +40,10 @@ def update_vouchers(name):
     if not item:
         return Responses.NOT_EXIST()
     json_dict = request.json
+
+    if( 'discount_percent_off' in json_dict and 'discount_fixed_amount' in json_dict ):
+        return Responses.OPERATION_FAILED(Messages.VOUCHER_DETAILS_WRONG)
+
     if len(item.update(json_dict)) > 0:
         return Responses.OPERATION_FAILED()
     return Responses.SUCCESS()
@@ -54,6 +58,9 @@ def add_voucher():
     existing_item = Voucher.get_voucher(json_dict['name'])
     if existing_item:
         return Responses.OBJECT_EXIST(Messages.VOUCHER_EXISTS)
+    if( 'discount_percent_off' in json_dict and 'discount_fixed_amount' in json_dict ):
+        return Responses.OPERATION_FAILED(Messages.VOUCHER_DETAILS_WRONG)
+
     item = Voucher(json_dict['name'])
     error = item.insert_as_new_item(json_dict, ['name', 'redeem_by'])
     if len(error) > 0:

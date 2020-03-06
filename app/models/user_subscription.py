@@ -20,11 +20,11 @@ class UserSubscription(db.Model, DBMixin):
 
     user = db.relationship('User')
     subscription_type = db.relationship('SubscriptionType')
-    output_column = ['user_id', 'user.firstname', 'user.lastname', 'start_date', 'end_date', 'subscription_type_id']
+    output_column = ['id', 'user_id', 'user.firstname', 'user.lastname', 'start_date', 'end_date', 'subscription_type_id']
 
-    def __init__(self, user_id=0, start_date=None, end_date=None, subscription_type_id=0):
+    def __init__(self, user_id=0, end_date=None, subscription_type_id=0):
         self.user_id = user_id
-        self.start_date = start_date
+        self.start_date = datetime.now()
         self.end_date = end_date
         self.subscription_type_id = subscription_type_id       
     

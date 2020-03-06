@@ -19,6 +19,7 @@ class Messages:
     EMAIL_EMPTY = 'Email can not be empty'
     TOKEN_EXPIRED = 'Token has expired'
     UNCONFIRMED_USER = 'Unconfirmed User'
+    VOUCHER_DETAILS_WRONG = 'Voucher cannot have both percent off and fixed amount'
 
 
 class Roles:
@@ -63,6 +64,10 @@ class Responses:
     def VOUCHER_NAME_EMPTY():
         return res('', Messages.VOUCHER_NAME_EMPTY, 400)
     
+    @staticmethod
+    def VOUCHER_DETAILS_WRONG():
+        return res('', Messages.VOUCHER_DETAILS_WRONG, 400)
+
     @staticmethod
     def NEEDED_FIELD_EMPTY():
         return res('', Messages.NEEDED_FIELD_EMPTY, 400)

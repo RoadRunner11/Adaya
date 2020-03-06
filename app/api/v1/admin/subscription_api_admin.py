@@ -50,7 +50,7 @@ def update_subscription(id):
 def add_subscription():
     json_dict = request.json
 
-    item = UserSubscription(json_dict['user_id'],json_dict['start_date'],json_dict['end_date'],json_dict['subscription_type_id'])
+    item = UserSubscription(user_id=json_dict['user_id'], end_date=json_dict['end_date'], subscription_type_id=json_dict['subscription_type_id'])
     error = item.insert_as_new_item(json_dict)
     if len(error) > 0:
         return Responses.OPERATION_FAILED(error)
