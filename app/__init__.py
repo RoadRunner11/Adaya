@@ -2,7 +2,6 @@ from flask import Flask
 from app.helpers.app_context import AppContext as AC
 from flask_jwt_extended import JWTManager
 from flask_mail import Mail
-from flask_cors import CORS
 
 mail = Mail()
 
@@ -22,7 +21,6 @@ def create_app(config_object):
 
     # initiate plugins
     ac = AC()
-    CORS(app)
     ac.db.init_app(app)
     ac.bcrypt.init_app(app)
     ac.jwt.init_app(app)
