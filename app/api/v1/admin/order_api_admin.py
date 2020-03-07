@@ -1,4 +1,4 @@
-from app.models import Order, Product
+from app.models import Order, Product, OrderItem
 from app.api.v1 import api_v1
 from app.helpers import Messages, Responses
 from app.helpers.utility import res, parse_int, get_page_from_args
@@ -27,12 +27,24 @@ def update_order(id):
     if not item:
         return Responses.NOT_EXIST()
     json_dict = request.json
-    order_items = json_dict['order_items']
-    if order_items:
-        item.order_items = order_items
-        item.calculate_cost()
+    order_items_dict = json_dict['order_items']
+
+    for order_item_dict in order_items_dict:
+        order_item = OrderItem()
+        if "id" in order_item_dict.keys():
+            order_item = OrderItem.query.get(order_item_dict['id'])        
+        order_item.update_from_dict(order_item_dict)
         
-    if len(item.update(json_dict,force_insert=True)) > 0:
+        if not "id" in order_item_dict.keys():
+             item.order_items.append(order_item)
+        else:
+            for oid in item.order_items:
+                if(oid.id == order_item_dict['id']):
+                    oid = order_item
+
+    item.calculate_cost()
+        
+    if len(item.update(force_insert=True)) > 0:
         return Responses.OPERATION_FAILED()
     return Responses.SUCCESS()
 
@@ -42,12 +54,17 @@ def update_order(id):
 def add_order():
     json_dict = request.json
     item = Order()
-    order_items = json_dict['order_items']
+    item.user_id = json_dict['user_id']
+    item.status_id = json_dict['status_id']
+    order_items_dict = json_dict['order_items']
 
-    if order_items:
-        item.order_items = order_items
-        item.calculate_cost()
+    for order_item_dict in order_items_dict:
+        order_item = OrderItem()       
+        order_item.update_from_dict(order_item_dict)
+        item.order_items.append(order_item)
     
-    if len(item.update(json_dict,force_insert=True)) > 0:
+    item.calculate_cost()
+    
+    if len(item.update(force_insert=True)) > 0:
         return Responses.OPERATION_FAILED()
     return res(item.as_dict())

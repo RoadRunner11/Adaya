@@ -51,21 +51,21 @@ def init_database():
     usersubscription = UserSubscription()
     usersubscription.user_id=2
     usersubscription.start_date=datetime.now()
-    usersubscription.end_date=datetime.strptime('06-04-2020 05:58:00', '%d-%m-%Y %H:%M:%S')
+    usersubscription.end_date=datetime.strptime('2020-04-06 05:58:00', '%Y-%m-%d %H:%M:%S')
     usersubscription.subscription_type=subtype
     usersubscription2 = UserSubscription()
     usersubscription2.user_id=3
     usersubscription2.start_date=datetime.now()
-    usersubscription2.end_date=datetime.strptime('06-01-2020 05:58:00', '%d-%m-%Y %H:%M:%S')
+    usersubscription2.end_date=datetime.strptime('2020-01-06 05:58:00', '%Y-%m-%d %H:%M:%S')
     usersubscription2.subscription_type=subtype2
     voucher = Voucher('HAO20')
     voucher.discount_fixed_amount = 100
     voucher.product_id = 3    
-    voucher.redeem_by = datetime.strptime('13-4-2020', '%d-%m-%Y')
+    voucher.redeem_by = datetime.strptime('2020-4-13 00:00:00', '%Y-%m-%d %H:%M:%S')
     voucher2 = Voucher('LUO20')
     voucher2.discount_fixed_amount = 8.00
     voucher2.product_id = 1    
-    voucher2.redeem_by = datetime.strptime('13-4-2020', '%d-%m-%Y')
+    voucher2.redeem_by = datetime.strptime('2020-4-13 00:00:00', '%Y-%m-%d %H:%M:%S')
     for x in range(1, 11):
             variation = Variation('S')
             variation.product_id = x
@@ -126,8 +126,8 @@ def init_database():
         order_item = OrderItem()
         order_item.quantity = 1
         order_item.variation_id = 2
-        order_item.start_date = datetime.strptime('1-4-2020', '%d-%m-%Y')
-        order_item.end_date = datetime.strptime('8-4-2020', '%d-%m-%Y')
+        order_item.start_date = datetime.strptime('2020-4-1 00:00:00', '%Y-%m-%d %H:%M:%S')
+        order_item.end_date = datetime.strptime('2020-4-8 00:00:00', '%Y-%m-%d %H:%M:%S')
         order.order_items = []
         order.order_items.append(order_item)
         article_category = food_article

@@ -16,7 +16,7 @@ class OrderItem(db.Model, DBMixin):
 
     variation = db.relationship('Variation')  
 
-    output_column = ['order_id', 'quantity', 'variation.product_id', 'variation.name', 'variation.price', 'start_date', 'end_date']
+    output_column = ['id','order_id', 'quantity', 'variation_id', 'variation.product_id', 'variation.name', 'variation.price', 'start_date', 'end_date']
 
     def update_from_dict(self, obj_dict, not_updatable_columns=[]):
         """
@@ -38,10 +38,10 @@ class OrderItem(db.Model, DBMixin):
                     continue
                 if hasattr(self, key): 
                     if key == 'start_date':
-                        self.start_date = datetime.strptime(obj_dict[key], '%d-%m-%Y') 
+                        self.start_date = datetime.strptime(obj_dict[key], '%Y-%m-%d %H:%M:%S') 
                         continue  
                     if key == 'end_date':
-                        self.end_date = datetime.strptime(obj_dict[key], '%d-%m-%Y')    
+                        self.end_date = datetime.strptime(obj_dict[key], '%Y-%m-%d %H:%M:%S')    
                         continue   
                     setattr(self, key, obj_dict[key])
                     flag = True

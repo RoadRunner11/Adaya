@@ -30,7 +30,7 @@ class Order(db.Model, DBMixin):
     status = db.relationship('OrderStatus')
     
 
-    output_column = ['id', 'order_items', 'products_freeze','payment_ref',
+    output_column = ['id', 'order_items', 'products_freeze','payment_ref', 'status_id', 'user_id',
                      'total_price', 'vouchers', 'user.email', 'user.firstname', 'user.lastname', 'status.name', 'enabled']
 
     def update_from_dict(self, obj_dict, not_updatable_columns=[]):

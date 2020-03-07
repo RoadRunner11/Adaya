@@ -12,7 +12,7 @@ class Variation(db.Model, DBMixin):
     product_id = db.Column(db.Integer, db.ForeignKey('product.id'), default=1)
 
     product = db.relationship('Product')
-    output_column = ['name', 'price', 'stock', 'product_id']
+    output_column = ['id','name', 'price', 'stock', 'product_id']
 
     def __init__(self, name=''):
         self.name = name
