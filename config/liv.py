@@ -4,7 +4,7 @@ import os
 # Secret key for hashing
 SECRET_KEY = 'AT@u@5HgZ/g0zK)a<-1l1[%xihmk-|'
 # database setting
-SQLALCHEMY_DATABASE_URI = os.environ.get('sql')
+SQLALCHEMY_DATABASE_URI = os.environ.get('CLEARDB_DATABASE_URL')
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 JWT_ACCESS_TOKEN_EXPIRES = datetime.timedelta(days=365)
 JWT_TOKEN_LOCATION = ['cookies']
