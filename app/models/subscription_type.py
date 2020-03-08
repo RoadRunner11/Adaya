@@ -10,7 +10,7 @@ class SubscriptionType(db.Model, DBMixin):
     duration = db.Column(db.String(50), unique=False, nullable=False)   
     price = db.Column(db.Numeric(10, 2),default=0, nullable=False)
     
-    output_column=['duration','price']
+    output_column=['id','duration','price']
 
     def __init__(self, duration='', price=0.0):
         self.duration = duration

@@ -1,5 +1,6 @@
 import pytest
 from app.models import User
+from app.models import UserSubscription
 from app.models import Order
 from app.models import OrderItem
 from app.models import Product
@@ -32,6 +33,14 @@ def new_product():
     return product
 
 @pytest.fixture(scope='module')
+def new_subscription():
+    subscription = UserSubscription()
+    subscription.subscription_type_id = '1'
+    subscription.start_date = datetime.strptime('2020-4-1 00:00:00', '%Y-%m-%d %H:%M:%S')
+    subscription.end_date = datetime.strptime('2020-5-1 00:00:00', '%Y-%m-%d %H:%M:%S')
+    return subscription
+
+@pytest.fixture(scope='module')
 def new_variation():
     variation = Variation()
     variation.name = 'XS'
@@ -55,8 +64,8 @@ def new_order(new_product):
     order_item.product_id = 2
     order_item.variation_id = 2
     order_item.quantity = 1
-    order_item.start_date = datetime.strptime('1-4-2020', '%d-%m-%Y')
-    order_item.end_date = datetime.strptime('8-4-2020', '%d-%m-%Y')
+    order_item.start_date = datetime.strptime('2020-4-1 00:00:00', '%Y-%m-%d %H:%M:%S')
+    order_item.end_date = datetime.strptime('2020-4-8 00:00:00', '%Y-%m-%d %H:%M:%S')
         
     order.order_items = []
     order.order_items.append(order_item)
@@ -71,36 +80,36 @@ def member_order():
     first_order_item.quantity = 1
     first_order_item.product_id = 2
     first_order_item.variation_id = 3
-    first_order_item.start_date = datetime.strptime('1-4-2020', '%d-%m-%Y').strftime('%d-%m-%Y')
-    first_order_item.end_date = datetime.strptime('8-4-2020', '%d-%m-%Y').strftime('%d-%m-%Y')   
+    first_order_item.start_date = datetime.strptime('2020-4-1 00:00:00', '%Y-%m-%d %H:%M:%S').strftime('%Y-%m-%d %H:%M:%S')
+    first_order_item.end_date = datetime.strptime('2020-4-8 00:00:00', '%Y-%m-%d %H:%M:%S').strftime('%Y-%m-%d %H:%M:%S')   
 
     second_order_item = OrderItem()
     second_order_item.quantity = 1
     second_order_item.product_id = 5
     second_order_item.variation_id = 2
-    second_order_item.start_date = datetime.strptime('1-4-2020', '%d-%m-%Y').strftime('%d-%m-%Y')
-    second_order_item.end_date = datetime.strptime('8-4-2020', '%d-%m-%Y').strftime('%d-%m-%Y') 
+    second_order_item.start_date = datetime.strptime('2020-4-1 00:00:00', '%Y-%m-%d %H:%M:%S').strftime('%Y-%m-%d %H:%M:%S')
+    second_order_item.end_date = datetime.strptime('2020-4-8 00:00:00', '%Y-%m-%d %H:%M:%S').strftime('%Y-%m-%d %H:%M:%S') 
 
     third_order_item = OrderItem()
     third_order_item.quantity = 1
     third_order_item.product_id = 4
     third_order_item.variation_id = 2
-    third_order_item.start_date = datetime.strptime('1-4-2020', '%d-%m-%Y').strftime('%d-%m-%Y')
-    third_order_item.end_date = datetime.strptime('8-4-2020', '%d-%m-%Y').strftime('%d-%m-%Y')   
+    third_order_item.start_date = datetime.strptime('2020-4-1 00:00:00', '%Y-%m-%d %H:%M:%S').strftime('%Y-%m-%d %H:%M:%S')
+    third_order_item.end_date = datetime.strptime('2020-4-8 00:00:00', '%Y-%m-%d %H:%M:%S').strftime('%Y-%m-%d %H:%M:%S')  
     
     fourth_order_item = OrderItem()
     fourth_order_item.variation_id = 2
     fourth_order_item.product_id = 3
     fourth_order_item.quantity = 1
-    fourth_order_item.start_date = datetime.strptime('1-4-2020', '%d-%m-%Y').strftime('%d-%m-%Y')
-    fourth_order_item.end_date = datetime.strptime('8-4-2020', '%d-%m-%Y').strftime('%d-%m-%Y')
+    fourth_order_item.start_date = datetime.strptime('2020-4-1 00:00:00', '%Y-%m-%d %H:%M:%S').strftime('%Y-%m-%d %H:%M:%S')
+    fourth_order_item.end_date = datetime.strptime('2020-4-8 00:00:00', '%Y-%m-%d %H:%M:%S').strftime('%Y-%m-%d %H:%M:%S') 
 
     fifth_order_item = OrderItem()
     fifth_order_item.variation_id = 2
     fifth_order_item.product_id = 6
     fifth_order_item.quantity = 1
-    fifth_order_item.start_date = datetime.strptime('1-4-2020', '%d-%m-%Y').strftime('%d-%m-%Y')
-    fifth_order_item.end_date = datetime.strptime('8-4-2020', '%d-%m-%Y').strftime('%d-%m-%Y')
+    fifth_order_item.start_date = datetime.strptime('2020-4-1 00:00:00', '%Y-%m-%d %H:%M:%S').strftime('%Y-%m-%d %H:%M:%S')
+    fifth_order_item.end_date = datetime.strptime('2020-4-8 00:00:00', '%Y-%m-%d %H:%M:%S').strftime('%Y-%m-%d %H:%M:%S') 
     
     voucher = Voucher('HAO20')
     voucher.product_id = 3

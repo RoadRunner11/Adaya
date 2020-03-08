@@ -14,7 +14,7 @@ class Product(db.Model, DBMixin):
         
     category = db.relationship('ProductCategory')
 
-    output_column = ['id', 'name', 'description','image', 'category.name', 'enabled']
+    output_column = ['id', 'name', 'description','image', 'category_id', 'category.name', 'enabled']
 
     def __init__(self, name=' '):
         self.name = name

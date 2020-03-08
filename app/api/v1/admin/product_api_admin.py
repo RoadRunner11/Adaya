@@ -35,7 +35,7 @@ def get_products(id=None):
             if (item.id == variation.product_id):
                 available_product_variations.append(variation)
 
-        product_variations = ProductVariations(product_name=item.name, description=item.description, image=item.image, category_id=item.category_id) 
+        product_variations = ProductVariations(product=item) 
         product_variations.variations = available_product_variations
         
         all_product_variations.append(product_variations)
@@ -54,13 +54,16 @@ def update_product(id):
         return Responses.OPERATION_FAILED()
     
     current_variations = Variation.query.filter_by(product_id=item.id).all()
+    current_variations_names = []
+    for variation in current_variations:
+        current_variations_names.append(variation.name)
 
     variations_dict = json_dict['variations']
     for variation_dict in variations_dict:
         variation = Variation()
         variation.update_from_dict(variation_dict)
 
-        if variation.name in current_variations:            
+        if variation.name in current_variations_names:            
             for current_variation in current_variations:
                 if variation.name == current_variation.name:
                     if len(current_variation.update(variation_dict)) > 0:
