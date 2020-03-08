@@ -1,5 +1,6 @@
 import pytest
 from app.models import User
+from app.models import UserSubscription
 from app.models import Order
 from app.models import OrderItem
 from app.models import Product
@@ -30,6 +31,14 @@ def new_product():
     product.description = '1sythq2w3stre4r'
     product.category_id = 2
     return product
+
+@pytest.fixture(scope='module')
+def new_subscription():
+    subscription = UserSubscription()
+    subscription.subscription_type_id = '1'
+    subscription.start_date = datetime.strptime('2020-4-1 00:00:00', '%Y-%m-%d %H:%M:%S')
+    subscription.end_date = datetime.strptime('2020-5-1 00:00:00', '%Y-%m-%d %H:%M:%S')
+    return subscription
 
 @pytest.fixture(scope='module')
 def new_variation():
