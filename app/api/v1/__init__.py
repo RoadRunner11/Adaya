@@ -8,6 +8,7 @@ from app.api.v1.user import order_api
 from app.api.v1.user import product_api
 from app.api.v1.user import subscription_api
 from app.api.v1.admin import *
+from app.api.v1 import heartbeat
 import flask
 
 

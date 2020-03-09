@@ -12,7 +12,7 @@ class Variation(db.Model, DBMixin):
     product_id = db.Column(db.Integer, db.ForeignKey('product.id'), default=1)
 
     product = db.relationship('Product')
-    output_column = ['name', 'price', 'stock', 'product_id']
+    output_column = ['id','name', 'price', 'stock', 'product_id']
 
     def __init__(self, name=''):
         self.name = name
@@ -33,4 +33,5 @@ class Variation(db.Model, DBMixin):
                     sort_query = db.asc(cls.created_time)
         filter_query = None
         
-        return cls.get(filter_query, page, per_page, sort_query)
+        #TODO return all variations
+        return cls.get(filter_query, page, 100, sort_query)
