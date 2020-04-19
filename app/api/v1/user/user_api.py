@@ -12,6 +12,7 @@ from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 from app import mail
 from app import templates
 from datetime import datetime
+import webbrowser
 
 @api_v1.route('/users/token', methods=['POST'])
 def request_token():
@@ -114,43 +115,75 @@ def password_reset():
     
 @api_v1.route('/users/password_reset/<token>')
 def password_reset_with_token(token):
+    passwordnewurl = 'http://localhost:8010/user-new-password'
+    passwordfailureurl = 'http://localhost:8010/user-password-reset-failure'
+
     secret_key = ConfigValues.get_config_value('EMAIL_PASSWORD_RESET_SECRET_KEY')
 
     password_reset_serializer = URLSafeTimedSerializer(secret_key)
+    
     try:
         email = password_reset_serializer.loads(token, salt='password-reset', max_age=3600)
     except SignatureExpired:
-        return Responses.TOKEN_EXPIRED()   
-
-    # TODO
-    # create form to take password or redirect to update user url
+        webbrowser.open_new_tab(passwordfailureurl + 'doc/')
+        return
+        #return Responses.TOKEN_EXPIRED()   
+    
+    webbrowser.open_new_tab(passwordnewurl + 'doc/')
+    
+@api_v1.route('/users/password_update', methods=['PUT'])
+def password_update():
     json_dict = request.json
-    user = User.get_user_by_email(email)
+    user = User.get_user_by_email(json_dict['email'])
     user.password = json_dict['password']
-    error = user.update()
+    
+    passwordurlsuccess = 'http://localhost:8010/user-password-reset-confirmation'
+    passwordurlfailure = 'http://localhost:8010/user-password-reset-failure'
+
+    error = user.update(json_dict)
+
     if len(error) > 0:
-        Responses.OPERATION_FAILED()
-    return Responses.SUCCESS()
+        webbrowser.open_new_tab(passwordurlfailure + 'doc/')
+        #return Responses.OPERATION_FAILED()
+    else:
+        webbrowser.open_new_tab(passwordurlsuccess + 'doc/')
+        #return Responses.SUCCESS()
 
 @api_v1.route('/users/confirm_email/<token>')
 def confirm_email(token):
+    # Open email confirmation URL in a new tab, if a browser window is already open.
+    urlsuccess = 'http://localhost:8010/user-email-confirmation'
+    urlfailure = 'http://localhost:8010/user-email-failure'
+
+
     secret_key = ConfigValues.get_config_value('EMAIL_PASSWORD_RESET_SECRET_KEY')
 
     confirm_serializer = URLSafeTimedSerializer(secret_key)
     try:
         email = confirm_serializer.loads(token, salt='email-confirm', max_age=3600)
     except SignatureExpired:
-        return Responses.TOKEN_EXPIRED()
+        webbrowser.open_new_tab(urlfailure + 'doc/')
+        return
+        #return Responses.TOKEN_EXPIRED()
 
     user = User.get_user_by_email(email)
     if not user:
-        return Responses.NOT_EXIST()
+        webbrowser.open_new_tab(urlfailure + 'doc/')
+        return
+        #return Responses.NOT_EXIST()
     
     user.email_confirmed = True
     user.email_confirmed_on = datetime.now()
+    
     error = user.update()
     if len(error) > 0:
-        Responses.OPERATION_FAILED()
-    return Responses.SUCCESS()
+        user.delete()
+        webbrowser.open_new_tab(urlfailure + 'doc/')
+        #return Responses.OPERATION_FAILED()
+    else:
+        webbrowser.open_new_tab(urlsuccess + 'doc/')
+        #return Responses.SUCCESS()
+
+    
     
 # TODO - User to make payment for order
