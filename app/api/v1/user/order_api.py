@@ -77,6 +77,7 @@ def return_user_order(id):
     # ToDo
     #  send confirmation email on receiving items ?
 
+@api_v1.route('/orders/', methods=['GET'])
 @api_v1.route('/orders/<int:id>', methods=['GET'])
 @user_only
 def get_user_orders(id=None):
@@ -85,6 +86,14 @@ def get_user_orders(id=None):
     is_desc = parse_int(request.args.get('is_desc'))
     user_id = parse_int(request.args.get('user'))
     status_id = parse_int(request.args.get('status'))
-    items = [Order.query.get(id)] if id else Order.get_items(
+    json_dict = request.json
+    
+    if 'user_id' in json_dict.keys():
+        user_id = json_dict['user_id']
+        items = Order.get_items(
         user_id=user_id, status_id=status_id, page=page, per_page=per_page, sort_by=sort_by, is_desc=is_desc)
-    return res([item.as_dict() for item in items])
+        return res([item.as_dict() for item in items])
+    else:
+        items = [Order.query.get(id)] if id else Order.get_items(
+            user_id=user_id, status_id=status_id, page=page, per_page=per_page, sort_by=sort_by, is_desc=is_desc)
+        return res([item.as_dict() for item in items])

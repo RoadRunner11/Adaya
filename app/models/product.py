@@ -9,12 +9,13 @@ class Product(db.Model, DBMixin):
 
     name = db.Column(db.String(255), nullable=False)
     description = db.Column(db.Text)
-    image = db.Column(db.String(255))    
+    image = db.Column(db.Text(25000))
+    images_album = db.Column(db.String(1000))    
     category_id = db.Column(db.Integer, db.ForeignKey('product_category.id'), default=1)
         
     category = db.relationship('ProductCategory')
 
-    output_column = ['id', 'name', 'description','image', 'category_id', 'category.name', 'enabled']
+    output_column = ['id', 'name', 'description','image', 'images_album', 'category_id', 'category.name', 'enabled']
 
     def __init__(self, name=' '):
         self.name = name
@@ -61,4 +62,8 @@ class Product(db.Model, DBMixin):
             return products
         else:
             product = Product.get_product_from_id(product_ids)   
-            return product    
+            return product  
+    
+    @classmethod
+    def get_products_from_name(cls, productname):
+        return Product.query.filter_by(name = productname).first()  
