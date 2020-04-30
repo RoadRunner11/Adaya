@@ -62,4 +62,8 @@ class Product(db.Model, DBMixin):
             return products
         else:
             product = Product.get_product_from_id(product_ids)   
-            return product    
+            return product  
+    
+    @classmethod
+    def get_products_from_name(cls, productname):
+        return Product.query.filter_by(name = productname).first()  

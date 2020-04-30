@@ -15,4 +15,3 @@ def user_get_product_categories(id=None):
     items = [ProductCategory.query.get(id)] if id else ProductCategory.get_items(
         name=name, page=page, per_page=per_page)
     return res([item.as_dict() for item in items])
-
