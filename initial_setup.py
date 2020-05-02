@@ -18,7 +18,7 @@ def randomString(stringLength=10):
     return ''.join(random.choice(letters) for i in range(stringLength))
 
 if __name__ == "__main__":
-    app = create_app("config.dev")  # start app with config
+    app = create_app("config.liv")  # start app with config
     with app.app_context():
         db.drop_all()
         db.create_all()
@@ -38,41 +38,19 @@ if __name__ == "__main__":
         MAIL_PORT = ConfigValues('MAIL_PORT', 465)
         MAIL_DEFAULT_SENDER = ConfigValues('MAIL_DEFAULT_SENDER', 'adayahouseshop@gmail.com')
         EMAIL_PASSWORD_RESET_SECRET_KEY= ConfigValues('EMAIL_PASSWORD_RESET_SECRET_KEY', 'Thisisasecret!')
-        SIB_KEY = ConfigValues('SIB_KEY', 'gzryVUPZHa1GW7n6')  
+        SIB_KEY = ConfigValues('SIB_KEY', 'gzryVUPZHa1GW7n6') 
         CLIENT_ID = ConfigValues('CLIENT_ID', 'f65017461657dc4')
         ACCESS_TOKEN = ConfigValues('ACCESS_TOKEN', '9dae131233c5e028255318571703a409a524583e')
         BEARER_REFRESH_TOKEN = ConfigValues('REFRESH_TOKEN', '86a42f98ad7a1703e7619d7c1abace0fd43288af')
         IMGUR_ACCOUNT_ID = ConfigValues('IMGUR_ACCOUNT_ID', '127525815')
-        IMGUR_ACCOUNT_USERNAME = ConfigValues('IMGUR_ACCOUNT_USERNAME', 'adayahouse')
+        IMGUR_ACCOUNT_USERNAME = ConfigValues('IMGUR_ACCOUNT_USERNAME', 'adayahouse')       
         subtype = SubscriptionType(duration=1, price=10)
         subtype2 = SubscriptionType(duration=6, price=40)
         usersubscription = UserSubscription()
-        usersubscription.user_id=2
+        usersubscription.user_id=11
         usersubscription.start_date=datetime.now()
         usersubscription.end_date=datetime.strptime('06-02-2020 05:58:00', '%d-%m-%Y %H:%M:%S')
         usersubscription.subscription_type=subtype
-        db.session.add(max_no_products_per_order)
-        db.session.add(min_duration_of_rental)
-        db.session.add(max_duration_of_rental)
-        db.session.add(max_no_of_vouchers)
-        db.session.add(MAIL_USERNAME)
-        db.session.add(MAIL_PASSWORD)
-        db.session.add(MAIL_SERVER)
-        db.session.add(MAIL_PORT)
-        db.session.add(MAIL_DEFAULT_SENDER)
-        db.session.add(EMAIL_PASSWORD_RESET_SECRET_KEY)
-        db.session.add(SIB_KEY)
-        db.session.add(CLIENT_ID)
-        db.session.add(ACCESS_TOKEN)
-        db.session.add(BEARER_REFRESH_TOKEN)
-        db.session.add(IMGUR_ACCOUNT_ID)
-        db.session.add(IMGUR_ACCOUNT_USERNAME)
-        db.session.add(member)
-        db.session.add(user)
-        db.session.add(user2)
-        db.session.add(subtype)
-        db.session.add(subtype2)
-        db.session.add(usersubscription)
         food_category = ProductCategory('food')
         clothes_category = ProductCategory('cloth')
         food_article = ArticleCategory('food-article')
@@ -106,18 +84,31 @@ if __name__ == "__main__":
             db.session.add(product)
             db.session.add(order_item)
             db.session.add(article)
+        db.session.add(max_no_products_per_order)
+        db.session.add(min_duration_of_rental)
+        db.session.add(max_duration_of_rental)
+        db.session.add(max_no_of_vouchers)
+        db.session.add(MAIL_USERNAME)
+        db.session.add(MAIL_PASSWORD)
+        db.session.add(MAIL_SERVER)
+        db.session.add(MAIL_PORT)
+        db.session.add(MAIL_DEFAULT_SENDER)
+        db.session.add(EMAIL_PASSWORD_RESET_SECRET_KEY)
+        db.session.add(SIB_KEY)
+        db.session.add(CLIENT_ID)
+        db.session.add(ACCESS_TOKEN)
+        db.session.add(BEARER_REFRESH_TOKEN)
+        db.session.add(IMGUR_ACCOUNT_ID)
+        db.session.add(IMGUR_ACCOUNT_USERNAME)
+        db.session.add(member)
+        db.session.add(user)
+        db.session.add(user2)
+        db.session.add(subtype)
+        db.session.add(subtype2)
+        db.session.add(usersubscription)
         
-        voucher = Voucher('HAO20')
-        voucher.discount_fixed_amount = 5
-        voucher.product_id = 3
-        voucher.redeem_by = datetime.strptime('13-4-2020', '%d-%m-%Y')
-        voucher2 = Voucher('LUO20')
-        voucher2.discount_fixed_amount = 20
-        voucher2.product_id = 5
-        voucher2.redeem_by = datetime.strptime('18-4-2020', '%d-%m-%Y')        
-        db.session.add(voucher)
-        db.session.add(voucher2)
-        for x in range(1, 11):
+        
+        for x in range(1, 91, 10):
             variation = Variation('S')
             variation.product_id = x
             variation.price = 10
@@ -138,5 +129,16 @@ if __name__ == "__main__":
             db.session.add(variation1)
             db.session.add(variation2)
             db.session.add(variation3)
+        voucher = Voucher('HAO20')
+        voucher.discount_fixed_amount = 5
+        voucher.product_id = 31
+        voucher.redeem_by = datetime.strptime('13-4-2020', '%d-%m-%Y')
+        voucher2 = Voucher('LUO20')
+        voucher2.discount_fixed_amount = 20
+        voucher2.product_id = 51
+        voucher2.redeem_by = datetime.strptime('18-4-2020', '%d-%m-%Y')        
+        db.session.add(voucher)
+        db.session.add(voucher2)
+       
 
         db.session.commit()
