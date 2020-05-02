@@ -38,36 +38,12 @@ if __name__ == "__main__":
         MAIL_PORT = ConfigValues('MAIL_PORT', 465)
         MAIL_DEFAULT_SENDER = ConfigValues('MAIL_DEFAULT_SENDER', 'adayahouseshop@gmail.com')
         EMAIL_PASSWORD_RESET_SECRET_KEY= ConfigValues('EMAIL_PASSWORD_RESET_SECRET_KEY', 'Thisisasecret!')
-        SIB_KEY = ConfigValues('SIB_KEY', 'gzryVUPZHa1GW7n6')
-        for x in range(1, 11):
-            variation = Variation('S')
-            variation.product_id = x
-            variation.price = 10
-            variation.stock = 1
-            variation1 = Variation('M')
-            variation1.product_id = x
-            variation1.price = 20
-            variation1.stock = 1
-            variation2 = Variation('L')
-            variation2.product_id = x
-            variation2.price = 30
-            variation2.stock = 1
-            variation3 = Variation('XL')
-            variation3.product_id = x
-            variation3.price = 40
-            variation3.stock = 1
-            db.session.add(variation)
-            db.session.add(variation1)
-            db.session.add(variation2)
-            db.session.add(variation3)
-        voucher = Voucher('HAO20')
-        voucher.discount_fixed_amount = 5
-        voucher.product_id = 3
-        voucher.redeem_by = datetime.strptime('13-4-2020', '%d-%m-%Y')
-        voucher2 = Voucher('LUO20')
-        voucher2.discount_fixed_amount = 20
-        voucher2.product_id = 5
-        voucher2.redeem_by = datetime.strptime('18-4-2020', '%d-%m-%Y')
+        SIB_KEY = ConfigValues('SIB_KEY', 'gzryVUPZHa1GW7n6')  
+        CLIENT_ID = ConfigValues('CLIENT_ID', 'f65017461657dc4')
+        ACCESS_TOKEN = ConfigValues('ACCESS_TOKEN', '9dae131233c5e028255318571703a409a524583e')
+        BEARER_REFRESH_TOKEN = ConfigValues('REFRESH_TOKEN', '86a42f98ad7a1703e7619d7c1abace0fd43288af')
+        IMGUR_ACCOUNT_ID = ConfigValues('IMGUR_ACCOUNT_ID', '127525815')
+        IMGUR_ACCOUNT_USERNAME = ConfigValues('IMGUR_ACCOUNT_USERNAME', 'adayahouse')
         subtype = SubscriptionType(duration=1, price=10)
         subtype2 = SubscriptionType(duration=6, price=40)
         usersubscription = UserSubscription()
@@ -86,11 +62,14 @@ if __name__ == "__main__":
         db.session.add(MAIL_DEFAULT_SENDER)
         db.session.add(EMAIL_PASSWORD_RESET_SECRET_KEY)
         db.session.add(SIB_KEY)
+        db.session.add(CLIENT_ID)
+        db.session.add(ACCESS_TOKEN)
+        db.session.add(BEARER_REFRESH_TOKEN)
+        db.session.add(IMGUR_ACCOUNT_ID)
+        db.session.add(IMGUR_ACCOUNT_USERNAME)
         db.session.add(member)
         db.session.add(user)
         db.session.add(user2)
-        db.session.add(voucher)
-        db.session.add(voucher2)
         db.session.add(subtype)
         db.session.add(subtype2)
         db.session.add(usersubscription)
@@ -127,5 +106,37 @@ if __name__ == "__main__":
             db.session.add(product)
             db.session.add(order_item)
             db.session.add(article)
+        
+        voucher = Voucher('HAO20')
+        voucher.discount_fixed_amount = 5
+        voucher.product_id = 3
+        voucher.redeem_by = datetime.strptime('13-4-2020', '%d-%m-%Y')
+        voucher2 = Voucher('LUO20')
+        voucher2.discount_fixed_amount = 20
+        voucher2.product_id = 5
+        voucher2.redeem_by = datetime.strptime('18-4-2020', '%d-%m-%Y')        
+        db.session.add(voucher)
+        db.session.add(voucher2)
+        for x in range(1, 11):
+            variation = Variation('S')
+            variation.product_id = x
+            variation.price = 10
+            variation.stock = 1
+            variation1 = Variation('M')
+            variation1.product_id = x
+            variation1.price = 20
+            variation1.stock = 1
+            variation2 = Variation('L')
+            variation2.product_id = x
+            variation2.price = 30
+            variation2.stock = 1
+            variation3 = Variation('XL')
+            variation3.product_id = x
+            variation3.price = 40
+            variation3.stock = 1
+            db.session.add(variation)
+            db.session.add(variation1)
+            db.session.add(variation2)
+            db.session.add(variation3)
 
         db.session.commit()
