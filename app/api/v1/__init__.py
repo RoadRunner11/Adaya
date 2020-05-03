@@ -44,5 +44,4 @@ def after_request(response):
     header['Access-Control-Allow-Headers'] = 'content-type'
     header['Access-Control-Allow-Methods']='GET, PUT, POST, DELETE, HEAD'
     
-    
     return response

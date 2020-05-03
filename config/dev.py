@@ -11,8 +11,8 @@ JWT_ACCESS_TOKEN_EXPIRES = datetime.timedelta(days=365)
 JWT_TOKEN_LOCATION = ['cookies']
 JWT_SESSION_COOKIE = False
 JWT_COOKIE_CSRF_PROTECT = False
-#ALLOW_ORIGIN = 'http://localhost:8000'
-ALLOW_ORIGIN = ['https://adaya.netlify.app', 'https://adayahouse.netlify.app']
+ALLOW_ORIGIN = 'http://localhost:8000'
+#ALLOW_ORIGIN = ['https://adaya.netlify.app', 'https://adayahouse.netlify.app']
 MAIL_SERVER='smtp-relay.sendinblue.com'
 MAIL_USERNAME='adayahouseshop@gmail.com'
 MAIL_PASSWORD='gzryVUPZHa1GW7n6'
