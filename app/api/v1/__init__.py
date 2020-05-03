@@ -1,4 +1,5 @@
 from flask import Blueprint
+from flask import request
 
 # Create new Blueprint
 api_v1 = Blueprint('api_v1',__name__)
@@ -37,9 +38,12 @@ def after_request(response):
     Returns:
         [type]: [description]
     """
-    header = response.headers
-    header['Access-Control-Allow-Origin'] = flask.current_app.config['ALLOW_ORIGIN']
-    header['Access-Control-Allow-Credentials'] = 'true'
-    header['Access-Control-Allow-Headers'] = 'content-type'
-    header['Access-Control-Allow-Methods']='GET, PUT, POST, DELETE, HEAD'
+    r = request.referrer[:-1]
+    if r in flask.current_app.config['ALLOW_ORIGIN']:
+       # response.headers.add('Access-Control-Allow-Origin', r)
+        header = response.headers
+        header['Access-Control-Allow-Origin'] = r
+        header['Access-Control-Allow-Credentials'] = 'true'
+        header['Access-Control-Allow-Headers'] = 'content-type'
+        header['Access-Control-Allow-Methods']='GET, PUT, POST, DELETE, HEAD'
     return response
