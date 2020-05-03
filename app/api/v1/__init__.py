@@ -37,17 +37,12 @@ def after_request(response):
     
     Returns:
         [type]: [description]
-    """
-    referrer = request.headers.get("Referer")
-    if referrer in flask.current_app.config['ALLOW_ORIGIN']:
-        response.headers.add('Access-Control-Allow-Origin', referrer)
-        response.headers.add('Access-Control-Allow-Credentials', 'true')
-        response.headers.add('Access-Control-Allow-Headers', 'content-type')
-        response.headers.add('Access-Control-Allow-Methods', 'GET, PUT, POST, DELETE, HEAD')
-        
-        # header = response.headers
-        # header['Access-Control-Allow-Origin'] = referrer
-        # header['Access-Control-Allow-Credentials'] = 'true'
-        # header['Access-Control-Allow-Headers'] = 'content-type'
-        # header['Access-Control-Allow-Methods']='GET, PUT, POST, DELETE, HEAD'
+    """     
+    header = response.headers
+    header['Access-Control-Allow-Origin'] = flask.current_app.config['ALLOW_ORIGIN']
+    header['Access-Control-Allow-Credentials'] = 'true'
+    header['Access-Control-Allow-Headers'] = 'content-type'
+    header['Access-Control-Allow-Methods']='GET, PUT, POST, DELETE, HEAD'
+    
+    
     return response
