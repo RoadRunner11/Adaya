@@ -21,17 +21,28 @@ class Order(db.Model, DBMixin):
     products_freeze = db.Column(db.Text)
     payment_ref = db.Column(db.String(255))
     total_price = db.Column(db.Numeric(10, 2))
-    user_id = db.Column(db.Integer, db.ForeignKey(
-        'user.id'), nullable=False, default=1)
-    status_id = db.Column(db.Integer, db.ForeignKey(
-        'order_status.id'), default=1)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False, default=1)
+    status_id = db.Column(db.Integer, db.ForeignKey('order_status.id'), default=1)
+    firstname = db.Column(db.String(255))
+    lastname = db.Column(db.String(255))
+    email = db.Column(db.String(120))
+    address1 = db.Column(db.String(255))
+    address2 = db.Column(db.String(255))
+    city = db.Column(db.String(255))
+    post_code = db.Column(db.String(255))
+    country = db.Column(db.String(255))
+    phone = db.Column(db.String(255))
+    late_charge = db.Column(db.Numeric(10, 2))
+    late_charge_paid = db.Column(db.Boolean, nullable=True, default=True)
+    
 
     user = db.relationship('User')
     status = db.relationship('OrderStatus')
     
 
     output_column = ['id', 'order_items', 'products_freeze','payment_ref', 'status_id', 'user_id',
-                     'total_price', 'vouchers', 'user.email', 'user.firstname', 'user.lastname', 'status.name', 'enabled']
+                     'total_price', 'vouchers', 'user.email', 'user.firstname', 'user.lastname', 'status.name', 'enabled', 'firstname', 'lastname',
+                      'email', 'address1', 'address2', 'city', 'post_code', 'country', 'phone', 'created_time', 'late_charge', 'late_charge_paid']
 
     def update_from_dict(self, obj_dict, not_updatable_columns=[]):
         """

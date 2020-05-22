@@ -13,10 +13,11 @@ class OrderItem(db.Model, DBMixin):
     quantity = db.Column(db.Integer, default=0)
     start_date = db.Column(db.DateTime, nullable=False)
     end_date = db.Column(db.DateTime, nullable=False)
+    days_returned_late = db.Column(db.Integer, default=0)
 
     variation = db.relationship('Variation')  
 
-    output_column = ['id','order_id', 'quantity', 'variation_id', 'variation.product_id', 'variation.name', 'variation.price', 'start_date', 'end_date']
+    output_column = ['id','order_id', 'quantity', 'variation_id', 'variation.product_id', 'variation.name', 'variation.price', 'start_date', 'end_date', 'days_returned_late']
 
     def update_from_dict(self, obj_dict, not_updatable_columns=[]):
         """

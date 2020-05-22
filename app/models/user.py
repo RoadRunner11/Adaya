@@ -29,6 +29,7 @@ class User(db.Model, DBMixin):
     post_code = db.Column(db.String(255))
     country = db.Column(db.String(255))
     phone = db.Column(db.String(255))
+    stripe_customer_id = db.Column(db.String(255))
     token = db.Column(db.String(255))
     salt = db.Column(db.String(255), nullable=False)
     email_confirmed = db.Column(db.Boolean, nullable=True, default=False)
@@ -38,11 +39,12 @@ class User(db.Model, DBMixin):
     role = db.relationship('Role')
     articles = db.relationship('Article', lazy='dynamic')
     orders = db.relationship('Order', lazy='dynamic')
+    blacklist = db.Column(db.Boolean, nullable=True, default=0)
 
     new_item_must_have_column=['email','password']
     output_column = ['id', 'email', 'firstname', 'lastname', 'address1',
                      'address2', 'city', 'post_code', 'country', 'phone', 
-                     'enabled', 'role.name', 'role.id', 'email_confirmed', 'email_confirmed_on']
+                     'enabled', 'role.name', 'role.id', 'email_confirmed', 'email_confirmed_on', 'blacklist']
     not_updatable_columns = ['id']
 
     def __init__(self, email=' ', password=' '):
@@ -204,3 +206,5 @@ class User(db.Model, DBMixin):
         msg = Message('Password Reset', sender='adaya@adayahouse.com', recipients=[user_email], html=password_reset_html)
 
         mail.send(msg)
+    
+    
