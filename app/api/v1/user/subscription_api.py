@@ -29,6 +29,22 @@ def user_subscribe():
     
     return res(user_subscription_detail.as_dict())
 
+
+@api_v1.route('/subscribe/<int:id>', methods=['GET'])
+#@user_only
+def get_user_subscription(id=None):
+    """
+    get_subscriptions gets all user subscriptions
+    
+    """  
+    item =  UserSubscription.get_subscription(user_id=id)
+    response={}
+    if(len(item)>0):
+        response = item[0]
+
+    return res(response.as_dict())
+
+
 @api_v1.route('/subscribe/confirm/<token>')
 #@user_only
 def confirm_user_subscription(token):

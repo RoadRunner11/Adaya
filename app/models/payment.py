@@ -2,8 +2,6 @@ import stripe
 import json
 import os
 from flask import Flask, render_template, jsonify, request, send_from_directory, url_for
-from app.models import Product, Variation, ProductVariations, User
-from app.api.v1 import api_v1
 from app.helpers import Messages, Responses
 from app.helpers.utility import res, parse_int, get_page_from_args
 from app.decorators.authorisation import user_only
@@ -32,5 +30,21 @@ class Payment(object):
         payment_authentication_html = render_template('offline_payment_authentication.html', my_accountr_url=my_account_link)
 
         msg = Message('Payment Authentication Needed', sender='adaya@adayahouse.com', recipients=[user_email], html=payment_authentication_html)
+
+        mail.send(msg)
+
+    @classmethod
+    def send_subscription_renewal_failure_email(cls, user_email):         
+        subscription_renewal_failure_html = render_template('subscription_renewal_failure.html')
+
+        msg = Message('Subscription Renewal Failure', sender='adaya@adayahouse.com', recipients=[user_email], html=subscription_renewal_failure_html)
+
+        mail.send(msg)
+
+    @classmethod
+    def send_subscription_renewal_success_email(cls, user_email): 
+        subscription_renewal_success_html = render_template('subscription_renewal_success.html')
+
+        msg = Message('Subscription Renewed', sender='adaya@adayahouse.com', recipients=[user_email], html=subscription_renewal_success_html)
 
         mail.send(msg)

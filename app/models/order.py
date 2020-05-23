@@ -109,6 +109,7 @@ class Order(db.Model, DBMixin):
             products_freeze.append(product.as_dict(['id', 'name', 'description', 'variation.price', 'image']))
         self.total_price = total_price
         user = User.query.get(self.user_id)
+        # else, there is another check when user makes an order and sets subscribed flag to 0 if it fails this validation
         if user.subscribed:
             if UserSubscription.check_subscription_active(self.user_id):
                 self.total_price = 0.00

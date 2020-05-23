@@ -126,6 +126,12 @@ class User(db.Model, DBMixin):
         return users[0] if len(users) > 0 else None
 
     @classmethod
+    def get_user_by_stripe_id(cls, stripe_id, page=None, per_page=None):
+        filter_query = cls.stripe_customer_id == stripe_id
+        users = cls.get(filter_query, page, per_page)
+        return users[0] if len(users) > 0 else None
+
+    @classmethod
     def get_users_by_role(cls, role, page=None, per_page=None):
         # How to filter by roles
         filter_query = cls.role.has(Role.name == role)

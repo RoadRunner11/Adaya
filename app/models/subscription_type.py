@@ -9,7 +9,8 @@ class SubscriptionType(db.Model, DBMixin):
 
     plan = db.Column(db.String(50), unique=False, nullable=False)   
     price = db.Column(db.Numeric(10, 2),default=0, nullable=False)
-    
+    stripe_subscription_product = db.Column(db.String(255), nullable=True)
+    stripe_price = db.Column(db.String(255), nullable=True)
     output_column=['id','plan','price']
 
     def __init__(self, plan='', price=0.0):

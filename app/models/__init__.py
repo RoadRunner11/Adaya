@@ -16,3 +16,4 @@ from app.models.product_variations import ProductVariations
 from app.models.subscription_type import SubscriptionType
 from app.models.user_subscription import UserSubscription
 from app.models.user_subscription_detail import UserSubscriptionDetail
+from app.models.payment import Payment
