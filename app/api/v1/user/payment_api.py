@@ -24,7 +24,6 @@ def create_customer_intent():
     json_dict = request.json
     user_id = json_dict['user_id']
     total_price = json_dict['total_price']
-    #total_price = '85.9'
     publishable_key = 'pk_test_wfEV385fd15MX1lKUFsPpG1F00EVVb5Dl7'
     #secret_key = 'sk_test_Fp5a2iT7YRDCEckASE3ExS5q004e2IXvcs'
     stripe.api_key = "sk_test_Fp5a2iT7YRDCEckASE3ExS5q004e2IXvcs"
@@ -45,7 +44,6 @@ def create_customer_intent():
         setup_future_usage='off_session',
         receipt_email=user.email
     )
-    #print(intent)
     try:
     # Send publishable key and PaymentIntent details to client
         response = jsonify({'publicKey': publishable_key, 'clientSecret': intent.client_secret, 'id': intent.id})

@@ -37,14 +37,19 @@ class User(db.Model, DBMixin):
     subscribed = db.Column(db.Boolean, nullable=True, default=0)
     role_id = db.Column(db.Integer, db.ForeignKey('role.id'), default=1)
     role = db.relationship('Role')
+    number_of_items_ordered_this_month = db.Column(db.Integer, default=0)
+    month_first_order = db.Column(db.DateTime, nullable=True)
+    blacklist = db.Column(db.Boolean, nullable=True, default=0)
+
     articles = db.relationship('Article', lazy='dynamic')
     orders = db.relationship('Order', lazy='dynamic')
-    blacklist = db.Column(db.Boolean, nullable=True, default=0)
+    
 
     new_item_must_have_column=['email','password']
     output_column = ['id', 'email', 'firstname', 'lastname', 'address1',
                      'address2', 'city', 'post_code', 'country', 'phone', 
-                     'enabled', 'role.name', 'role.id', 'email_confirmed', 'email_confirmed_on', 'blacklist']
+                     'enabled', 'role.name', 'role.id', 'email_confirmed', 'email_confirmed_on', 
+                     'number_of_orders_this_month', 'month_first_order', 'blacklist']
     not_updatable_columns = ['id']
 
     def __init__(self, email=' ', password=' '):

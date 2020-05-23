@@ -1,4 +1,4 @@
-from app.models import Order, Product, ConfigValues, Voucher, OrderItem
+from app.models import Order, Product, ConfigValues, Voucher, OrderItem, User, OrderItem
 from app.api.v1 import api_v1
 from app.helpers import Messages, Responses
 from app.helpers.utility import res, parse_int, get_page_from_args
@@ -47,6 +47,17 @@ def create_order():
         return Responses.OPERATION_FAILED()
     return res(item.as_dict())
 
+@api_v1.route('/calculate-order-cost', methods=['POST'])
+@user_only
+def calculate_order_cost():
+    json_dict = request.json
+
+    total = Order.calculate_cost_for_users(json_dict)
+
+    if total == 0:
+        return Responses.OPERATION_FAILED()
+    return res({'total_cost': total})
+
 @api_v1.route('/orders/<int:id>', methods=['PUT'])
 @user_only
 def update_user_order():
@@ -75,6 +86,8 @@ def update_user_order():
     if len(item.update(force_insert=True)) > 0:
         return Responses.OPERATION_FAILED()
     return Responses.SUCCESS()
+
+
 
 @api_v1.route('/orders/confirmed/<int:id>', methods=['PUT'])
 @user_only
