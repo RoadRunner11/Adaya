@@ -48,3 +48,11 @@ class Payment(object):
         msg = Message('Subscription Renewed', sender='adaya@adayahouse.com', recipients=[user_email], html=subscription_renewal_success_html)
 
         mail.send(msg)
+    
+    @classmethod
+    def send_subscription_cancelled_email(cls, user_email): 
+        subscription_cancelled_html = render_template('subscription_ended.html')
+
+        msg = Message('Subscription Cancelled', sender='adaya@adayahouse.com', recipients=[user_email], html=subscription_cancelled_html)
+
+        mail.send(msg)

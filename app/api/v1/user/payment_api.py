@@ -326,7 +326,7 @@ def webhook_received():
         user_subscription_dict['current_end_date'] = e_date
 
         userSubscription.update(user_subscription_dict)
-        user.update({'subscribed':1})
+        user.update({'subscribed': 1, 'number_of_items_ordered_this_month' : 0})
 
     if event_type == 'invoice.payment_failed':
         # If the payment fails or the customer does not have a valid payment method,
@@ -339,7 +339,22 @@ def webhook_received():
         user = User.get_user_by_stripe_id(stripe_id=sid)
         email = user.email
         Payment.send_subscription_renewal_failure_email(user_email=email)
-        user.update({'subscribed':0})
+                
+        userSub = UserSubscription.get_subscription(user_id=user.id)
+        userSubscription = {}
+        if len(userSub > 0):
+            userSubscription = userSub[0]
+
+        user_subscription_dict = {}
+        user_subscription_dict['user_id'] = user.id
+        user_subscription_dict['subscription_type_id'] = userSubscription.subscription_type_id
+        s_date = datetime.fromtimestamp(data['object']['period_start'])
+        user_subscription_dict['current_start_date'] = s_date
+        e_date = datetime.fromtimestamp(data['object']['period_end'])
+        user_subscription_dict['current_end_date'] = e_date
+
+        userSubscription.update(user_subscription_dict)
+        user.update({'subscribed': 0, 'number_of_items_ordered_this_month' : 0})
 
     if event_type == 'invoice.finalized':
         # If you want to manually send out invoices to your customers
@@ -350,6 +365,26 @@ def webhook_received():
         # handle subscription cancelled automatically based
         # upon your subscription settings. Or if the user cancels it.
         print(data)
+        sid = request_data['data']['object']['customer']
+        user = User.get_user_by_stripe_id(stripe_id=sid)
+        email = user.email
+        
+        userSub = UserSubscription.get_subscription(user_id=user.id)
+        userSubscription = {}
+        if len(userSub > 0):
+            userSubscription = userSub[0]
+
+        user_subscription_dict = {}
+        user_subscription_dict['user_id'] = user.id
+        user_subscription_dict['subscription_type_id'] = userSubscription.subscription_type_id
+        s_date = datetime.fromtimestamp(data['object']['period_start'])
+        user_subscription_dict['current_start_date'] = s_date
+        e_date = datetime.fromtimestamp(data['object']['period_end'])
+        user_subscription_dict['current_end_date'] = e_date
+
+        userSubscription.update(user_subscription_dict)
+        Payment.send_subscription_cancelled_email(user_email=email)
+        user.update({'subscribed': 0, 'number_of_items_ordered_this_month' : 0})
 
     if event_type == 'customer.subscription.trial_will_end':
         # Send notification to your user that the trial will end
