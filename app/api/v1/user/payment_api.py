@@ -3,7 +3,7 @@ import json
 import os
 from datetime import datetime
 from flask import Flask, render_template, jsonify, request, send_from_directory, url_for
-from app.models import Product, Variation, ProductVariations, User, Payment, SubscriptionType, UserSubscription
+from app.models import Product, Variation, ProductVariations, User, Payment, SubscriptionType, UserSubscription, Order
 from app.api.v1 import api_v1
 from app.helpers import Messages, Responses
 from app.helpers.utility import res, parse_int, get_page_from_args
@@ -206,7 +206,10 @@ def charge_customer_offline():
     json_dict = request.json
     user_id = json_dict['user_id']
     number_days_late = json_dict['number_days_late']
-    charge_per_day = 1000 #10GBP
+    order_id = json_dict['order_id']
+    charge_per_day = 5.00 #10GBP
+    total_cost = int(number_days_late) * charge_per_day
+    stripe_total_price = int (float(total_cost) * 100)
     publishable_key = 'pk_test_wfEV385fd15MX1lKUFsPpG1F00EVVb5Dl7'
     
     user = User.query.get(user_id)
@@ -227,7 +230,7 @@ def charge_customer_offline():
         # If authentication is required or the card is declined, Stripe
         # will throw an error
         intent = stripe.PaymentIntent.create(
-            amount=charge_per_day * number_days_late,
+            amount=stripe_total_price,
             currency='gbp',
             payment_method=payment_methods['data'][0]['id'],
             customer=user_stripe_id,
@@ -240,6 +243,9 @@ def charge_customer_offline():
             'publicKey': publishable_key, 
             'clientSecret': intent.client_secret
         })
+
+        order = Order.query.get(order_id)
+        order.update({'late_charge': str(total_cost),'late_charge_paid': 1})
 
         return responseObject.json
 
@@ -306,10 +312,10 @@ def webhook_received():
         user = User.get_user_by_stripe_id(stripe_id=sid)
         email = user.email
         Payment.send_subscription_renewal_success_email(user_email=email)
-        userSub = UserSubscription.get_subscription(user_id=user.id)[0]
+        userSub = UserSubscription.get_subscription(user_id=user.id)
         userSubscription = {}
         if len(userSub > 0):
-            userSubscription = userSub
+            userSubscription = userSub[0]
 
         user_subscription_dict = {}
         user_subscription_dict['user_id'] = user.id

@@ -17,3 +17,4 @@ from app.models.subscription_type import SubscriptionType
 from app.models.user_subscription import UserSubscription
 from app.models.user_subscription_detail import UserSubscriptionDetail
 from app.models.payment import Payment
+from app.models.order_item_with_price import Order_Item_With_Price

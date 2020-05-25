@@ -82,14 +82,11 @@ class UserSubscription(db.Model, DBMixin):
             filter_query = cls.user_id == user_id
         return cls.get(filter_query, page, per_page)
 
-
     @classmethod
     def check_subscription_active(cls, user_id):
         user_subscription = UserSubscription.query.filter_by(user_id = user_id).first()
-        #TODO sort list by end_date and select most recent end date for check
-        if user_subscription.end_date > datetime.now():
+        if user_subscription.current_end_date > datetime.now():
             return True
-    
     
     #@timeloop.job(interval=timedelta(seconds=30))
     @classmethod

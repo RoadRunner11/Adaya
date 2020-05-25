@@ -13,7 +13,6 @@ def create_order():
     item.user_id = json_dict['user_id']
     order_items_dict = json_dict['order_items']
     
-
     item.update_from_dict(json_dict)
 
     for order_item_dict in order_items_dict:
@@ -25,7 +24,7 @@ def create_order():
         return Responses.NO_STOCK()
     
     max_number = int(ConfigValues.get_config_value('max_no_products_per_order'))
-    if item.check_quantity_products(max_number):
+    if item.check_quantity_products(max_number):# check user subscription and how many items alllowed
        return Responses.OPERATION_FAILED()
     
     if 'voucher_codes' in json_dict.keys():
@@ -42,21 +41,21 @@ def create_order():
             item.calculate_discounted_cost()
     else:    
         item.calculate_cost()
-    
+    #user.update({'number_of_items_ordered_this_month': no_items_this_month, 'month_first_order' : date_first_month_order})
     if len(item.update(json_dict,force_insert=True)) > 0:
         return Responses.OPERATION_FAILED()
     return res(item.as_dict())
 
 @api_v1.route('/calculate-order-cost', methods=['POST'])
-@user_only
+#@user_only
 def calculate_order_cost():
     json_dict = request.json
 
-    total = Order.calculate_cost_for_users(json_dict)
+    response = Order.calculate_cost_for_users(json_dict)
 
-    if total == 0:
-        return Responses.OPERATION_FAILED()
-    return res({'total_cost': total})
+    if response == -1:
+        return Responses.NO_ORDERS_EXCEEDED()
+    return res(response)
 
 @api_v1.route('/orders/<int:id>', methods=['PUT'])
 @user_only
