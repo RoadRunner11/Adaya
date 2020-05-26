@@ -9,10 +9,12 @@ class Variation(db.Model, DBMixin):
     name = db.Column(db.String(50), unique=False, nullable=False)   
     price = db.Column(db.Numeric(10, 2),default=0)
     stock = db.Column(db.Integer, default=0)
+    retail_price = db.Column(db.Numeric(10, 2),default=0)
+    next_available_date = db.Column(db.DateTime, nullable=True)
     product_id = db.Column(db.Integer, db.ForeignKey('product.id'), default=1)
 
     product = db.relationship('Product')
-    output_column = ['id','name', 'price', 'stock', 'product_id']
+    output_column = ['id','name', 'price', 'stock', 'retail_price','next_available_date','product_id']
 
     def __init__(self, name=''):
         self.name = name
@@ -34,4 +36,4 @@ class Variation(db.Model, DBMixin):
         filter_query = None
         
         #TODO return all variations
-        return cls.get(filter_query, page, 100, sort_query)
+        return cls.get(filter_query, page, 1000, sort_query)

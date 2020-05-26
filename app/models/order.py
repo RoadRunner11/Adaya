@@ -109,7 +109,10 @@ class Order(db.Model, DBMixin):
             stock_quantity = int(variation.stock) - int(order_item.quantity)
             product = Product.get_product_from_id(variation.product_id)
             products_freeze.append(product.as_dict(['id', 'name', 'description', 'variation.price', 'image']))
-            variation.update({'stock' : stock_quantity})
+            if stock_quantity <= 0:
+                variation.update({'stock' : stock_quantity, 'next_available_date': datetime.now() + relativedelta(days=14)})
+            else:
+                variation.update({'stock' : stock_quantity})
         self.products_freeze = json.dumps(products_freeze)
 
         return order_details
@@ -321,7 +324,12 @@ class Order(db.Model, DBMixin):
             if order_item.quantity <= variation.stock:
                 continue
             else:
-                return False
+                order_items = OrderItem.query.filter(OrderItem.created_time.between((datetime.now() - relativedelta(months=1)), datetime.now())).all() #get last orders in the month
+                sortedOrderItems = sorted(order_items, key=lambda x: x.created_time, reverse=True)
+                if order_item.start_date > (sortedOrderItems[0].end_date + relativedelta(days=14)):
+                   continue
+                else:
+                    return False
         return True
     
     def check_order_status(self):

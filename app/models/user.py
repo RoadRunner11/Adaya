@@ -49,7 +49,7 @@ class User(db.Model, DBMixin):
     output_column = ['id', 'email', 'firstname', 'lastname', 'address1',
                      'address2', 'city', 'post_code', 'country', 'phone', 
                      'enabled', 'role.name', 'role.id', 'email_confirmed', 'email_confirmed_on', 
-                     'number_of_orders_this_month', 'month_first_order', 'blacklist']
+                     'number_of_items_ordered_this_month', 'month_first_order', 'blacklist']
     not_updatable_columns = ['id']
 
     def __init__(self, email=' ', password=' '):

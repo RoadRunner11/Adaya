@@ -32,6 +32,16 @@ class Payment(object):
         msg = Message('Payment Authentication Needed', sender='adaya@adayahouse.com', recipients=[user_email], html=payment_authentication_html)
 
         mail.send(msg)
+    
+    @classmethod
+    def send_payment_failed_email(cls, user_email): 
+        my_account_link = 'http://localhost:8010/my-account'
+
+        payment_failed_html = render_template('payment_failed.html', my_accountr_url=my_account_link)
+
+        msg = Message('Payment Authentication Needed', sender='adaya@adayahouse.com', recipients=[user_email], html=payment_failed_html)
+
+        mail.send(msg)
 
     @classmethod
     def send_subscription_renewal_failure_email(cls, user_email):         

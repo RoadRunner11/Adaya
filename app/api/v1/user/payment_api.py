@@ -3,7 +3,7 @@ import json
 import os
 from datetime import datetime
 from flask import Flask, render_template, jsonify, request, send_from_directory, url_for
-from app.models import Product, Variation, ProductVariations, User, Payment, SubscriptionType, UserSubscription, Order
+from app.models import Product, Variation, ProductVariations, User, Payment, SubscriptionType, UserSubscription, Order, OrderItem
 from app.api.v1 import api_v1
 from app.helpers import Messages, Responses
 from app.helpers.utility import res, parse_int, get_page_from_args
@@ -22,8 +22,20 @@ from mailin import Mailin
 #@user_only
 def create_customer_intent():
     json_dict = request.json
+    item = Order()
+    item.user_id = json_dict['user_id']
+    
+    order_items_dict = json_dict['order_items']
+    for order_item_dict in order_items_dict:
+        order_item = OrderItem()
+        if order_item.update_from_dict(order_item_dict):
+            item.order_items.append(order_item)
+    
+    item.update_from_dict(json_dict)
+    calculated_details = Order.calculate_cost_for_users(item)
+    total_price = float(calculated_details['total_cost']) + 3.99
     user_id = json_dict['user_id']
-    total_price = json_dict['total_price']
+    
     publishable_key = 'pk_test_wfEV385fd15MX1lKUFsPpG1F00EVVb5Dl7'
     #secret_key = 'sk_test_Fp5a2iT7YRDCEckASE3ExS5q004e2IXvcs'
     stripe.api_key = "sk_test_Fp5a2iT7YRDCEckASE3ExS5q004e2IXvcs"
@@ -35,7 +47,7 @@ def create_customer_intent():
         user.update({"stripe_customer_id": sid})
 
     user_stripe_id = user.stripe_customer_id
-    stripe_total_price = int (float(total_price) * 100) #amount to stripe has to be integer so convert to smallest currency unit
+    stripe_total_price = int (total_price * 100) #amount to stripe has to be integer so convert to smallest currency unit
 
     intent = stripe.PaymentIntent.create(
         amount=stripe_total_price,
@@ -207,8 +219,17 @@ def charge_customer_offline():
     user_id = json_dict['user_id']
     number_days_late = json_dict['number_days_late']
     order_id = json_dict['order_id']
-    charge_per_day = 5.00 #10GBP
-    total_cost = int(number_days_late) * charge_per_day
+    
+    item = Order.query.get(order_id)
+    order_items = item.order_items
+    total_cost = 0.00
+    for order_item in order_items:
+        variation = Variation.get_variation_from_id(order_item.variation_id)
+        if order_item.days_returned_late > 14:
+            total_charge += float(variation.retail_price)
+        else:
+            total_charge += (0.5 * float(variation.price)) * int(number_days_late)
+    
     stripe_total_price = int (float(total_cost) * 100)
     publishable_key = 'pk_test_wfEV385fd15MX1lKUFsPpG1F00EVVb5Dl7'
     
@@ -263,7 +284,7 @@ def charge_customer_offline():
             return jsonify({
                 'error': 'authentication_required', 
                 'paymentMethod': err.payment_method.id, 
-                'amount': charge_per_day * number_days_late,
+                'amount': total_cost,
                 'card': err.payment_method.card, 
                 'publicKey': publishable_key, 
                 'clientSecret': err.payment_intent.client_secret
@@ -271,9 +292,12 @@ def charge_customer_offline():
         elif err.code:
             # The card was declined for other reasons (e.g. insufficient funds)
             # Bring the customer back on-session to ask them for a new payment method
+
+            Payment.send_payment_failed_email(user.email)
+
             return jsonify({
                 'error': err.code, 
-                'publicKey': charge_per_day * number_days_late, 
+                'publicKey': publishable_key, 
                 'clientSecret': err.payment_intent.client_secret
             }).json
 

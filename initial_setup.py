@@ -126,18 +126,22 @@ if __name__ == "__main__":
             variation = Variation('S')
             variation.product_id = x
             variation.price = 10
+            variation.retail_price = variation.price * 3
             variation.stock = 1
             variation1 = Variation('M')
             variation1.product_id = x
             variation1.price = 20
+            variation1.retail_price = variation1.price * 3
             variation1.stock = 1
             variation2 = Variation('L')
             variation2.product_id = x
             variation2.price = 30
+            variation2.retail_price = variation2.price * 3
             variation2.stock = 1
             variation3 = Variation('XL')
             variation3.product_id = x
             variation3.price = 40
+            variation3.retail_price = variation3.price * 3
             variation3.stock = 1
             db.session.add(variation)
             db.session.add(variation1)
