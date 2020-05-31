@@ -29,6 +29,7 @@ class User(db.Model, DBMixin):
     post_code = db.Column(db.String(255))
     country = db.Column(db.String(255))
     phone = db.Column(db.String(255))
+    stripe_customer_id = db.Column(db.String(255))
     token = db.Column(db.String(255))
     salt = db.Column(db.String(255), nullable=False)
     email_confirmed = db.Column(db.Boolean, nullable=True, default=False)
@@ -36,13 +37,19 @@ class User(db.Model, DBMixin):
     subscribed = db.Column(db.Boolean, nullable=True, default=0)
     role_id = db.Column(db.Integer, db.ForeignKey('role.id'), default=1)
     role = db.relationship('Role')
+    number_of_items_ordered_this_month = db.Column(db.Integer, default=0)
+    month_first_order = db.Column(db.DateTime, nullable=True)
+    blacklist = db.Column(db.Boolean, nullable=True, default=0)
+
     articles = db.relationship('Article', lazy='dynamic')
     orders = db.relationship('Order', lazy='dynamic')
+    
 
     new_item_must_have_column=['email','password']
     output_column = ['id', 'email', 'firstname', 'lastname', 'address1',
                      'address2', 'city', 'post_code', 'country', 'phone', 
-                     'enabled', 'role.name', 'role.id', 'email_confirmed', 'email_confirmed_on']
+                     'enabled', 'role.name', 'role.id', 'email_confirmed', 'email_confirmed_on', 
+                     'number_of_items_ordered_this_month', 'subscribed','month_first_order', 'blacklist']
     not_updatable_columns = ['id']
 
     def __init__(self, email=' ', password=' '):
@@ -120,6 +127,12 @@ class User(db.Model, DBMixin):
     @classmethod
     def get_user_by_email(cls, email, page=None, per_page=None):
         filter_query = cls.email == email
+        users = cls.get(filter_query, page, per_page)
+        return users[0] if len(users) > 0 else None
+
+    @classmethod
+    def get_user_by_stripe_id(cls, stripe_id, page=None, per_page=None):
+        filter_query = cls.stripe_customer_id == stripe_id
         users = cls.get(filter_query, page, per_page)
         return users[0] if len(users) > 0 else None
 
@@ -204,3 +217,5 @@ class User(db.Model, DBMixin):
         msg = Message('Password Reset', sender='adaya@adayahouse.com', recipients=[user_email], html=password_reset_html)
 
         mail.send(msg)
+    
+    

@@ -97,7 +97,7 @@ def update_user_information(email):
         return Responses.UNCONFIRMED_USER()
     
     json_dict = request.json
-    if len(user.update(json_dict, ['password'])) > 0:
+    if len(user.update(json_dict)) > 0: #['password']
         return Responses.OPERATION_FAILED()
     return Responses.SUCCESS()
 
@@ -135,19 +135,18 @@ def password_reset_with_token(token):
 def password_update():
     json_dict = request.json
     user = User.get_user_by_email(json_dict['email'])
-    user.password = json_dict['password']
     
-    passwordurlsuccess = 'http://localhost:8010/user-password-reset-confirmation'
-    passwordurlfailure = 'http://localhost:8010/user-password-reset-failure'
+    #passwordurlsuccess = 'http://localhost:8010/user-password-reset-confirmation'
+    #passwordurlfailure = 'http://localhost:8010/user-password-reset-failure'
 
-    error = user.update(json_dict)
+    error = user.update(json_dict['password'])
 
     if len(error) > 0:
-        webbrowser.open_new_tab(passwordurlfailure + 'doc/')
-        #return Responses.OPERATION_FAILED()
+        #webbrowser.open_new_tab(passwordurlfailure + 'doc/')
+        return Responses.OPERATION_FAILED()
     else:
-        webbrowser.open_new_tab(passwordurlsuccess + 'doc/')
-        #return Responses.SUCCESS()
+        #webbrowser.open_new_tab(passwordurlsuccess + 'doc/')
+        return Responses.SUCCESS()
 
 @api_v1.route('/users/confirm_email/<token>')
 def confirm_email(token):
@@ -184,6 +183,4 @@ def confirm_email(token):
         webbrowser.open_new_tab(urlsuccess + 'doc/')
         #return Responses.SUCCESS()
 
-    
-    
-# TODO - User to make payment for order
+

@@ -8,6 +8,7 @@ class ConfigValues(db.Model, DBMixin):
     __tablename__ = 'config_values'
     name = db.Column(db.String(50), unique=True, nullable=False)
     value =  db.Column(db.String(255), nullable=False)   
+    # display_column = db.Column(db.Boolean, nullable=True, default=False)
     
         
     def __init__(self, name, value):

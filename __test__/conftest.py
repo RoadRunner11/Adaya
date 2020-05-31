@@ -46,8 +46,8 @@ def init_database():
     MAIL_DEFAULT_SENDER = ConfigValues('MAIL_DEFAULT_SENDER', 'adayahouseshop@gmail.com')
     EMAIL_PASSWORD_RESET_SECRET_KEY = ConfigValues('EMAIL_PASSWORD_RESET_SECRET_KEY', 'Thisisasecret!')
     SIB_KEY = ConfigValues('SIB_KEY', 'gzryVUPZHa1GW7n6')
-    subtype = SubscriptionType(duration=1, price=10)
-    subtype2 = SubscriptionType(duration=6, price=40)
+    subtype = SubscriptionType(plan='Adaya Lite', price=10)
+    subtype2 = SubscriptionType(plan='Adaya Premium', price=40)
     usersubscription = UserSubscription()
     usersubscription.user_id=2
     usersubscription.start_date=datetime.now()

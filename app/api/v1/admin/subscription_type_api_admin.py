@@ -8,33 +8,33 @@ from app.decorators.authorisation import admin_only
 
 
 @api_v1.route('/connect/subscribetype', methods=['GET'])
-@api_v1.route('/connect/subscribetype/<int:duration>', methods=['GET'])
+@api_v1.route('/connect/subscribetype/<string:plan>', methods=['GET'])
 #@admin_only
-def get_subscription_types(duration=None):
+def get_subscription_types(plan=None):
     """
     get_subscription_types gets all subscription types
     
     """
     page, per_page = get_page_from_args()
 
-    items =  SubscriptionType.get_items(duration=duration, page=page, per_page=per_page)
+    items =  SubscriptionType.get_items(plan=plan, page=page, per_page=per_page)
 
     return res([item.as_dict() for item in items])
 
 
-@api_v1.route('/connect/subscribetype/<int:duration>', methods=['PUT'])
+@api_v1.route('/connect/subscribetype/<string:plan>', methods=['PUT'])
 #@admin_only
-def update_subscription_type(duration):
+def update_subscription_type(plan):
     """
     update_subscription_type updates subscription type by using duration in months
 
     Args:
-        duration (int): 
+        plan (string): 
 
     Returns:
         (string,int): update succesful, otherwise response no need to update
     """
-    item = SubscriptionType.get_items(duration=duration)[0]
+    item = SubscriptionType.get_items(plan=plan)[0]
     if not item:
         return Responses.NOT_EXIST()
     json_dict = request.json
@@ -47,15 +47,15 @@ def update_subscription_type(duration):
 #@admin_only
 def add_subscription_type():
     json_dict = request.json
-    if 'duration' not in json_dict:
+    if 'plan' not in json_dict:
         return Responses.OPERATION_FAILED(Messages.NEEDED_FIELD_EMPTY)
     if 'price' not in json_dict:
         return Responses.OPERATION_FAILED(Messages.NEEDED_FIELD_EMPTY)
-    existing_item = SubscriptionType.get_items(duration=json_dict['duration'])
+    existing_item = SubscriptionType.get_items(plan=json_dict['plan'])
     if len(existing_item) > 0:
         return Responses.OBJECT_EXIST()
-    item = SubscriptionType(json_dict['duration'], json_dict['price'])
-    error = item.insert_as_new_item(json_dict, ['duration', 'price'])
+    item = SubscriptionType(json_dict['plan'], json_dict['price'])
+    error = item.insert_as_new_item(json_dict, ['plan', 'price'])
     if len(error) > 0:
         return Responses.OPERATION_FAILED(error)
     return res(item.as_dict())

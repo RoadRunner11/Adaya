@@ -2,11 +2,13 @@ from app.helpers.app_context import AppContext as AC
 from app.models.db_mixin import DBMixin
 from app.models.voucher import Voucher 
 from app.models import Product, User
+from app.models.order_item_with_price import Order_Item_With_Price
 from app.models.config_values import ConfigValues
 from app.models.variation import Variation
 from app.models.order_item import OrderItem
 from app.models.user_subscription import UserSubscription
 from datetime import datetime
+from dateutil.relativedelta import relativedelta
 import json
 
 db = AC().db
@@ -21,17 +23,28 @@ class Order(db.Model, DBMixin):
     products_freeze = db.Column(db.Text)
     payment_ref = db.Column(db.String(255))
     total_price = db.Column(db.Numeric(10, 2))
-    user_id = db.Column(db.Integer, db.ForeignKey(
-        'user.id'), nullable=False, default=1)
-    status_id = db.Column(db.Integer, db.ForeignKey(
-        'order_status.id'), default=1)
-
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False, default=1)
+    status_id = db.Column(db.Integer, db.ForeignKey('order_status.id'), default=1)
+    firstname = db.Column(db.String(255))
+    lastname = db.Column(db.String(255))
+    email = db.Column(db.String(120))
+    address1 = db.Column(db.String(255))
+    address2 = db.Column(db.String(255))
+    city = db.Column(db.String(255))
+    post_code = db.Column(db.String(255))
+    country = db.Column(db.String(255))
+    phone = db.Column(db.String(255))
+    late = db.Column(db.Boolean, nullable=True, default=False)
+    late_charge = db.Column(db.Numeric(10, 2))
+    late_charge_paid = db.Column(db.Boolean, nullable=True, default=True)
+   
     user = db.relationship('User')
     status = db.relationship('OrderStatus')
     
 
     output_column = ['id', 'order_items', 'products_freeze','payment_ref', 'status_id', 'user_id',
-                     'total_price', 'vouchers', 'user.email', 'user.firstname', 'user.lastname', 'status.name', 'enabled']
+                     'total_price', 'vouchers', 'user.email', 'user.firstname', 'user.lastname', 'status.name', 'enabled', 'firstname', 'lastname',
+                      'email', 'address1', 'address2', 'city', 'post_code', 'country', 'phone', 'created_time', 'late', 'late_charge', 'late_charge_paid']
 
     def update_from_dict(self, obj_dict, not_updatable_columns=[]):
         """
@@ -85,23 +98,41 @@ class Order(db.Model, DBMixin):
     
 
     def calculate_cost(self):
-        total_price = 0
         products_freeze = []
+
+        order_details = Order.calculate_cost_for_users(self)
         
+        self.total_price = float(order_details['total_cost'])
+        
+        # update product freeze and stock
         for order_item in self.order_items:
             variation = Variation.get_variation_from_id(order_item.variation_id)
-            #TODO decrease stock count
-            #variation.stock -= 1
+            stock_quantity = int(variation.stock) - int(order_item.quantity)
             product = Product.get_product_from_id(variation.product_id)
-            duration = self.date_difference(order_item.start_date, order_item.end_date)
-            total_price += (variation.price * duration.days)
             products_freeze.append(product.as_dict(['id', 'name', 'description', 'variation.price', 'image']))
-        self.total_price = total_price
-        user = User.query.get(self.user_id)
-        if user.subscribed:
-            if UserSubscription.check_subscription_active(self.user_id):
-                self.total_price = 0.00
+            if stock_quantity <= 0:
+                variation.update({'stock' : stock_quantity, 'next_available_date': datetime.now() + relativedelta(days=14)})
+            else:
+                variation.update({'stock' : stock_quantity})
         self.products_freeze = json.dumps(products_freeze)
+
+        return order_details
+        
+        # for order_item in self.order_items:
+        #     variation = Variation.get_variation_from_id(order_item.variation_id)
+        #     #TODO decrease stock count
+        #     #variation.stock -= 1
+        #     product = Product.get_product_from_id(variation.product_id)
+        #     duration = self.date_difference(order_item.start_date, order_item.end_date)
+        #     total_price += (variation.price * duration.days)
+        #     products_freeze.append(product.as_dict(['id', 'name', 'description', 'variation.price', 'image']))
+        # self.total_price = total_price
+        # user = User.query.get(self.user_id)
+        # # else, there is another check when user makes an order and sets subscribed flag to 0 if it fails this validation
+        # if user.subscribed:
+        #     if UserSubscription.check_subscription_active(self.user_id):
+        #         self.total_price = 0.00
+        # self.products_freeze = json.dumps(products_freeze)
     
     def calculate_discounted_cost(self):
         total_price = 0
@@ -137,7 +168,146 @@ class Order(db.Model, DBMixin):
 
         self.total_price = total_price
         self.products_freeze = json.dumps(products_freeze)
+        #user.update({'number_of_items_ordered_this_month': no_items_this_month, 'month_first_order' : date_first_month_order})
+        #user.update({'subscribed': 0})
+    
+    # TODO:Improvement, break this function to two functions, for subscribed and non subscribed
+    @classmethod
+    def calculate_cost_for_users(cls,  order):
+        item = order
+        user = User.query.get(item.user_id)
+        order_items= item.order_items
+        max_number_adayalite = int(ConfigValues.get_config_value('max_no_free_products_adayalite_user'))
+        max_number_products_monthly = int(ConfigValues.get_config_value('max_no_products_per_month'))
         
+        no_items_this_month = user.number_of_items_ordered_this_month
+        date_first_month_order = user.month_first_order
+        order_items_with_price = Order.add_price_on_order_item(order_items)
+        no_items_this_order = Order.get_number_of_items_in_order(order_items)
+        unsubscribed_user_no_items_this_month = 0
+        
+        if not user.subscribed:        
+           order_details_this_month = Order.get_order_details_this_month(date_first_month_order, item.user_id)
+           unsubscribed_user_no_items_this_month = int(order_details_this_month['unsubscribed_user_no_items_this_month'])
+           date_first_month_order = order_details_this_month['date_first_month_order']
+
+        userSub = UserSubscription.get_subscription(user_id=item.user_id)
+        userSubscription = {}
+        if len(userSub) > 0:
+            userSubscription = userSub[0]
+
+        total_cost = 0.00
+        if user.subscribed:
+            if(userSubscription.subscription_type_id == 1): #AdayaLite plan 
+                if no_items_this_month > 4 and no_items_this_month <= max_number_products_monthly:
+                    total_cost = Order.get_cost(order_items)
+                elif no_items_this_month < max_number_adayalite:
+                    no_uncharged_items_left = max_number_adayalite - no_items_this_month
+                    if no_items_this_order <= no_uncharged_items_left: #check if number of items in order is covered by number of uncharged items left
+                        total_cost = 0.00
+                    else:
+                        total_cost = Order.get_cost(order_items)
+                        order_items_sorted = Order.sort_order_items_on_price(order_items_with_price)
+                        index = 0
+                        while(index < no_uncharged_items_left):
+                            variation = Variation.get_variation_from_id(order_items_sorted[index].variation_id)
+                            duration = order_items_sorted[index].end_date - order_items_sorted[index].start_date
+                            if(duration.days == 7):
+                                total_cost -= float(variation.price + 10)
+                            else:
+                                total_cost -= float(variation.price)   
+                            index += 1
+                else:
+                    return -1
+                        
+            if(userSubscription.subscription_type_id == 2): #AdayaLifestyle plan
+                total_cost = 0.00
+
+        else: #unsubscribed user
+            if unsubscribed_user_no_items_this_month > max_number_products_monthly:
+                return -1
+        
+            total_cost = Order.get_cost(order_items)
+            unsubscribed_user_no_items_this_month += no_items_this_order
+            return ({'total_cost': total_cost, 'no_items_this_month' : unsubscribed_user_no_items_this_month, 'month_first_order' : date_first_month_order.strftime('%Y-%m-%d %H:%M:%S')})
+
+        no_items_this_month += no_items_this_order
+        return ({'total_cost': total_cost, 'no_items_this_month' : no_items_this_month, 'month_first_order' : userSubscription.current_end_date.strftime('%Y-%m-%d %H:%M:%S')})
+    
+    @classmethod
+    def get_order_details_this_month(cls, date_first_month_order, user_id):
+        unsubscribed_user_no_items_this_month = 0
+        date_of_first_month_order = date_first_month_order
+        if date_of_first_month_order is None:  # add current date as first order this month if blank
+            date_of_first_month_order = datetime.now()
+        print('current date plus a month')
+        print(date_of_first_month_order + relativedelta(months=1))
+    
+        # set first order date to current time if the old first date is more than a month ago
+        if (date_of_first_month_order + relativedelta(months=1)) < datetime.now():  
+            date_of_first_month_order = datetime.now()
+    
+        orders = Order.get_items(user_id=user_id, per_page=30) #get 30 orders though max a month is 20 
+
+        orders_this_month = []
+        for order in orders:
+            if (order.created_time >= date_of_first_month_order) and (order.created_time < date_of_first_month_order + relativedelta(months=1)):
+                orders_this_month.append(order)
+    
+        for order in orders_this_month:
+            order_items_in_order = OrderItem.get_items(order_id=order.id)
+            for order_item in order_items_in_order:
+                unsubscribed_user_no_items_this_month += int(order_item.quantity)
+        
+        return ({'unsubscribed_user_no_items_this_month' : unsubscribed_user_no_items_this_month, 'date_first_month_order' : date_of_first_month_order })
+
+    @classmethod
+    def get_cost(cls, order_items):
+        total = 0.00
+        for order_item in order_items:
+            variation = Variation.get_variation_from_id(order_item.variation_id)
+            duration = order_item.end_date - order_item.start_date
+            if(duration.days == 7):
+                total += float((variation.price + 10))
+            else:
+                total += float(variation.price)
+        return total
+    
+    @classmethod
+    def get_number_of_items_in_order(cls, order_items):
+        total = 0
+        for order_item in order_items:
+            total += int(order_item.quantity)
+        return total
+    
+    @classmethod
+    def sort_order_items_on_price(cls, order_items):
+        sortedOrderItems = sorted(order_items, key=lambda x: x.price, reverse=True)
+        return sortedOrderItems
+    
+    @classmethod
+    def add_price_on_order_item(cls, order_items):
+         # add price to order items
+        items_with_price = []
+        for order_item in order_items:
+            variation = Variation.get_variation_from_id(order_item.variation_id)
+            order_item_with_price =  Order_Item_With_Price()
+            
+            duration = order_item.end_date - order_item.start_date
+            if duration.days == 7:
+                order_item_with_price.price = float(variation.price + 10)
+            else:
+                order_item_with_price.price = float(variation.price)
+
+
+            order_item_with_price.quantity = order_item.quantity
+            order_item_with_price.start_date = order_item.start_date
+            order_item_with_price.end_date = order_item.end_date
+            order_item_with_price.variation_id = order_item.variation_id
+
+            items_with_price.append(order_item_with_price)
+        return items_with_price
+
     def check_quantity_products(self, max_number):
         """
             Checks the number of products in the order 
@@ -155,7 +325,12 @@ class Order(db.Model, DBMixin):
             if order_item.quantity <= variation.stock:
                 continue
             else:
-                return False
+                order_items = OrderItem.query.filter(OrderItem.created_time.between((datetime.now() - relativedelta(months=1)), datetime.now())).all() #get last orders in the month
+                sortedOrderItems = sorted(order_items, key=lambda x: x.created_time, reverse=True)
+                if order_item.start_date > (sortedOrderItems[0].end_date + relativedelta(days=14)):
+                   continue
+                else:
+                    return False
         return True
     
     def check_order_status(self):

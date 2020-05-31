@@ -20,6 +20,8 @@ class Messages:
     TOKEN_EXPIRED = 'Token has expired'
     UNCONFIRMED_USER = 'Unconfirmed User'
     VOUCHER_DETAILS_WRONG = 'Voucher cannot have both percent off and fixed amount'
+    NO_ORDERS_EXCEEDED = 'Number of Orders for the month exceeded'
+    SUBSCRIPTION_INACTIVE = 'Subscription Inactive, please  contact us'
 
 
 class Roles:
@@ -87,3 +89,11 @@ class Responses:
     @staticmethod
     def UNCONFIRMED_USER():
         return res('', Messages.UNCONFIRMED_USER, 400)     
+    
+    @staticmethod
+    def NO_ORDERS_EXCEEDED():
+        return res('', Messages.NO_ORDERS_EXCEEDED, 400)
+    
+    @staticmethod
+    def SUBSCRIPTION_INACTIVE():
+        return res('', Messages.SUBSCRIPTION_INACTIVE, 400)

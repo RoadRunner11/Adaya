@@ -12,20 +12,29 @@ db = AC().db
 class UserSubscription(db.Model, DBMixin):
     __tablename__ = 'user_subscription'
 
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))  
-    start_date = db.Column(db.DateTime, nullable=True)
-    end_date = db.Column(db.DateTime, nullable=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id')) 
+    subscription_id = db.Column(db.String(255))
+    subscription_product = db.Column(db.String(255), nullable=True)
     subscription_type_id = db.Column(db.Integer, db.ForeignKey('subscription_type.id'))
-    payment_ref = db.Column(db.String(255))
-
+    current_start_date = db.Column(db.DateTime, nullable=True)
+    current_end_date = db.Column(db.DateTime, nullable=True)
+    type_object = db.Column(db.String(255))
+    application_fee_percent = db.Column(db.String(255))
+    billing_cycle_anchor = db.Column(db.String(255))
+    billing_thresholds = db.Column(db.String(255), nullable=True)
+    cancel_at = db.Column(db.String(255), nullable=True)
+    cancel_at_period_end = db.Column(db.Boolean, nullable=True)
+    canceled_at = db.Column(db.DateTime, nullable=True)
+    collection_method = db.Column(db.String(255), nullable=True)
+    
     user = db.relationship('User')
     subscription_type = db.relationship('SubscriptionType')
-    output_column = ['id', 'user_id', 'user.firstname', 'user.lastname', 'start_date', 'end_date', 'subscription_type_id', 'subscription_type.duration']
+    output_column = ['id', 'user_id', 'user.firstname', 'user.lastname', 'current_start_date', 'current_end_date', 'subscription_type_id', 'subscription_type.plan']
 
     def __init__(self, user_id=0, end_date=None, subscription_type_id=0):
         self.user_id = user_id
-        self.start_date = datetime.now()
-        self.end_date = end_date
+        self.current_start_date = datetime.now()
+        self.current_end_date = end_date
         self.subscription_type_id = subscription_type_id       
     
     @classmethod
@@ -55,14 +64,29 @@ class UserSubscription(db.Model, DBMixin):
         if id != None:
             filter_query = cls.user_id == id
         return cls.get(filter_query, page, per_page, sort_query)
-    
+    @classmethod
+    def get_subscription(cls, user_id=None, page=None, per_page=None):
+        """
+        get_items
+
+        Args:
+            name (string, optional): [description]. Defaults to None.
+            page (int, optional): [description]. Defaults to None.
+            per_page (int, optional): [description]. Defaults to None.
+
+        Returns:
+            [type]: [description]
+        """
+        filter_query = None
+        if user_id != None:
+            filter_query = cls.user_id == user_id
+        return cls.get(filter_query, page, per_page)
+
     @classmethod
     def check_subscription_active(cls, user_id):
         user_subscription = UserSubscription.query.filter_by(user_id = user_id).first()
-        #TODO sort list by end_date and select most recent end date for check
-        if user_subscription.end_date > datetime.now():
+        if user_subscription.current_end_date > datetime.now():
             return True
-    
     
     #@timeloop.job(interval=timedelta(seconds=30))
     @classmethod

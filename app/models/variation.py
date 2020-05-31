@@ -9,10 +9,12 @@ class Variation(db.Model, DBMixin):
     name = db.Column(db.String(50), unique=False, nullable=False)   
     price = db.Column(db.Numeric(10, 2),default=0)
     stock = db.Column(db.Integer, default=0)
+    retail_price = db.Column(db.Numeric(10, 2),default=0)
+    next_available_date = db.Column(db.DateTime, nullable=True)
     product_id = db.Column(db.Integer, db.ForeignKey('product.id'), default=1)
 
     product = db.relationship('Product')
-    output_column = ['id','name', 'price', 'stock', 'product_id']
+    output_column = ['id','name', 'price', 'stock', 'retail_price','next_available_date','product_id']
 
     def __init__(self, name=''):
         self.name = name
@@ -21,6 +23,15 @@ class Variation(db.Model, DBMixin):
     def get_variation_from_id(cls, variation_id):
         variation = Variation.query.get(variation_id)
         return variation
+
+    @classmethod
+    def get_variation_from_size(cls, size):
+        return Variation.query.filter_by(name = size).all()
+
+    @classmethod
+    def get_unique_variations(cls):
+        return Variation.query.with_entities(Variation.name).distinct()
+
 
     @classmethod
     def get_items(cls, category_id=None, page=None, per_page=None, sort_by=None, is_desc=None):   
@@ -34,4 +45,4 @@ class Variation(db.Model, DBMixin):
         filter_query = None
         
         #TODO return all variations
-        return cls.get(filter_query, page, 100, sort_query)
+        return cls.get(filter_query, page, 100000, sort_query)

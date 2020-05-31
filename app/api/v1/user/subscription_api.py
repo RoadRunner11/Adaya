@@ -20,14 +20,30 @@ def user_subscribe():
         return Responses.UNCONFIRMED_USER()
     
     subscription_type = json_dict['subscription_type']
-    subscription = SubscriptionType.get_items(duration=subscription_type)[0]
+    subscription = SubscriptionType.get_items(plan=subscription_type)[0]
     subscription_price = subscription.price
 
     start_date=date.today()
-    end_date = start_date + relativedelta(months=int(subscription.duration))
-    user_subscription_detail = UserSubscriptionDetail(start_date, end_date, subscription.duration, subscription_price)
+    end_date = start_date + relativedelta(months=int(subscription.plan))
+    user_subscription_detail = UserSubscriptionDetail(start_date, end_date, subscription.plan, subscription_price)
     
     return res(user_subscription_detail.as_dict())
+
+
+@api_v1.route('/subscribe/<int:id>', methods=['GET'])
+#@user_only
+def get_user_subscription(id=None):
+    """
+    get_subscriptions gets all user subscriptions
+    
+    """  
+    item =  UserSubscription.get_subscription(user_id=id)
+    response={}
+    if(len(item)>0):
+        response = item[0]
+
+    return res(response.as_dict())
+
 
 @api_v1.route('/subscribe/confirm/<token>')
 #@user_only
@@ -49,9 +65,10 @@ def confirm_user_subscription(token):
     subscription = SubscriptionType.get_items(subscription_type)
 
     start_date=date.today()
-    end_date = start_date + relativedelta(months=int(subscription.duration))
+    end_date = start_date + relativedelta(months=int(1))
+    #end_date = start_date + relativedelta(months=int(subscription.plan))
 
-    user_subscription = UserSubscription(user.id,start_date,end_date,subscription.id)
+    user_subscription = UserSubscription(user.id,end_date,subscription.id)
     error = user_subscription.update()
     if len(error) > 0:
         Responses.OPERATION_FAILED()
