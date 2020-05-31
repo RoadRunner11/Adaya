@@ -4,17 +4,19 @@ class Order_Item_With_Product(object):
     end_date = None
     variation_id = 0 
     product = None
+    days_returned_late = 0
 
-    def __init__(self, quantity, start_date, end_date, variation_id):
+    def __init__(self, quantity, start_date, end_date, variation_id, days_returned_late=0):
         self.quantity = quantity
         self.start_date = start_date
         self.end_date = end_date
         self.variation_id = variation_id 
+        self.days_returned_late = days_returned_late
     
     def as_dict(self):   
         output = {}
 
-        output_column = ['product', 'quantity', 'variation_id', 'start_date', 'end_date']
+        output_column = ['product', 'quantity', 'variation_id', 'start_date', 'end_date', 'days_returned_late']
 
         for column in output_column:
             output[column] = getattr(self, column)

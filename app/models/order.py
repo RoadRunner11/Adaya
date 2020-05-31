@@ -34,6 +34,7 @@ class Order(db.Model, DBMixin):
     post_code = db.Column(db.String(255))
     country = db.Column(db.String(255))
     phone = db.Column(db.String(255))
+    late = db.Column(db.Boolean, nullable=True, default=False)
     late_charge = db.Column(db.Numeric(10, 2))
     late_charge_paid = db.Column(db.Boolean, nullable=True, default=True)
    
@@ -43,7 +44,7 @@ class Order(db.Model, DBMixin):
 
     output_column = ['id', 'order_items', 'products_freeze','payment_ref', 'status_id', 'user_id',
                      'total_price', 'vouchers', 'user.email', 'user.firstname', 'user.lastname', 'status.name', 'enabled', 'firstname', 'lastname',
-                      'email', 'address1', 'address2', 'city', 'post_code', 'country', 'phone', 'created_time', 'late_charge', 'late_charge_paid']
+                      'email', 'address1', 'address2', 'city', 'post_code', 'country', 'phone', 'created_time', 'late', 'late_charge', 'late_charge_paid']
 
     def update_from_dict(self, obj_dict, not_updatable_columns=[]):
         """
@@ -276,7 +277,7 @@ class Order(db.Model, DBMixin):
     def get_number_of_items_in_order(cls, order_items):
         total = 0
         for order_item in order_items:
-            total += order_item.quantity
+            total += int(order_item.quantity)
         return total
     
     @classmethod

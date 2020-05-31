@@ -32,3 +32,7 @@ class ProductCategory(db.Model, DBMixin):
         if name != None:
             filter_query = cls.name == name
         return cls.get(filter_query, page, per_page)
+    
+    @classmethod
+    def get_category_from_name(cls, name):
+        return ProductCategory.query.filter_by(name = name).all()

@@ -25,6 +25,11 @@ class Variation(db.Model, DBMixin):
         return variation
 
     @classmethod
+    def get_variation_from_size(cls, size):
+        return Variation.query.filter_by(name = size).all()
+
+
+    @classmethod
     def get_items(cls, category_id=None, page=None, per_page=None, sort_by=None, is_desc=None):   
         sort_query = db.desc(cls.created_time)
         if sort_by != None:
@@ -36,4 +41,4 @@ class Variation(db.Model, DBMixin):
         filter_query = None
         
         #TODO return all variations
-        return cls.get(filter_query, page, 1000, sort_query)
+        return cls.get(filter_query, page, 100000, sort_query)

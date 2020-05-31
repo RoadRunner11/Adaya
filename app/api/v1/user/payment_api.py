@@ -202,6 +202,7 @@ def cancel_subscription():
         user_subscription_dict['collection_method'] = deletedSubscription['collection_method']
        
         userSubscription.update(user_subscription_dict)
+        Payment.send_subscription_cancelled_email(user_email=user.email)
 
         if datetime.now() > userSubscription.current_end_date:  # else, there is another check when user makes an order and sets to 0 if it fails this validation
             user.update({'subscribed':0})
@@ -217,7 +218,6 @@ def cancel_subscription():
 def charge_customer_offline():
     json_dict = request.json
     user_id = json_dict['user_id']
-    number_days_late = json_dict['number_days_late']
     order_id = json_dict['order_id']
     
     item = Order.query.get(order_id)
@@ -226,9 +226,9 @@ def charge_customer_offline():
     for order_item in order_items:
         variation = Variation.get_variation_from_id(order_item.variation_id)
         if order_item.days_returned_late > 14:
-            total_charge += float(variation.retail_price)
+            total_cost += float(variation.retail_price)
         else:
-            total_charge += (0.5 * float(variation.price)) * int(number_days_late)
+            total_cost += (0.5 * float(variation.price)) * int(order_item.days_returned_late)
     
     stripe_total_price = int (float(total_cost) * 100)
     publishable_key = 'pk_test_wfEV385fd15MX1lKUFsPpG1F00EVVb5Dl7'
@@ -280,7 +280,8 @@ def charge_customer_offline():
             # without asking your customers to re-enter their details
 
             Payment.send_payment_request_authorisation_email(user.email)
-
+            order = Order.query.get(order_id)
+            order.update({'late_charge': str(total_cost),'late_charge_paid': 0})
             return jsonify({
                 'error': 'authentication_required', 
                 'paymentMethod': err.payment_method.id, 
@@ -294,7 +295,8 @@ def charge_customer_offline():
             # Bring the customer back on-session to ask them for a new payment method
 
             Payment.send_payment_failed_email(user.email)
-
+            order = Order.query.get(order_id)
+            order.update({'late_charge': str(total_cost),'late_charge_paid': 0})
             return jsonify({
                 'error': err.code, 
                 'publicKey': publishable_key, 
@@ -408,7 +410,9 @@ def webhook_received():
 
         userSubscription.update(user_subscription_dict)
         Payment.send_subscription_cancelled_email(user_email=email)
-        user.update({'subscribed': 0, 'number_of_items_ordered_this_month' : 0})
+        if datetime.now() > userSubscription.current_end_date:  # else, there is another check when user makes an order and sets to 0 if it fails this validation
+            user.update({'subscribed': 0, 'number_of_items_ordered_this_month' : 0})
+          
 
     if event_type == 'customer.subscription.trial_will_end':
         # Send notification to your user that the trial will end

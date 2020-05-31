@@ -78,8 +78,9 @@ def validate_order():
     #     return Responses.SUBSCRIPTION_INACTIVE()
 
     if user.subscribed:
-        if UserSubscription.check_subscription_active(user.id):
-            return Responses.SUBSCRIPTION_INACTIVE()
+        if not UserSubscription.check_subscription_active(user.id):
+            user.update({'subscribed': 0})
+            #return Responses.SUBSCRIPTION_INACTIVE()
 
     # if 'voucher_codes' in json_dict.keys():
     #     voucher_codes = json_dict['voucher_codes']
@@ -282,7 +283,7 @@ def get_order_with_product(id=None):
     order_with_product.late_charge = item.late_charge
 
     for order_item in item.order_items:
-        order_item_with_product = Order_Item_With_Product(order_item.quantity, order_item.start_date, order_item.end_date, order_item.variation_id)
+        order_item_with_product = Order_Item_With_Product(order_item.quantity, order_item.start_date, order_item.end_date, order_item.variation_id, order_item.days_returned_late)
         variation = Variation.get_variation_from_id(order_item.variation_id)
         product = Product.get_product_from_id(variation.product_id)
         new_product = ProductSkeleton(name=product.name)
