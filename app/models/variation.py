@@ -28,6 +28,10 @@ class Variation(db.Model, DBMixin):
     def get_variation_from_size(cls, size):
         return Variation.query.filter_by(name = size).all()
 
+    @classmethod
+    def get_unique_variations(cls):
+        return Variation.query.with_entities(Variation.name).distinct()
+
 
     @classmethod
     def get_items(cls, category_id=None, page=None, per_page=None, sort_by=None, is_desc=None):   

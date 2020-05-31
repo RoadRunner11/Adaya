@@ -169,3 +169,38 @@ def user_get_productcategories(name=None):
         all_product_variations.append(product_variations)
 
     return res([product_variation.as_dict() for product_variation in all_product_variations])
+
+@api_v1.route('/products/sizes', methods=['GET'])
+#@user_only
+def user_get_sizes(name=None):
+    """
+    get_products meeting criteria
+    Args:
+        id ([type]): product id
+
+    Returns:
+        [type]: [description]
+    """
+    page, per_page = get_page_from_args()    
+    sort_by = request.args.get('sort_by')
+    is_desc = parse_int(request.args.get('is_desc'))
+    category_id = parse_int(request.args.get('category'))
+    size = request.args.get('size')
+
+    items =  Product.get_items(
+        category_id=category_id, page=page, per_page=per_page, sort_by=sort_by, is_desc=is_desc)
+
+
+    variations = Variation.get_variation_from_size(size=size)
+    
+    all_product_variations = []
+    
+    for item in items:
+        for variation in variations:
+            if (item.id == variation.product_id):
+                if  int(variation.stock) > 0:
+                    product_variations = ProductVariations(product=item)
+                    product_variations.variations = variation
+                    all_product_variations.append(product_variations)
+
+    return res([product_variation.as_dict() for product_variation in all_product_variations])
