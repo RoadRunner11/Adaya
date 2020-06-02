@@ -39,23 +39,24 @@ def after_request(response):
     
     Returns:
         [type]: [description]
-    """     
+    """    
+
     # request_origin = request.environ.get('HTTP_ORIGIN', 'https://adayahouse.netlify.app')
     # if request_origin in flask.current_app.config['ALLOW_ORIGIN']:
-    request_origin = request.environ.get('HTTP_ORIGIN', 'https://adayahouse.netlify.app')
-    if request_origin in flask.current_app.config['ALLOW_ORIGIN']:
-        header = response.headers
-        header['Access-Control-Allow-Origin'] = request_origin
-        header['Access-Control-Allow-Credentials'] = 'true'
-        header['Access-Control-Allow-Headers'] = 'content-type'
-        header['Access-Control-Allow-Methods']='GET, PUT, POST, DELETE, HEAD'
-    
-    return response
-
-    # header = response.headers
-    # header['Access-Control-Allow-Origin'] = flask.current_app.config['ALLOW_ORIGIN']    #request_origin
-    # header['Access-Control-Allow-Credentials'] = 'true'
-    # header['Access-Control-Allow-Headers'] = 'content-type'
-    # header['Access-Control-Allow-Methods']='GET, PUT, POST, DELETE, HEAD'
+    # request_origin = request.environ.get('HTTP_ORIGIN', 'https://adayahouse.netlify.app')
+    # if request_origin in flask.current_app.config['ALLOW_ORIGIN']:
+    #     header = response.headers
+    #     header['Access-Control-Allow-Origin'] = request_origin
+    #     header['Access-Control-Allow-Credentials'] = 'true'
+    #     header['Access-Control-Allow-Headers'] = 'content-type'
+    #     header['Access-Control-Allow-Methods']='GET, PUT, POST, DELETE, HEAD'
     
     # return response
+
+    header = response.headers
+    header['Access-Control-Allow-Origin'] = flask.current_app.config['ALLOW_ORIGIN']    #request_origin
+    header['Access-Control-Allow-Credentials'] = 'true'
+    header['Access-Control-Allow-Headers'] = 'content-type'
+    header['Access-Control-Allow-Methods']='GET, PUT, POST, DELETE, HEAD'
+    
+    return response
