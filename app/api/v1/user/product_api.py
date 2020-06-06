@@ -170,7 +170,7 @@ def user_get_productcategories(name=None):
 
     return res([product_variation.as_dict() for product_variation in all_product_variations])
 
-@api_v1.route('/products/sizes', methods=['GET'])
+@api_v1.route('/products/sizes', methods=['POST'])
 #@user_only
 def user_get_sizes(name=None):
     """
@@ -185,13 +185,13 @@ def user_get_sizes(name=None):
     sort_by = request.args.get('sort_by')
     is_desc = parse_int(request.args.get('is_desc'))
     category_id = parse_int(request.args.get('category'))
-    size = request.args.get('size')
+    json_dict = request.json
 
     items =  Product.get_items(
-        category_id=category_id, page=page, per_page=per_page, sort_by=sort_by, is_desc=is_desc)
+        category_id=category_id, page=page, per_page=100, sort_by=sort_by, is_desc=is_desc) #update pls
 
 
-    variations = Variation.get_variation_from_size(size=size)
+    variations = Variation.get_variation_from_size(size=json_dict['size'])
     
     all_product_variations = []
     
@@ -202,5 +202,7 @@ def user_get_sizes(name=None):
                     product_variations = ProductVariations(product=item)
                     product_variations.variations = variation
                     all_product_variations.append(product_variations)
+    
+    print(all_product_variations)
 
     return res([product_variation.as_dict() for product_variation in all_product_variations])
