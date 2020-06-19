@@ -161,3 +161,29 @@ class DBMixin():
         if sort_query is not None:
             query = query.order_by(sort_query)
         return query.paginate(page, per_page, error_out).items
+    
+    @classmethod
+    def get_page_details(cls, filter_queries=None, page=1, per_page=10, sort_query=None, display_enabled_only=True, error_out=False):
+        """
+        get default get query
+
+        Args:
+            filter_queries (single query or query list, optional): example - [Article.category_id == 1] or Article.category_id == 1
+            page (int, optional): which page. Defaults to 1.
+            per_page (int, optional): how many items for each return. Defaults to 10.
+            order ([type], optional): example db.desc(Post.post_date) or db.asc
+            error_out (bool, optional): [description]. Defaults to False.
+
+        Returns:
+            [type]: [description]
+        """
+        query = cls.query.filter(cls.enabled == 1)
+        if filter_queries is not None:
+            if type(filter_queries) == list:
+                for filter_query in filter_queries:
+                    query = query.filter(filter_query)
+            else:
+                query = query.filter(filter_queries)
+        if sort_query is not None:
+            query = query.order_by(sort_query)
+        return query.paginate(page, per_page, error_out)
