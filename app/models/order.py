@@ -10,6 +10,14 @@ from app.models.user_subscription import UserSubscription
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import json
+from app import mail
+from flask_mail import Mail, Message
+from flask import Flask, render_template, jsonify, request, send_from_directory, url_for
+from app.models.config_values import ConfigValues
+import sib_api_v3_sdk
+from sib_api_v3_sdk.rest import ApiException
+from pprint import pprint
+from mailin import Mailin
 
 db = AC().db
 
@@ -96,6 +104,26 @@ class Order(db.Model, DBMixin):
             filter_queries.append(cls.status_id == status_id)
         return cls.get(filter_queries, page, per_page, sort_query)
     
+    @classmethod
+    def get_items_pages(cls, user_id=None, status_id=None, page=None, per_page=None, sort_by=None, is_desc=None):
+        # default sort by time
+        sort_query = db.desc(cls.created_time)
+        if sort_by != None:
+            if sort_by == 'created_time':
+                sort_query = db.desc(cls.created_time)
+                if not is_desc:
+                    sort_query = db.asc(cls.created_time)
+            if sort_by == 'total_price':
+                sort_query = db.desc(cls.total_price)
+                if not is_desc:
+                    sort_query = db.asc(cls.total_price)
+        filter_queries = []
+        if user_id != None:
+            filter_queries.append(cls.user_id == user_id)
+        if status_id != None:
+            filter_queries.append(cls.status_id == status_id)
+        return cls.get_page_details(filter_queries, page, per_page, sort_query)
+    
 
     def calculate_cost(self):
         products_freeze = []
@@ -111,7 +139,7 @@ class Order(db.Model, DBMixin):
             product = Product.get_product_from_id(variation.product_id)
             products_freeze.append(product.as_dict(['id', 'name', 'description', 'variation.price', 'image']))
             if stock_quantity <= 0:
-                variation.update({'stock' : stock_quantity, 'next_available_date': datetime.now() + relativedelta(days=14)})
+                variation.update({'stock' : stock_quantity, 'next_available_date': datetime.now() + relativedelta(days=14)}) #ensure it is in yyy-mm-dd
             else:
                 variation.update({'stock' : stock_quantity})
         self.products_freeze = json.dumps(products_freeze)
@@ -150,9 +178,7 @@ class Order(db.Model, DBMixin):
             product_price = 0.00
             
             if not duration.days in (valid_durations):
-                return False            
-            #TODO decrease stock count
-            #variation.stock -= 1
+                return False        
 
             if(product.id in voucher_products_id):
                 voucher = Voucher.get_voucher_by_product_id(product.id)
@@ -320,17 +346,39 @@ class Order(db.Model, DBMixin):
             return True
     
     def check_stock(self):
-        for order_item in self.order_items:
-            variation = Variation.get_variation_from_id(order_item.variation_id)
-            if order_item.quantity <= variation.stock:
-                continue
-            else:
-                order_items = OrderItem.query.filter(OrderItem.created_time.between((datetime.now() - relativedelta(months=1)), datetime.now())).all() #get last orders in the month
-                sortedOrderItems = sorted(order_items, key=lambda x: x.created_time, reverse=True)
-                if order_item.start_date > (sortedOrderItems[0].end_date + relativedelta(days=14)):
-                   continue
-                else:
+        for incoming_order_item in self.order_items:            
+            variation = Variation.get_variation_from_id(incoming_order_item.variation_id)
+            # get all orders for this product in the next 3 months- this is the max pre booking time
+            all_order_items_within_three_months = OrderItem.query.filter(OrderItem.start_date.between(datetime.now(), (datetime.now() + relativedelta(weeks=14)))).all()
+            order_items_for_product_within_three_months = []
+            if len(all_order_items_within_three_months) > 0:
+                order_items_for_product_within_three_months = all_order_items_within_three_months.filter(variation_id = incoming_order_item.variation_id).all()
+            
+            # check the order date if it is within the range of other orders 
+            no_confirmed_orders = 0
+            coinciding_orders = []
+            for item in order_items_for_product_within_three_months:
+                item_start_date = datetime.strptime(item.start_date, '%Y-%m-%d %H:%M:%S')
+                item_end_date = datetime.strptime(item.end_date, '%Y-%m-%d %H:%M:%S')
+                incoming_order_item_start_date = datetime.strptime(incoming_order_item.start_date, '%Y-%m-%d %H:%M:%S')
+
+                if(item_start_date <= incoming_order_item_start_date <= item_end_date):
+                    coinciding_orders.append(item)
+                    no_confirmed_orders += int(item.quantity)
+
+            if len(coinciding_orders) > 0 :            
+                if(no_confirmed_orders >= int(variation.total_stock)): # if number of booked orders greater than total stock, no order can be made
                     return False
+                else:
+                    if incoming_order_item.quantity < variation.stock: # check the quantity requested is not more than the available stock for that day requested
+                        continue
+                    else:
+                        return False
+            else:
+                if int(incoming_order_item.quantity) <= int(variation.total_stock):
+                    continue
+                else:
+                    return False     
         return True
     
     def check_order_status(self):
@@ -349,3 +397,11 @@ class Order(db.Model, DBMixin):
     
     def date_difference(self, start_date, end_date):
         return end_date - start_date
+    
+    @classmethod
+    def send_order_confirmation_email(cls, order_number, user_email): 
+        order_confirmation_html = render_template('order_confirmation.html', order_number=order_number, user_email=user_email)
+
+        msg = Message('Order Confirmation', sender='adaya@adayahouse.com', recipients=[user_email], html=order_confirmation_html)
+
+        mail.send(msg)

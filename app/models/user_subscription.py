@@ -64,6 +64,36 @@ class UserSubscription(db.Model, DBMixin):
         if id != None:
             filter_query = cls.user_id == id
         return cls.get(filter_query, page, per_page, sort_query)
+    
+    @classmethod
+    def get_items_pages(cls, id=None, page=None, per_page=None, sort_by=None, is_desc=None):
+        """
+        get_items
+
+        Args:
+            name (string, optional): [description]. Defaults to None.
+            page (int, optional): [description]. Defaults to None.
+            per_page (int, optional): [description]. Defaults to None.
+            sort_by ([type], optional): what column to sort. Defaults to None.
+            is_desc ([type], optional): sort desc? (1 or 0). Defaults to None.
+
+        Returns:
+            [type]: [description]
+        """
+        sort_query = db.desc(cls.created_time)
+        if sort_by != None:
+            if sort_by == 'user_id':
+                # only support sorting by user_id
+                sort_query = db.desc(cls.name)
+                if not is_desc:
+                    sort_query = db.asc(cls.created_time)
+
+        filter_query = None
+        if id != None:
+            filter_query = cls.user_id == id
+        return cls.get_page_details(filter_query, page, per_page, sort_query)
+
+
     @classmethod
     def get_subscription(cls, user_id=None, page=None, per_page=None):
         """

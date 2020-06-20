@@ -12,8 +12,9 @@ from app.decorators.authorisation import admin_only
 def get_order_status(id=None):
     page, per_page = get_page_from_args()
     name = request.args.get('name')
+    per_page_for_stat = 50 # not many statuses so return all
     items = [OrderStatus.query.get(id)] if id else OrderStatus.get_items(
-        name=name, page=page, per_page=per_page)
+        name=name, page=page, per_page=per_page_for_stat)
     return res([item.as_dict() for item in items])
 
 

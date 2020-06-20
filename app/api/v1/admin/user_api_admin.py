@@ -25,6 +25,23 @@ def get_users(email=None):
         page=page, per_page=per_page)
     return res([item.as_dict() for item in items])
 
+@api_v1.route('/connect/users/pagination', methods=['GET'])
+#@admin_only
+def get_users_pages(email=None):
+    """
+    get_users gets all user or specify user
+
+    Args:
+        email ([type], optional): [description]. Defaults to None.
+
+    Returns:
+        [type]: [description]
+    """
+    page, per_page = get_page_from_args()
+    
+    page_details =  User.get_page_details(page=page, per_page=per_page)
+
+    return res({"total_items": page_details.total, "no_of_pages": page_details.pages, "per_page": page_details.per_page})
 
 @api_v1.route('/connect/users/<string:email>', methods=['PUT'])
 @admin_only

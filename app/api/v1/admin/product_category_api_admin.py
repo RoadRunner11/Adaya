@@ -11,9 +11,10 @@ from app.decorators.authorisation import admin_only
 @admin_only
 def get_product_categories(id=None):
     page, per_page = get_page_from_args()
+    per_page_for_cat = 50 # not many catgeories
     name = request.args.get('name')
     items = [ProductCategory.query.get(id)] if id else ProductCategory.get_items(
-        name=name, page=page, per_page=per_page)
+        name=name, page=page, per_page=per_page_for_cat)
     return res([item.as_dict() for item in items])
 
 
