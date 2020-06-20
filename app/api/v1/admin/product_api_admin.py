@@ -42,6 +42,32 @@ def get_products(id=None):
 
     return res([product_variation.as_dict() for product_variation in all_product_variations])
 
+@api_v1.route('/connect/products/pagination', methods=['GET'])
+#@admin_only
+def get_product_pages(name=None): # pagination details for all products
+
+    """
+    get default get query
+
+    Args:
+        filter_queries (single query or query list, optional): example - [Article.category_id == 1] or Article.category_id == 1
+        page (int, optional): which page. Defaults to 1.
+        per_page (int, optional): how many items for each return. Defaults to 10.
+        order ([type], optional): example db.desc(Post.post_date) or db.asc
+        error_out (bool, optional): [description]. Defaults to False.
+
+    Returns:
+        [type]: [description]
+    """
+    page, per_page = get_page_from_args()    
+    sort_by = request.args.get('sort_by')
+    is_desc = parse_int(request.args.get('is_desc'))
+    category_id = parse_int(request.args.get('category'))
+
+    page_details =  Product.get_items_pages(category_id=category_id, page=page, per_page=per_page, sort_by=sort_by, is_desc=is_desc)
+    
+
+    return res({"total_items": page_details.total, "no_of_pages": page_details.pages, "per_page": page_details.per_page})
 
 @api_v1.route('/connect/products/<int:id>', methods=['PUT'])
 #@admin_only

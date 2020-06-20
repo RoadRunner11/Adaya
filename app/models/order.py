@@ -104,6 +104,26 @@ class Order(db.Model, DBMixin):
             filter_queries.append(cls.status_id == status_id)
         return cls.get(filter_queries, page, per_page, sort_query)
     
+    @classmethod
+    def get_items_pages(cls, user_id=None, status_id=None, page=None, per_page=None, sort_by=None, is_desc=None):
+        # default sort by time
+        sort_query = db.desc(cls.created_time)
+        if sort_by != None:
+            if sort_by == 'created_time':
+                sort_query = db.desc(cls.created_time)
+                if not is_desc:
+                    sort_query = db.asc(cls.created_time)
+            if sort_by == 'total_price':
+                sort_query = db.desc(cls.total_price)
+                if not is_desc:
+                    sort_query = db.asc(cls.total_price)
+        filter_queries = []
+        if user_id != None:
+            filter_queries.append(cls.user_id == user_id)
+        if status_id != None:
+            filter_queries.append(cls.status_id == status_id)
+        return cls.get_page_details(filter_queries, page, per_page, sort_query)
+    
 
     def calculate_cost(self):
         products_freeze = []
