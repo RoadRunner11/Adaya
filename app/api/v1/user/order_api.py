@@ -53,7 +53,7 @@ def create_order():
         return Responses.OPERATION_FAILED()
     
     #send email confirmation to user
-    Order.send_order_confirmation_email(item.id, user.email)
+    Order.send_order_confirmation_email(order_number=item.id, user_email=user.email)
     return res(item.as_dict())
 
 @api_v1.route('/orders/valid', methods=['POST'])

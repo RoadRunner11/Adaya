@@ -349,7 +349,10 @@ class Order(db.Model, DBMixin):
         for incoming_order_item in self.order_items:            
             variation = Variation.get_variation_from_id(incoming_order_item.variation_id)
             # get all orders for this product in the next 3 months- this is the max pre booking time
-            order_items_for_product_within_three_months = OrderItem.query.filter(OrderItem.start_date.between(datetime.now(), (datetime.now() + relativedelta(weeks=14)))).filter(variation_id = incoming_order_item.variation_id).all() 
+            all_order_items_within_three_months = OrderItem.query.filter(OrderItem.start_date.between(datetime.now(), (datetime.now() + relativedelta(weeks=14)))).all()
+            order_items_for_product_within_three_months = []
+            if len(all_order_items_within_three_months) > 0:
+                order_items_for_product_within_three_months = all_order_items_within_three_months.filter(variation_id = incoming_order_item.variation_id).all()
             
             # check the order date if it is within the range of other orders 
             no_confirmed_orders = 0
@@ -395,7 +398,8 @@ class Order(db.Model, DBMixin):
     def date_difference(self, start_date, end_date):
         return end_date - start_date
     
-    def send_order_confirmation_email(self, order_number=10, user_email="bigseyi5@gmail.com"): 
+    @classmethod
+    def send_order_confirmation_email(cls, order_number, user_email): 
         order_confirmation_html = render_template('order_confirmation.html', order_number=order_number, user_email=user_email)
 
         msg = Message('Order Confirmation', sender='adaya@adayahouse.com', recipients=[user_email], html=order_confirmation_html)
