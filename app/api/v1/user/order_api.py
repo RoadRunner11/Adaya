@@ -6,7 +6,7 @@ from flask import jsonify, request
 from app.decorators.authorisation import user_only
 
 @api_v1.route('/orders', methods=['POST'])
-@user_only
+#@user_only
 def create_order():
     json_dict = request.json
     item = Order()
@@ -22,6 +22,7 @@ def create_order():
     
 
     user = User.query.get(item.user_id)
+       
     # check if user is not blacklisted
     # if user.blacklist:
     #     return Responses.SUBSCRIPTION_INACTIVE()
@@ -52,6 +53,7 @@ def create_order():
         return Responses.OPERATION_FAILED()
     
     #send email confirmation to user
+    Order.send_order_confirmation_email(item.id, user.email)
     return res(item.as_dict())
 
 @api_v1.route('/orders/valid', methods=['POST'])
@@ -270,7 +272,6 @@ def get_order_with_product(id=None):
     item = Order.query.get(id)
     
     order_with_product = OrderProducts(total_price=item.total_price)
-    order_with_product.total_price = item.total_price
     order_with_product.firstname = item.firstname
     order_with_product.lastname = item.lastname
     order_with_product.email = item.email
@@ -281,6 +282,8 @@ def get_order_with_product(id=None):
     order_with_product.country = item.country
     order_with_product.phone = item.phone
     order_with_product.late_charge = item.late_charge
+    if len(order_with_product.order_items) > 0:
+        order_with_product.order_items = [] #empty the array again. and then get new data
 
     for order_item in item.order_items:
         order_item_with_product = Order_Item_With_Product(order_item.quantity, order_item.start_date, order_item.end_date, order_item.variation_id, order_item.days_returned_late)

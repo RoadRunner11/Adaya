@@ -115,8 +115,8 @@ def password_reset():
     
 @api_v1.route('/users/password_reset/<token>')
 def password_reset_with_token(token):
-    passwordnewurl = 'http://localhost:8010/user-new-password'
-    passwordfailureurl = 'http://localhost:8010/user-password-reset-failure'
+    passwordnewurl = '/user-new-password'
+    passwordfailureurl = '/user-password-reset-failure'
 
     secret_key = ConfigValues.get_config_value('EMAIL_PASSWORD_RESET_SECRET_KEY')
 
@@ -151,8 +151,8 @@ def password_update():
 @api_v1.route('/users/confirm_email/<token>')
 def confirm_email(token):
     # Open email confirmation URL in a new tab, if a browser window is already open.
-    urlsuccess = 'http://localhost:8010/user-email-confirmation'
-    urlfailure = 'http://localhost:8010/user-email-failure'
+    urlsuccess = '/user-email-confirmation'
+    urlfailure = '/user-email-failure'
 
 
     secret_key = ConfigValues.get_config_value('EMAIL_PASSWORD_RESET_SECRET_KEY')
@@ -184,3 +184,14 @@ def confirm_email(token):
         #return Responses.SUCCESS()
 
 
+@api_v1.route('/users/contact_us', methods=['POST'])
+def contact_us():
+    json_dict = request.json
+    email = json_dict['email']
+    subject = json_dict['subject']
+    name = json_dict['name']
+    message = json_dict['message']
+    
+    User.contact_us_email(email, subject, name, message)
+    
+    return Responses.SUCCESS()

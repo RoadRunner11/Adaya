@@ -10,6 +10,14 @@ from app.models.user_subscription import UserSubscription
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import json
+from app import mail
+from flask_mail import Mail, Message
+from flask import Flask, render_template, jsonify, request, send_from_directory, url_for
+from app.models.config_values import ConfigValues
+import sib_api_v3_sdk
+from sib_api_v3_sdk.rest import ApiException
+from pprint import pprint
+from mailin import Mailin
 
 db = AC().db
 
@@ -366,3 +374,10 @@ class Order(db.Model, DBMixin):
     
     def date_difference(self, start_date, end_date):
         return end_date - start_date
+    
+    def send_order_confirmation_email(self, order_number=10, user_email="bigseyi5@gmail.com"): 
+        order_confirmation_html = render_template('order_confirmation.html', order_number=order_number, user_email=user_email)
+
+        msg = Message('Order Confirmation', sender='adaya@adayahouse.com', recipients=[user_email], html=order_confirmation_html)
+
+        mail.send(msg)

@@ -218,4 +218,12 @@ class User(db.Model, DBMixin):
 
         mail.send(msg)
     
+    @classmethod
+    def contact_us_email(cls, user_email, subject, name, message): 
+
+        contact_us_html = render_template('contact_us.html', name=name, message=message)
+
+        msg = Message(subject, sender=user_email, recipients=["adayahouseshop@gmail.com"], html=contact_us_html)
+
+        mail.send(msg)
     
