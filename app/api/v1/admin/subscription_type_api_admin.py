@@ -59,3 +59,18 @@ def add_subscription_type():
     if len(error) > 0:
         return Responses.OPERATION_FAILED(error)
     return res(item.as_dict())
+
+@api_v1.route('/connect/subscribetype/<string:plan>', methods=['DELETE'])
+#@admin_only
+def delete_subscription_types(plan=None):
+    """
+    get_subscription_types gets all subscription types
+    
+    """
+    page, per_page = get_page_from_args()
+
+    item =  SubscriptionType.get_items(plan=plan, page=page, per_page=per_page)
+    error = item.delete()
+    if len(error) > 0:
+        return Responses.OPERATION_FAILED()
+    return Responses.SUCCESS()

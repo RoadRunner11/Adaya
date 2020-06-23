@@ -78,3 +78,22 @@ def add_user():
     if len(error) > 0:
         return Responses.OPERATION_FAILED(error)
     return res(item.as_dict())
+
+
+@api_v1.route('/connect/users/<string:email>', methods=['DELETE'])
+@admin_only
+def delete_user(email=None):
+    """
+    get_users gets all user or specify user
+
+    Args:
+        email ([type], optional): [description]. Defaults to None.
+
+    Returns:
+        [type]: [description]
+    """
+    item = User.get_user_by_email(email)
+    error = item.delete()
+    if len(error) > 0:
+        return Responses.OPERATION_FAILED(error)
+    return Responses.SUCCESS()

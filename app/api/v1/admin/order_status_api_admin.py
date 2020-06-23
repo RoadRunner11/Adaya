@@ -39,3 +39,12 @@ def add_order_status():
     if len(error) > 0:
         return Responses.OPERATION_FAILED()
     return res(item.as_dict())
+
+@api_v1.route('/connect/order_status/<int:id>', methods=['DELETE'])
+#@admin_only
+def delete_order_status(id=None):
+    item = OrderStatus.query.get(id)
+    error = item.delete()
+    if len(error) > 0:
+        return Responses.OPERATION_FAILED()
+    return Responses.SUCCESS()

@@ -81,3 +81,20 @@ def add_voucher():
     if len(error) > 0:
         return Responses.OPERATION_FAILED(error)
     return res(item.as_dict())
+
+
+@api_v1.route('/connect/vouchers/<string:name>', methods=['DELETE'])
+#@admin_only
+def delete_vouchers(name=None):
+    """
+   delete voucher
+    """
+    page, per_page = get_page_from_args()
+    sort_by = request.args.get('sort_by')
+    is_desc = parse_int(request.args.get('is_desc'))
+
+    item =  Voucher.get_voucher(voucher_code=name)
+    error = item.delete()
+    if len(error) > 0:
+        return Responses.OPERATION_FAILED()
+    return Responses.SUCCESS()

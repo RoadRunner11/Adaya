@@ -83,6 +83,15 @@ def validate_order():
         if not UserSubscription.check_subscription_active(user.id):
             user.update({'subscribed': 0})
             #return Responses.SUBSCRIPTION_INACTIVE()
+        userSub = UserSubscription.get_subscription(user_id=item.user_id)
+        userSubscription = {}
+        if len(userSub) > 0:
+            userSubscription = userSub[0]
+            max_per_order_for_lifestyle = int(ConfigValues.get_config_value('max_no_of_items_per_order_adayalifestyle')) 
+            if(userSubscription.subscription_type_id == 2): #AdayaLifestyle plan 
+                if item.check_quantity_products(max_per_order_for_lifestyle):
+                    return Responses.OPERATION_FAILED()
+            
 
     # if 'voucher_codes' in json_dict.keys():
     #     voucher_codes = json_dict['voucher_codes']

@@ -7,7 +7,7 @@ db = AC().db
 class SubscriptionType(db.Model, DBMixin):
     __tablename__ = 'subscription_type'
 
-    plan = db.Column(db.String(50), unique=False, nullable=False)   
+    plan = db.Column(db.String(50), unique=True, nullable=False)   
     price = db.Column(db.Numeric(10, 2),default=0, nullable=False)
     stripe_subscription_product = db.Column(db.String(255), nullable=True)
     stripe_price = db.Column(db.String(255), nullable=True)

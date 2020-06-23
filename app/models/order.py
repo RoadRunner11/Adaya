@@ -348,29 +348,26 @@ class Order(db.Model, DBMixin):
     def check_stock(self):
         for incoming_order_item in self.order_items:            
             variation = Variation.get_variation_from_id(incoming_order_item.variation_id)
-            # get all orders for this product in the next 3 months- this is the max pre booking time
-            all_order_items_within_three_months = OrderItem.query.filter(OrderItem.start_date.between(datetime.now(), (datetime.now() + relativedelta(weeks=14)))).all()
-            order_items_for_product_within_three_months = []
-            if len(all_order_items_within_three_months) > 0:
-                order_items_for_product_within_three_months = all_order_items_within_three_months.filter(variation_id = incoming_order_item.variation_id).all()
+            # get all orders for this product ranging from last 12 days to the next 3 months- this is the max pre booking time
+            order_items_for_product_within_three_months = OrderItem.query.filter(OrderItem.start_date.between(datetime.now() - relativedelta(days=12), (datetime.now() + relativedelta(weeks=14))), OrderItem.variation_id == incoming_order_item.variation_id).all()
+            #OrderItem.query.filter(OrderItem.start_date.between(datetime.now(), (datetime.now() + relativedelta(weeks=14)))).all()
+            # order_items_for_product_within_three_months = []
+            # if len(order_items_for_product_within_three_months) > 0:
+            #     order_items_for_product_within_three_months = all_order_items_within_three_months.filter(variation_id = incoming_order_item.variation_id).all()
             
-            # check the order date if it is within the range of other orders 
-            no_confirmed_orders = 0
+            # check the incoming order date if it is within the range/clashing with other orders in the next 3 months
+            no_already_confirmed_orders = 0
             coinciding_orders = []
             for item in order_items_for_product_within_three_months:
-                item_start_date = datetime.strptime(item.start_date, '%Y-%m-%d %H:%M:%S')
-                item_end_date = datetime.strptime(item.end_date, '%Y-%m-%d %H:%M:%S')
-                incoming_order_item_start_date = datetime.strptime(incoming_order_item.start_date, '%Y-%m-%d %H:%M:%S')
-
-                if(item_start_date <= incoming_order_item_start_date <= item_end_date):
+                if(item.start_date <= incoming_order_item.start_date <= item.end_date):
                     coinciding_orders.append(item)
-                    no_confirmed_orders += int(item.quantity)
+                    no_already_confirmed_orders += int(item.quantity)
 
             if len(coinciding_orders) > 0 :            
-                if(no_confirmed_orders >= int(variation.total_stock)): # if number of booked orders greater than total stock, no order can be made
+                if(no_already_confirmed_orders >= int(variation.total_stock)): # if number of confirmed orders for the date greater than total stock, no order can be made
                     return False
                 else:
-                    if incoming_order_item.quantity < variation.stock: # check the quantity requested is not more than the available stock for that day requested
+                    if int(incoming_order_item.quantity) < int(variation.stock): # check the quantity requested is not more than the available stock for that day requested
                         continue
                     else:
                         return False
