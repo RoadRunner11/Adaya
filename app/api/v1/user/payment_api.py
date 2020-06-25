@@ -158,7 +158,12 @@ def create_subscription():
                 newUserSubscription.update(user_subscription_dict)
             user.update({'subscribed':1})
 
-
+        start_date = userSubscription.current_start_date.strftime('%Y-%m-%d %H:%M:%S')
+        if subscriptionType.plan == 'Adaya Lite': #adayalite
+            Payment.send_subscription_confirmation_email_adayalite(user_email=user.email, user_name=user.firstname, subscription_start=start_date)
+        if subscriptionType.plan == 'Adaya Lifestyle': #adayalifestyle
+            Payment.send_subscription_confirmation_email_adayalifestyle(user_email=user.email, user_name=user.firstname, subscription_start=start_date)
+        
         return jsonify(subscription).json
 
     except Exception as e:

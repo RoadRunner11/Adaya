@@ -83,9 +83,9 @@ def add_voucher():
     return res(item.as_dict())
 
 
-@api_v1.route('/connect/vouchers/<string:name>', methods=['DELETE'])
+@api_v1.route('/connect/vouchers/<int:id>', methods=['DELETE'])
 #@admin_only
-def delete_vouchers(name=None):
+def delete_vouchers(id=None):
     """
    delete voucher
     """
@@ -93,7 +93,7 @@ def delete_vouchers(name=None):
     sort_by = request.args.get('sort_by')
     is_desc = parse_int(request.args.get('is_desc'))
 
-    item =  Voucher.get_voucher(voucher_code=name)
+    item =  Voucher.query.get(id)
     error = item.delete()
     if len(error) > 0:
         return Responses.OPERATION_FAILED()

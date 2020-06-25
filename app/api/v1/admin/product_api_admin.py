@@ -151,3 +151,22 @@ def delete_product(id=None):
         return Responses.OPERATION_FAILED()
 
     return Responses.SUCCESS()
+
+@api_v1.route('/connect/products/variation/<int:id>', methods=['DELETE'])
+#@admin_only
+def delete_variation(id=None):
+    """
+    get_products returns all product or the product with specific id
+    Args:
+        id ([type]): product id
+
+    Returns:
+        [type]: [description]
+    """
+    variation = Variation.get_variation_from_id(id)
+    
+    # delete variation before product
+    if len(variation.delete()) > 0:
+        return Responses.OPERATION_FAILED()
+
+    return Responses.SUCCESS()

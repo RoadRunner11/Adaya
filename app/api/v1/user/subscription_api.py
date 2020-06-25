@@ -10,6 +10,7 @@ from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 
 @api_v1.route('/subscribe', methods=['POST'])
 #@user_only
+# this not a needed api as subscription is now done through the payment api
 def user_subscribe():
     json_dict = request.json
     email = json_dict['email']

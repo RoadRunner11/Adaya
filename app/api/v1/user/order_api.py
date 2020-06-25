@@ -1,4 +1,4 @@
-from app.models import Order, Product, ConfigValues, Voucher, OrderItem, User, OrderItem, UserSubscription, OrderProducts, Order_Item_With_Product, Variation, ProductSkeleton
+from app.models import Order, Product, ConfigValues, Voucher, OrderItem, User, OrderItem, SubscriptionType, UserSubscription, OrderProducts, Order_Item_With_Product, Variation, ProductSkeleton
 from app.api.v1 import api_v1
 from app.helpers import Messages, Responses
 from app.helpers.utility import res, parse_int, get_page_from_args
@@ -75,9 +75,9 @@ def validate_order():
         return Responses.NO_STOCK()
     
     user = User.query.get(item.user_id)
-    # check if user is blacklisted
-    # if user.blacklist:
-    #     return Responses.SUBSCRIPTION_INACTIVE()
+    #check if user is blacklisted
+    if user.blacklist:
+        return Responses.BLACKLISTED()
 
     if user.subscribed:
         if not UserSubscription.check_subscription_active(user.id):
@@ -88,7 +88,8 @@ def validate_order():
         if len(userSub) > 0:
             userSubscription = userSub[0]
             max_per_order_for_lifestyle = int(ConfigValues.get_config_value('max_no_of_items_per_order_adayalifestyle')) 
-            if(userSubscription.subscription_type_id == 2): #AdayaLifestyle plan 
+            subscriptionType = SubscriptionType.query.get(userSubscription.subscription_type_id)
+            if(subscriptionType.plan == 'Adaya Lifestyle'): #AdayaLifestyle plan 
                 if item.check_quantity_products(max_per_order_for_lifestyle):
                     return Responses.OPERATION_FAILED()
             
@@ -190,6 +191,7 @@ def update_confirmed_user_order(id):
         return Responses.OPERATION_FAILED()
     return Responses.SUCCESS()
 
+# needed incase design is changed to create order before payment is confirmed in customer UI
 @api_v1.route('/orders/unconfirmed/<int:id>', methods=['DELETE'])
 #@user_only
 def remove_unconfirmed_user_order(id):

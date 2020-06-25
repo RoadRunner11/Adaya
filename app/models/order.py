@@ -7,6 +7,7 @@ from app.models.config_values import ConfigValues
 from app.models.variation import Variation
 from app.models.order_item import OrderItem
 from app.models.user_subscription import UserSubscription
+from app.models.subscription_type import SubscriptionType
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import json
@@ -145,23 +146,8 @@ class Order(db.Model, DBMixin):
         self.products_freeze = json.dumps(products_freeze)
 
         return order_details
-        
-        # for order_item in self.order_items:
-        #     variation = Variation.get_variation_from_id(order_item.variation_id)
-        #     #TODO decrease stock count
-        #     #variation.stock -= 1
-        #     product = Product.get_product_from_id(variation.product_id)
-        #     duration = self.date_difference(order_item.start_date, order_item.end_date)
-        #     total_price += (variation.price * duration.days)
-        #     products_freeze.append(product.as_dict(['id', 'name', 'description', 'variation.price', 'image']))
-        # self.total_price = total_price
-        # user = User.query.get(self.user_id)
-        # # else, there is another check when user makes an order and sets subscribed flag to 0 if it fails this validation
-        # if user.subscribed:
-        #     if UserSubscription.check_subscription_active(self.user_id):
-        #         self.total_price = 0.00
-        # self.products_freeze = json.dumps(products_freeze)
     
+    #TODO update to use calculate cost for users function and factor in vouchers
     def calculate_discounted_cost(self):
         total_price = 0
         product_price = 0        
@@ -224,7 +210,8 @@ class Order(db.Model, DBMixin):
 
         total_cost = 0.00
         if user.subscribed:
-            if(userSubscription.subscription_type_id == 1): #AdayaLite plan 
+            subscriptionType = SubscriptionType.query.get(userSubscription.subscription_type_id)
+            if(subscriptionType.plan == 'Adaya Lite'): #AdayaLite plan 
                 if no_items_this_month > 4 and no_items_this_month <= max_number_products_monthly:
                     total_cost = Order.get_cost(order_items)
                 elif no_items_this_month < max_number_adayalite:
@@ -246,7 +233,7 @@ class Order(db.Model, DBMixin):
                 else:
                     return -1
                         
-            if(userSubscription.subscription_type_id == 2): #AdayaLifestyle plan
+            if(subscriptionType.plan == 'Adaya Lifestyle'): #AdayaLifestyle plan
                 total_cost = 0.00
 
         else: #unsubscribed user
