@@ -242,10 +242,10 @@ class Order(db.Model, DBMixin):
         
             total_cost = Order.get_cost(order_items)
             unsubscribed_user_no_items_this_month += no_items_this_order
-            return ({'total_cost': total_cost, 'no_items_this_month' : unsubscribed_user_no_items_this_month, 'month_first_order' : date_first_month_order.strftime('%Y-%m-%d %H:%M:%S')})
+            return ({'total_cost': total_cost, 'no_items_this_month' : unsubscribed_user_no_items_this_month, 'month_first_order' : date_first_month_order})
 
         no_items_this_month += no_items_this_order
-        return ({'total_cost': total_cost, 'no_items_this_month' : no_items_this_month, 'month_first_order' : userSubscription.current_end_date.strftime('%Y-%m-%d %H:%M:%S')})
+        return ({'total_cost': total_cost, 'no_items_this_month' : no_items_this_month, 'month_first_order' : userSubscription.current_end_date})
     
     @classmethod
     def get_order_details_this_month(cls, date_first_month_order, user_id):

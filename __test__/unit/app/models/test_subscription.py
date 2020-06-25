@@ -8,5 +8,5 @@ def test_check_subscription_active(test_client, init_database):
 def test_check_all_user_subscriptions(test_client, init_database):
     UserSubscription.Check_all_user_subsriptions()
     users = User.query.all()
+    assert users[0].subscribed == False
     assert users[1].subscribed == True
-    assert users[2].subscribed == False

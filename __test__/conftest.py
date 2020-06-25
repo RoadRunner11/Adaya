@@ -38,6 +38,9 @@ def init_database():
     user3.email_confirmed = True
     user3.subscribed = True
     user4.email_confirmed = False
+    max_no_products_per_month = ConfigValues('max_no_products_per_month', 20)
+    max_no_free_products_adayalite_user = ConfigValues('max_no_free_products_adayalite_user', 4)
+    max_no_of_items_per_order_adayalifestyle = ConfigValues('max_no_of_items_per_order_adayalifestyle', 4)
     max_no_products_per_order = ConfigValues('max_no_products_per_order', 4)
     min_duration_of_rental = ConfigValues('min_duration_of_rental', 4)
     max_duration_of_rental = ConfigValues('max_duration_of_rental', 7)
@@ -53,13 +56,13 @@ def init_database():
     subtype2 = SubscriptionType(plan='Adaya Premium', price=40)
     usersubscription = UserSubscription()
     usersubscription.user_id=2
-    usersubscription.start_date=datetime.now()
-    usersubscription.end_date=datetime.strptime('2020-09-06 05:58:00', '%Y-%m-%d %H:%M:%S')
+    usersubscription.current_start_date=datetime.now()
+    usersubscription.current_end_date=datetime.strptime('2020-09-06 05:58:00', '%Y-%m-%d %H:%M:%S')
     usersubscription.subscription_type=subtype
     usersubscription2 = UserSubscription()
     usersubscription2.user_id=3
-    usersubscription2.start_date=datetime.now()
-    usersubscription2.end_date=datetime.strptime('2020-08-06 05:58:00', '%Y-%m-%d %H:%M:%S')
+    usersubscription2.current_start_date=datetime.now()
+    usersubscription2.current_end_date=datetime.strptime('2020-08-06 05:58:00', '%Y-%m-%d %H:%M:%S')
     usersubscription2.subscription_type=subtype2
     voucher = Voucher('HAO20')
     voucher.discount_fixed_amount = 100
@@ -91,6 +94,9 @@ def init_database():
             db.session.add(variation2)
             db.session.add(variation3)    
     db.session.add(max_no_products_per_order)
+    db.session.add(max_no_products_per_month)
+    db.session.add(max_no_free_products_adayalite_user)
+    db.session.add(max_no_of_items_per_order_adayalifestyle)
     db.session.add(min_duration_of_rental)
     db.session.add(max_duration_of_rental)
     db.session.add(max_no_of_vouchers)

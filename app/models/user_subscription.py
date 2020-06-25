@@ -124,7 +124,7 @@ class UserSubscription(db.Model, DBMixin):
         user_subscriptions = UserSubscription.query.all()
         
         for user_subscription in user_subscriptions:
-            if datetime.now() > user_subscription.end_date:
+            if datetime.now() > user_subscription.current_end_date:
                 user = User.query.filter_by(id = user_subscription.user_id).first()
                 user.subscribed = False
                 user.update()

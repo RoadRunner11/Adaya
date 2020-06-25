@@ -7,7 +7,7 @@ def test_calculate_discounted_cost(test_client, init_database, member_order):
 
 def test_calculate_cost(test_client, init_database, new_order):
     new_order.calculate_cost()
-    assert new_order.total_price == 280
+    assert new_order.total_price == 60.0
     assert new_order.products_freeze == '[{"id": "1", "name": "Haoluo", "description": "None", "variation.price": "", "image": "None"}, {"id": "1", "name": "Haoluo", "description": "None", "variation.price": "", "image": "None"}]'
 
 
