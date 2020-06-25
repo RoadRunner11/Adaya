@@ -81,6 +81,6 @@ def new_voucher():
     voucher.discount_fixed_amount = 8.00
     voucher.max_redemptions = 2
     voucher.no_of_redemptions = 1
-    voucher.redeem_by = datetime.strptime('8-4-2020', '%d-%m-%Y') 
+    voucher.redeem_by = datetime.strptime('8-8-2020', '%d-%m-%Y') 
 
     return voucher

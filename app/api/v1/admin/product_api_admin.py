@@ -4,6 +4,7 @@ from app.helpers import Messages, Responses
 from app.helpers.utility import res, parse_int, get_page_from_args
 from flask import jsonify, request
 from app.decorators.authorisation import admin_only
+import datetime
 
 
 @api_v1.route('/connect/products', methods=['GET'])
@@ -88,13 +89,14 @@ def update_product(id):
     for variation_dict in variations_dict:
         variation = Variation()
         variation.update_from_dict(variation_dict)
-
+        variation.next_available_date = datetime.datetime.strptime(variation.next_available_date, '%Y-%m-%d %H:%M:%S')     
+        
         if variation.name in current_variations_names:            
             for current_variation in current_variations:
                 if variation.name == current_variation.name:
                     if len(current_variation.update(variation_dict)) > 0:
                         return Responses.OPERATION_FAILED()
-        else:
+        else: #a new variation is being added to this product
             if len(variation.update()) > 0:
                 return Responses.OPERATION_FAILED()
     return Responses.SUCCESS()
@@ -115,7 +117,8 @@ def add_product():
     for variation_dict in variations_dict:
         variation = Variation()
         if variation.update_from_dict(variation_dict):
-            variation.product_id = product.id            
+            variation.product_id = product.id    
+            variation.next_available_date = datetime.datetime.strptime(variation.next_available_date, '%Y-%m-%d %H:%M:%S')        
             variations.append(variation)    
 
     for variation in variations:

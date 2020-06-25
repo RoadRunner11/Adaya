@@ -25,7 +25,7 @@ def user_subscribe():
     subscription_price = subscription.price
 
     start_date=date.today()
-    end_date = start_date + relativedelta(months=int(subscription.plan))
+    end_date = start_date + relativedelta(months=1)
     user_subscription_detail = UserSubscriptionDetail(start_date, end_date, subscription.plan, subscription_price)
     
     return res(user_subscription_detail.as_dict())

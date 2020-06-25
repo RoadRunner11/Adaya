@@ -98,6 +98,8 @@ def update_user_information(email):
     user = User.get_user_by_email(email)
     if not user:
         return Responses.NOT_EXIST()
+    if not user.email_confirmed:
+        return Responses.UNCONFIRMED_USER()
     
     json_dict = request.json
     if len(user.update(json_dict)) > 0: #['password']

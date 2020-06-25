@@ -8,7 +8,7 @@ def test_admin_get_subscriptiontype(test_client, init_database):
     '/connect/subscribetype', json={})
 
     assert response.status_code == 200    
-    assert response.json['body'][0]['plan'] == '1'
+    assert response.json['body'][0]['plan'] == 'Adaya Lite'
     assert len(response.json['body'])== 2
 
 def test_admin_add_subscriptiontype(test_client, init_database): 
@@ -21,7 +21,7 @@ def test_admin_add_subscriptiontype(test_client, init_database):
 
 def test_admin_update_subscriptiontype(test_client, init_database, new_product):
     response = test_client.put(
-        '/connect/subscribetype/1', json={'plan': '5','price': '78'})
+        '/connect/subscribetype/Adaya Lite', json={'plan': 'Adaya Lite','price': '78'})
 
     assert response.status_code == 200
     assert response.json['body'] == 'Operation Success'
