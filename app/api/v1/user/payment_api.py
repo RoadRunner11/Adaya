@@ -33,7 +33,7 @@ def create_customer_intent():
     
     item.update_from_dict(json_dict)
     calculated_details = Order.calculate_cost_for_users(item)
-    total_price = float(calculated_details['total_cost']) + 3.99
+    total_price = float(calculated_details['total_cost'])
     user_id = json_dict['user_id']
     
     publishable_key = 'pk_test_wfEV385fd15MX1lKUFsPpG1F00EVVb5Dl7'
@@ -41,7 +41,43 @@ def create_customer_intent():
     stripe.api_key = "sk_test_Fp5a2iT7YRDCEckASE3ExS5q004e2IXvcs"
     
     user = User.query.get(user_id)
-    if not user.stripe_customer_id:
+    if not user.stripe_customer_id or len(user.stripe_customer_id) < 1:
+        s_customer = stripe.Customer.create(email=user.email, name=user.firstname)
+        sid = s_customer['id']
+        user.update({"stripe_customer_id": sid})
+
+    user_stripe_id = user.stripe_customer_id
+    stripe_total_price = int (total_price * 100) #amount to stripe has to be integer so convert to smallest currency unit
+
+    intent = stripe.PaymentIntent.create(
+        amount=stripe_total_price,
+        currency='gbp',
+        customer=user_stripe_id, 
+        setup_future_usage='off_session',
+        receipt_email=user.email
+    )
+    try:
+    # Send publishable key and PaymentIntent details to client
+        response = jsonify({'publicKey': publishable_key, 'clientSecret': intent.client_secret, 'id': intent.id})
+        return response.json
+    except Exception as e:
+        return jsonify(error=str(e)), 403
+    
+    #return generate_response(intent)
+
+@api_v1.route('/create-payment-intent-late-fee', methods=['POST'])
+#@user_only
+def create_customer_intent_late_payment():
+    json_dict = request.json
+    user_id = json_dict['user_id']
+    total_price = float(json_dict['late_fee_total_price'])
+
+    publishable_key = 'pk_test_wfEV385fd15MX1lKUFsPpG1F00EVVb5Dl7'
+    #secret_key = 'sk_test_Fp5a2iT7YRDCEckASE3ExS5q004e2IXvcs'
+    stripe.api_key = "sk_test_Fp5a2iT7YRDCEckASE3ExS5q004e2IXvcs"
+    
+    user = User.query.get(user_id)
+    if not user.stripe_customer_id or len(user.stripe_customer_id) < 1:
         s_customer = stripe.Customer.create(email=user.email, name=user.firstname)
         sid = s_customer['id']
         user.update({"stripe_customer_id": sid})
