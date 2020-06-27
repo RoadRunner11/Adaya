@@ -101,7 +101,7 @@ def validate_order():
     return res(details)
 
 @api_v1.route('/calculate-order-cost', methods=['POST'])
-#@user_only
+@user_only
 def calculate_order_cost():
     json_dict = request.json
     item = Order()

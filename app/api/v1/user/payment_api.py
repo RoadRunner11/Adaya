@@ -3,7 +3,7 @@ import json
 import os
 from datetime import datetime
 from flask import Flask, render_template, jsonify, request, send_from_directory, url_for
-from app.models import Product, Variation, ProductVariations, User, Payment, SubscriptionType, UserSubscription, Order, OrderItem
+from app.models import Product, Variation, ProductVariations, User, Payment, SubscriptionType, UserSubscription, Order, OrderItem, ConfigValues
 from app.api.v1 import api_v1
 from app.helpers import Messages, Responses
 from app.helpers.utility import res, parse_int, get_page_from_args
@@ -33,15 +33,49 @@ def create_customer_intent():
     
     item.update_from_dict(json_dict)
     calculated_details = Order.calculate_cost_for_users(item)
-    total_price = float(calculated_details['total_cost']) + 3.99
+    total_price = float(calculated_details['total_cost'])
     user_id = json_dict['user_id']
     
-    publishable_key = 'pk_test_wfEV385fd15MX1lKUFsPpG1F00EVVb5Dl7'
-    #secret_key = 'sk_test_Fp5a2iT7YRDCEckASE3ExS5q004e2IXvcs'
-    stripe.api_key = "sk_test_Fp5a2iT7YRDCEckASE3ExS5q004e2IXvcs"
+    publishable_key = ConfigValues.get_config_value('STRIPE_PK')
+    stripe.api_key =  ConfigValues.get_config_value('STRIPE_SK') 
     
     user = User.query.get(user_id)
-    if not user.stripe_customer_id:
+    if not user.stripe_customer_id or len(user.stripe_customer_id) < 1:
+        s_customer = stripe.Customer.create(email=user.email, name=user.firstname)
+        sid = s_customer['id']
+        user.update({"stripe_customer_id": sid})
+
+    user_stripe_id = user.stripe_customer_id
+    stripe_total_price = int (total_price * 100) #amount to stripe has to be integer so convert to smallest currency unit
+
+    intent = stripe.PaymentIntent.create(
+        amount=stripe_total_price,
+        currency='gbp',
+        customer=user_stripe_id, 
+        setup_future_usage='off_session',
+        receipt_email=user.email
+    )
+    try:
+    # Send publishable key and PaymentIntent details to client
+        response = jsonify({'publicKey': publishable_key, 'clientSecret': intent.client_secret, 'id': intent.id})
+        return response.json
+    except Exception as e:
+        return jsonify(error=str(e)), 403
+    
+    #return generate_response(intent)
+
+@api_v1.route('/create-payment-intent-late-fee', methods=['POST'])
+#@user_only
+def create_customer_intent_late_payment():
+    json_dict = request.json
+    user_id = json_dict['user_id']
+    total_price = float(json_dict['late_fee_total_price'])
+
+    publishable_key = ConfigValues.get_config_value('STRIPE_PK')
+    stripe.api_key =  ConfigValues.get_config_value('STRIPE_SK') 
+    
+    user = User.query.get(user_id)
+    if not user.stripe_customer_id or len(user.stripe_customer_id) < 1:
         s_customer = stripe.Customer.create(email=user.email, name=user.firstname)
         sid = s_customer['id']
         user.update({"stripe_customer_id": sid})
@@ -70,10 +104,7 @@ def create_customer_intent():
 def create_customer_for_subscription():
     json_dict = request.json
     user_id = json_dict['user_id']
-    #subscription_price =  SubscriptionType.get_items(plan=plan)[0]
-    publishable_key = 'pk_test_wfEV385fd15MX1lKUFsPpG1F00EVVb5Dl7'
-    #secret_key = 'sk_test_Fp5a2iT7YRDCEckASE3ExS5q004e2IXvcs'
-    stripe.api_key = "sk_test_Fp5a2iT7YRDCEckASE3ExS5q004e2IXvcs"
+    stripe.api_key =  ConfigValues.get_config_value('STRIPE_SK')
     
     user = User.query.get(user_id)
     if not user.stripe_customer_id:
@@ -181,7 +212,7 @@ def cancel_subscription():
     subscriptionId = userSubscription.subscription_id
     user = User.query.get(user_id)
 
-    stripe.api_key = "sk_test_Fp5a2iT7YRDCEckASE3ExS5q004e2IXvcs"
+    stripe.api_key =  ConfigValues.get_config_value('STRIPE_SK')
 
     try:
          # Cancel the subscription by deleting it
@@ -236,14 +267,16 @@ def charge_customer_offline():
             total_cost += (0.5 * float(variation.price)) * int(order_item.days_returned_late)
     
     stripe_total_price = int (float(total_cost) * 100)
-    publishable_key = 'pk_test_wfEV385fd15MX1lKUFsPpG1F00EVVb5Dl7'
     
+    publishable_key = ConfigValues.get_config_value('STRIPE_PK')
+    
+
     user = User.query.get(user_id)
     if not user.stripe_customer_id:
         return Responses.OPERATION_FAILED()
 
     user_stripe_id = user.stripe_customer_id
-    stripe.api_key = "sk_test_Fp5a2iT7YRDCEckASE3ExS5q004e2IXvcs"
+    stripe.api_key =  ConfigValues.get_config_value('STRIPE_SK')
 
     try:
         # List the customer's payment methods to find one to charge
@@ -313,7 +346,7 @@ def webhook_received():
 
     # You can use webhooks to receive information about asynchronous payment events.
     # For more about our webhook events check out https://stripe.com/docs/webhooks.
-    webhook_secret = "whsec_Z5rqV5EyWqGAcsGVsf1id7kfCk8hQXkI" #os.getenv('STRIPE_WEBHOOK_SECRET')
+    webhook_secret = ConfigValues.get_config_value('STRIPE_WHS') #"whsec_Z5rqV5EyWqGAcsGVsf1id7kfCk8hQXkI" #os.getenv('STRIPE_WEBHOOK_SECRET')
     request_data = json.loads(request.data)
 
     if webhook_secret:
