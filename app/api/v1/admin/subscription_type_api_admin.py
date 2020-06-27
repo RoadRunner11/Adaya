@@ -70,7 +70,7 @@ def delete_subscription_types(plan=None):
     page, per_page = get_page_from_args()
 
     item =  SubscriptionType.get_items(plan=plan, page=page, per_page=per_page)
-    error = item.delete()
+    error = item[0].delete()
     if len(error) > 0:
         return Responses.OPERATION_FAILED()
     return Responses.SUCCESS()

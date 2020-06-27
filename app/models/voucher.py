@@ -18,6 +18,8 @@ class Voucher(db.Model, DBMixin):
     product_id = db.Column(db.Integer, db.ForeignKey('product.id'), nullable=False, default=1)  
     product = db.relationship('Product')
 
+    output_column = ['id','name', 'discount_percent_off', 'discount_fixed_amount', 'max_redemptions', 'no_of_redemptions','redeem_by','product_id']
+
     @classmethod
     def get_items(cls, name=None, page=None, per_page=None, sort_by=None, is_desc=None):
         """
