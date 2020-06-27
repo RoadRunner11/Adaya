@@ -4,6 +4,8 @@ from app.helpers import Messages, Responses
 from app.helpers.utility import res, parse_int, get_page_from_args
 from flask import jsonify, request
 from app.decorators.authorisation import admin_only
+import datetime
+from dateutil.parser import parse
 
 
 @api_v1.route('/connect/products', methods=['GET'])
@@ -88,13 +90,16 @@ def update_product(id):
     for variation_dict in variations_dict:
         variation = Variation()
         variation.update_from_dict(variation_dict)
-
+        if variation.next_available_date != None: # ensure this is a date string
+            if is_date(variation.next_available_date):
+                variation.next_available_date = datetime.datetime.strptime(variation.next_available_date, '%Y-%m-%d %H:%M:%S')     
+        
         if variation.name in current_variations_names:            
             for current_variation in current_variations:
                 if variation.name == current_variation.name:
                     if len(current_variation.update(variation_dict)) > 0:
                         return Responses.OPERATION_FAILED()
-        else:
+        else: #a new variation is being added to this product
             if len(variation.update()) > 0:
                 return Responses.OPERATION_FAILED()
     return Responses.SUCCESS()
@@ -115,10 +120,75 @@ def add_product():
     for variation_dict in variations_dict:
         variation = Variation()
         if variation.update_from_dict(variation_dict):
-            variation.product_id = product.id            
+            variation.product_id = product.id    
+            if variation.next_available_date != None: # ensure this is a date string
+                if is_date(variation.next_available_date):
+                    variation.next_available_date = datetime.datetime.strptime(variation.next_available_date, '%Y-%m-%d %H:%M:%S')        
             variations.append(variation)    
 
     for variation in variations:
         if len(variation.update()) > 0:
             return Responses.OPERATION_FAILED()
     return Responses.SUCCESS()
+
+
+@api_v1.route('/connect/products/<int:id>', methods=['DELETE'])
+#@admin_only
+def delete_product(id=None):
+    """
+    get_products returns all product or the product with specific id
+    Args:
+        id ([type]): product id
+
+    Returns:
+        [type]: [description]
+    """
+    item = Product.query.get(id)
+
+    variations = Variation.get_items_for_id(product_id = item.id)
+    
+    # delete variations before product
+    for variation in variations:
+       if len(variation.delete()) > 0:
+           return Responses.OPERATION_FAILED()
+
+    # deletes product
+    error = item.delete()
+    
+    if len(error) > 0:
+        return Responses.OPERATION_FAILED()
+
+    return Responses.SUCCESS()
+
+@api_v1.route('/connect/products/variation/<int:id>', methods=['DELETE'])
+#@admin_only
+def delete_variation(id=None):
+    """
+    get_products returns all product or the product with specific id
+    Args:
+        id ([type]): product id
+
+    Returns:
+        [type]: [description]
+    """
+    variation = Variation.get_variation_from_id(id)
+    
+    # delete variation before product
+    if len(variation.delete()) > 0:
+        return Responses.OPERATION_FAILED()
+
+    return Responses.SUCCESS()
+
+def is_date(string, fuzzy=False):
+    """
+    Return whether the string can be interpreted as a date.
+
+    :param string: str, string to check for date
+    :param fuzzy: bool, ignore unknown tokens in string if True
+    """
+    try: 
+        parse(string, fuzzy=fuzzy)
+        return True
+
+    except ValueError:
+        return False

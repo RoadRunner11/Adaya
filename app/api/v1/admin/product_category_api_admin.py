@@ -39,3 +39,12 @@ def add_product_category():
     if len(error) > 0:
         return Responses.OPERATION_FAILED()
     return res(item.as_dict())
+
+@api_v1.route('/connect/product_categories/<int:id>', methods=['DELETE'])
+@admin_only
+def delete_product_categories(id=None):
+    item = ProductCategory.query.get(id)
+    error = item.delete()
+    if len(error) > 0:
+        return Responses.OPERATION_FAILED()
+    return Responses.SUCCESS()

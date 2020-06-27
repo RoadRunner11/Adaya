@@ -27,6 +27,11 @@ def request_token():
     email = request.json.get('email', None)
     password = request.json.get('password', None)
     user = User.authenticate(email, password)
+    # ensure email is confirmed
+    if not user.email_confirmed:
+        user.send_confirmation_email(user.email)
+        return Responses.UNCONFIRMED_USER()
+
     if user:
         token = create_access_token(identity=user.token_identity())
         response, status = res()
@@ -108,8 +113,6 @@ def password_reset():
     user = User.get_user_by_email(email)
     if not user:
         return Responses.NOT_EXIST()
-    if not user.email_confirmed:
-        return Responses.UNCONFIRMED_USER()
     
     user.send_password_reset_email(email)
     

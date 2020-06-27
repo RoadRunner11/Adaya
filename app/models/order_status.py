@@ -7,7 +7,7 @@ db = AC().db
 class OrderStatus(db.Model, DBMixin):
     __tablename__ = 'order_status'
 
-    name = db.Column(db.String(255), nullable=False)
+    name = db.Column(db.String(255), nullable=False, unique=True)
     orders = db.relationship('Order', lazy='dynamic')
 
     def __init__(self, name=' '):

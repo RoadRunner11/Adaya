@@ -22,6 +22,7 @@ class Messages:
     VOUCHER_DETAILS_WRONG = 'Voucher cannot have both percent off and fixed amount'
     NO_ORDERS_EXCEEDED = 'Number of Orders for the month exceeded'
     SUBSCRIPTION_INACTIVE = 'Subscription Inactive, please  contact us'
+    BLACKLISTED = 'User Blacklisted and account disabled'
 
 
 class Roles:
@@ -97,3 +98,7 @@ class Responses:
     @staticmethod
     def SUBSCRIPTION_INACTIVE():
         return res('', Messages.SUBSCRIPTION_INACTIVE, 400)
+    
+    @staticmethod
+    def BLACKLISTED():
+        return res('', Messages.BLACKLISTED, 400)

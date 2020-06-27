@@ -4,6 +4,8 @@ from app.helpers import Messages, Responses
 from app.helpers.utility import res, parse_int, get_page_from_args
 from flask import jsonify, request
 from app.decorators.authorisation import admin_only
+from dateutil.parser import parse
+import datetime
 
 
 @api_v1.route('/connect/orders', methods=['GET'])
@@ -62,15 +64,22 @@ def update_order(id):
         if "id" in order_item_dict.keys():
             order_item = OrderItem.query.get(order_item_dict['id'])        
         order_item.update_from_dict(order_item_dict)
+        if order_item.date_returned != None: # ensure this is a date string
+            if is_date(order_item.date_returned):
+                order_item.date_returned = datetime.datetime.strptime(order_item.date_returned, '%Y-%m-%d %H:%M:%S')   
         
         if not "id" in order_item_dict.keys():
              item.order_items.append(order_item)
-        else:
-            for oid in item.order_items:
-                if(oid.id == order_item_dict['id']):
-                    oid = order_item
-
-    item.calculate_cost()
+        # else:
+        #     for oid in item.order_items:
+        #         if(oid.id == order_item_dict['id']):
+        #             oid = order_item
+    
+    item.update_from_dict(json_dict)
+    # re enable if customers can call in to order
+    # currently orders can only be made from customer UI 
+    # only edit on the order is to the status
+    #item.calculate_cost()
         
     if len(item.update(force_insert=True)) > 0:
         return Responses.OPERATION_FAILED()
@@ -96,3 +105,18 @@ def add_order():
     if len(item.update(force_insert=True)) > 0:
         return Responses.OPERATION_FAILED()
     return res(item.as_dict())
+
+
+def is_date(string, fuzzy=False):
+    """
+    Return whether the string can be interpreted as a date.
+
+    :param string: str, string to check for date
+    :param fuzzy: bool, ignore unknown tokens in string if True
+    """
+    try: 
+        parse(string, fuzzy=fuzzy)
+        return True
+
+    except ValueError:
+        return False

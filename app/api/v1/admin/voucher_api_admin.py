@@ -56,7 +56,7 @@ def update_vouchers(name):
         return Responses.NOT_EXIST()
     json_dict = request.json
 
-    if( 'discount_percent_off' in json_dict and 'discount_fixed_amount' in json_dict ):
+    if(('discount_percent_off' in json_dict and float(json_dict['discount_percent_off']) > 0) and ('discount_fixed_amount' in json_dict and float(json_dict['discount_fixed_amount']) > 0)):
         return Responses.OPERATION_FAILED(Messages.VOUCHER_DETAILS_WRONG)
 
     if len(item.update(json_dict)) > 0:
@@ -73,7 +73,7 @@ def add_voucher():
     existing_item = Voucher.get_voucher(json_dict['name'])
     if existing_item:
         return Responses.OBJECT_EXIST(Messages.VOUCHER_EXISTS)
-    if( 'discount_percent_off' in json_dict and 'discount_fixed_amount' in json_dict ):
+    if(('discount_percent_off' in json_dict and float(json_dict['discount_percent_off']) > 0) and ('discount_fixed_amount' in json_dict and float(json_dict['discount_fixed_amount']) > 0)):
         return Responses.OPERATION_FAILED(Messages.VOUCHER_DETAILS_WRONG)
 
     item = Voucher(json_dict['name'])
@@ -81,3 +81,20 @@ def add_voucher():
     if len(error) > 0:
         return Responses.OPERATION_FAILED(error)
     return res(item.as_dict())
+
+
+@api_v1.route('/connect/vouchers/<int:id>', methods=['DELETE'])
+#@admin_only
+def delete_vouchers(id=None):
+    """
+   delete voucher
+    """
+    page, per_page = get_page_from_args()
+    sort_by = request.args.get('sort_by')
+    is_desc = parse_int(request.args.get('is_desc'))
+
+    item =  Voucher.query.get(id)
+    error = item.delete()
+    if len(error) > 0:
+        return Responses.OPERATION_FAILED()
+    return Responses.SUCCESS()

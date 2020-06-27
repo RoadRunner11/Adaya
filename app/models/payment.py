@@ -66,3 +66,20 @@ class Payment(object):
         msg = Message('Subscription Cancelled', sender='adaya@adayahouse.com', recipients=[user_email], html=subscription_cancelled_html)
 
         mail.send(msg)
+    
+
+    @classmethod
+    def send_subscription_confirmation_email_adayalite(cls, user_email, user_name, subscription_start): 
+        adayalite_subscription_confirmation_html = render_template('adayalite_subscription_confirmation.html', user_name=user_name, subscription_start=subscription_start)
+
+        msg = Message('Subscription Confirmed', sender='adaya@adayahouse.com', recipients=[user_email], html=adayalite_subscription_confirmation_html)
+
+        mail.send(msg)
+    
+    @classmethod
+    def send_subscription_confirmation_email_adayalifestyle(cls, user_email, user_name, subscription_start): 
+        adayalifestyle_subscription_confirmation_html = render_template('adayalifestyle_subscription_confirmation.html', user_name=user_name, subscription_start=subscription_start)
+
+        msg = Message('Subscription Confirmed', sender='adaya@adayahouse.com', recipients=[user_email], html=adayalifestyle_subscription_confirmation_html)
+
+        mail.send(msg)

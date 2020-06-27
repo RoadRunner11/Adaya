@@ -7,7 +7,7 @@ db = AC().db
 class ProductCategory(db.Model, DBMixin):
     __tablename__ = 'product_category'
 
-    name = db.Column(db.String(255), nullable=False)
+    name = db.Column(db.String(255), nullable=False, unique=True)
     products = db.relationship('Product', lazy='dynamic')
 
     output_column = ['id', 'name', 'enabled']

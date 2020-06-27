@@ -1,4 +1,4 @@
-from app.models import Order, Product, ConfigValues, Voucher, OrderItem, User, OrderItem, UserSubscription, OrderProducts, Order_Item_With_Product, Variation, ProductSkeleton
+from app.models import Order, Product, ConfigValues, Voucher, OrderItem, User, OrderItem, SubscriptionType, UserSubscription, OrderProducts, Order_Item_With_Product, Variation, ProductSkeleton
 from app.api.v1 import api_v1
 from app.helpers import Messages, Responses
 from app.helpers.utility import res, parse_int, get_page_from_args
@@ -22,11 +22,8 @@ def create_order():
     
 
     user = User.query.get(item.user_id)
-       
-    # check if user is not blacklisted
-    # if user.blacklist:
-    #     return Responses.SUBSCRIPTION_INACTIVE()
 
+    #TODO renable when voucher functionality is done
     # if user.subscribed:
     #     if UserSubscription.check_subscription_active(user.id):
     #         return Responses.SUBSCRIPTION_INACTIVE()
@@ -49,11 +46,14 @@ def create_order():
     if details != -1:        
         user.update({'number_of_items_ordered_this_month': int(details['no_items_this_month']), 'month_first_order' : details['month_first_order']})
 
+    # convert date 
     if len(item.update(json_dict,force_insert=True)) > 0:
         return Responses.OPERATION_FAILED()
     
     #send email confirmation to user
     Order.send_order_confirmation_email(order_number=item.id, user_email=user.email)
+    # for item in item.order_items:
+    #     item.m date_first_month_order.strftime('%Y-%m-%d %H:%M:%S')
     return res(item.as_dict())
 
 @api_v1.route('/orders/valid', methods=['POST'])
@@ -75,28 +75,24 @@ def validate_order():
         return Responses.NO_STOCK()
     
     user = User.query.get(item.user_id)
-    # check if user is blacklisted
-    # if user.blacklist:
-    #     return Responses.SUBSCRIPTION_INACTIVE()
+    #check if user is blacklisted
+    if user.blacklist:
+        return Responses.BLACKLISTED()
 
     if user.subscribed:
         if not UserSubscription.check_subscription_active(user.id):
             user.update({'subscribed': 0})
             #return Responses.SUBSCRIPTION_INACTIVE()
-
-    # if 'voucher_codes' in json_dict.keys():
-    #     voucher_codes = json_dict['voucher_codes']
-    #     number_vouchers_allowed = int(ConfigValues.get_config_value('max_no_of_vouchers'))
-    #     if len(voucher_codes) >  number_vouchers_allowed:
-    #         return Responses.NO_VOUCHERS_EXCEEDED()
-    #     vouchers = Voucher.get_vouchers(voucher_codes)
-    #     if not vouchers[0]:
-    #         return Responses.INVALID_VOUCHER()        
-    #     valid = Voucher.validate_voucher(vouchers)
-    #     if valid:
-    #         item.vouchers = vouchers
-    #         item.calculate_discounted_cost()
-    # else:    
+        userSub = UserSubscription.get_subscription(user_id=item.user_id)
+        userSubscription = {}
+        if len(userSub) > 0:
+            userSubscription = userSub[0]
+            max_per_order_for_lifestyle = int(ConfigValues.get_config_value('max_no_of_items_per_order_adayalifestyle')) 
+            subscriptionType = SubscriptionType.query.get(userSubscription.subscription_type_id)
+            if(subscriptionType.plan == 'Adaya Lifestyle'): #AdayaLifestyle plan 
+                if item.check_quantity_products(max_per_order_for_lifestyle):
+                    return Responses.OPERATION_FAILED()
+            
     details = Order.calculate_cost_for_users(item)
 
     if details == -1:        
@@ -134,6 +130,7 @@ def calculate_order_cost():
         return Responses.NO_ORDERS_EXCEEDED()
     return res(response)
 
+# not used. Orders can only be updated from admin panel
 @api_v1.route('/orders/<int:id>', methods=['PUT'])
 @user_only
 def update_user_order():
@@ -181,6 +178,7 @@ def update_confirmed_user_order(id):
         return Responses.OPERATION_FAILED()
     return Responses.SUCCESS()
 
+# needed incase design is changed to create order before payment is confirmed in customer UI
 @api_v1.route('/orders/unconfirmed/<int:id>', methods=['DELETE'])
 #@user_only
 def remove_unconfirmed_user_order(id):
@@ -193,7 +191,7 @@ def remove_unconfirmed_user_order(id):
         return Responses.OPERATION_FAILED()
     return Responses.SUCCESS()
 
-
+# not being used, rework when calculating cost using voucher
 @api_v1.route('/orders/voucher', methods=['POST'])
 @user_only
 def calculate_order_discount():
@@ -218,14 +216,6 @@ def calculate_order_discount():
         item.vouchers = vouchers
         item.calculate_discounted_cost()
     return res(item.as_dict())
-
-@api_v1.route('/orders/return/<int:id>', methods=['PUT'])
-@user_only
-def return_user_order(id): 
-    item = Order.query.get(id)
-    item.status_id = 1
-    # ToDo
-    #  send confirmation email on receiving items ?
 
 @api_v1.route('/orders', methods=['GET'])
 @api_v1.route('/orders/<int:id>', methods=['GET'])
