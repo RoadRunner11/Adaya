@@ -104,7 +104,6 @@ def create_customer_intent_late_payment():
 def create_customer_for_subscription():
     json_dict = request.json
     user_id = json_dict['user_id']
-    publishable_key = ConfigValues.get_config_value('STRIPE_PK')
     stripe.api_key =  ConfigValues.get_config_value('STRIPE_SK')
     
     user = User.query.get(user_id)
