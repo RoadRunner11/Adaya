@@ -21,6 +21,7 @@ def user_get_products(id=None):
     """
     page, per_page = get_page_from_args()    
     sort_by = request.args.get('sort_by')
+    sort_by_price = request.args.get('sort_by_price')
     is_desc = parse_int(request.args.get('is_desc'))
     category_id = parse_int(request.args.get('category'))
     items = [Product.query.get(id)] if id else Product.get_items(
@@ -41,6 +42,10 @@ def user_get_products(id=None):
         
         all_product_variations.append(product_variations)
 
+    if sort_by_price == 'price':
+        sorted_productVariations_by_price = sorted(all_product_variations, key=lambda x: x.variations[0].price, reverse=False)
+        return res([product_variation.as_dict() for product_variation in sorted_productVariations_by_price])
+    
     return res([product_variation.as_dict() for product_variation in all_product_variations])
 
 @api_v1.route('/products/<string:name>', methods=['GET'])
@@ -134,6 +139,7 @@ def user_get_productcategories(category=None):
     """
     page, per_page = get_page_from_args()    
     sort_by = request.args.get('sort_by')
+    sort_by_price = request.args.get('sort_by_price')
     is_desc = parse_int(request.args.get('is_desc'))
     
     category_details = []
@@ -164,6 +170,10 @@ def user_get_productcategories(category=None):
         product_variations.variations = available_product_variations
         
         all_product_variations.append(product_variations)
+    
+    if sort_by_price == 'price':
+        sorted_productVariations_by_price = sorted(all_product_variations, key=lambda x: x.variations[0].price, reverse=False)
+        return res([product_variation.as_dict() for product_variation in sorted_productVariations_by_price])
 
     return res([product_variation.as_dict() for product_variation in all_product_variations])
 
@@ -180,7 +190,7 @@ def user_get_sizes(size=None):
     """
     page, per_page = get_page_from_args()    
     sort_by = request.args.get('sort_by')
-    # is_desc = parse_int(request.args.get('is_desc'))
+    sort_by_price = request.args.get('sort_by_price')
     # category_id = parse_int(request.args.get('category'))
 
     variations = Variation.get_items_for_size(size=size, page=page, per_page=per_page, sort_by=sort_by)
@@ -192,6 +202,10 @@ def user_get_sizes(size=None):
         product_variations = ProductVariations(product=product)
         product_variations.variations = variation
         all_product_variations.append(product_variations)
+    
+    if sort_by_price == 'price':
+        sorted_productVariations_by_price = sorted(all_product_variations, key=lambda x: x.variations.price, reverse=False)
+        return res([product_variation.as_dict() for product_variation in sorted_productVariations_by_price])
 
     return res([product_variation.as_dict() for product_variation in all_product_variations])
 
