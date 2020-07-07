@@ -8,7 +8,6 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
 @api_v1.route('/variations', methods=['GET'])
-#@user_only
 def user_variations(name=None):
     """
     gets all unique variation types

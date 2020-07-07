@@ -1,9 +1,17 @@
 from app.models import Order, User
 from app.helpers.app_context import AppContext as AC
 from datetime import datetime
+from flask_jwt_extended import create_access_token, set_access_cookies, unset_jwt_cookies
+import flask
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 def test_unsubscribed_member_order(test_client, init_database, member_order): 
   order_items = order_items_as_dict(member_order)
+  server_name = flask.current_app.config["ALLOW_ORIGIN"] or "localhost"
+  # get member user
+  user = User.get_user_by_email(email='abcd@gmail.com')
+  token = create_access_token(identity=user.token_identity())
+  test_client.set_cookie(server_name, key='access_token_cookie', value=token)
   
   response = test_client.post(
     '/orders', json={'order_items':[order_items[0], order_items[1]], 'user_id': 1})
@@ -13,6 +21,11 @@ def test_unsubscribed_member_order(test_client, init_database, member_order):
 
 def test_subscribed_member_order(test_client, init_database, member_order): 
   order_items = order_items_as_dict(member_order)
+  server_name = flask.current_app.config["ALLOW_ORIGIN"] or "localhost"
+  # get member user
+  user = User.get_user_by_email(email='abcd@gmail.com')
+  token = create_access_token(identity=user.token_identity())
+  test_client.set_cookie(server_name, key='access_token_cookie', value=token)
 
   response = test_client.post(
     '/orders', json={'order_items':[order_items[0], order_items[1]], 'user_id': member_order.user_id})

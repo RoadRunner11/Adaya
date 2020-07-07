@@ -1,4 +1,4 @@
-from app.models import User
+from app.models import User, Role
 from app.api.v1 import api_v1
 from app.helpers import Messages, Responses
 from app.helpers.utility import res, parse_int, get_page_from_args
@@ -73,6 +73,10 @@ def add_user():
     existing_item = User.get_user_by_email(json_dict['email'])
     if existing_item:
         return Responses.OBJECT_EXIST(Messages.EMAIL_EXIST)
+    # set admin email to confirmed
+    role = Role.query.get(json_dict['role_id'])
+    if(role.name == "admin"):
+        json_dict['email_confirmed'] = True
     item = User()
     error = item.insert_as_new_item(json_dict)
     if len(error) > 0:

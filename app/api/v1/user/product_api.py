@@ -210,7 +210,6 @@ def user_get_sizes(size=None):
     return res([product_variation.as_dict() for product_variation in all_product_variations])
 
 @api_v1.route('/products/pagination', methods=['GET'])
-#@user_only
 def user_get_product_pages(name=None): # pagination details for all products
 
     """
@@ -237,7 +236,6 @@ def user_get_product_pages(name=None): # pagination details for all products
     return res({"total_items": page_details.total, "no_of_pages": page_details.pages, "per_page": page_details.per_page})
 
 @api_v1.route('/products/pagination/<string:category>', methods=['GET'])
-#@user_only
 def user_get_product_pages_category(category=None): # pagination details for products filtered by category
 
     """
@@ -264,7 +262,6 @@ def user_get_product_pages_category(category=None): # pagination details for pro
     return res({"total_items": page_details.total, "no_of_pages": page_details.pages, "per_page": page_details.per_page})
 
 @api_v1.route('/products/pagination/size/<string:size>', methods=['GET'])
-#@user_only
 def user_get_product_pages_size(size=None): # pagination details for products filtered by size
     """
     get_products meeting criteria
