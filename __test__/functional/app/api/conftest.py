@@ -15,6 +15,7 @@ def admin_user():
     user.email = 'abc@gmail.com'
     user.password = '1q2w3e4r'
     user.email_confirmed = 'True'
+    user.role_id = 2
     return user
 
 @pytest.fixture(scope='module')

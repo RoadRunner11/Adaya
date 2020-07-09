@@ -6,8 +6,12 @@ ArticleStatus, OrderStatus, Order, OrderItem, ConfigValues, Voucher, Variation, 
 import random
 from random import randint
 import string
+from app.helpers.utility import res
 from datetime import datetime
 from app import create_app
+from flask_jwt_extended import create_access_token, set_access_cookies, unset_jwt_cookies
+from flask_jwt_extended import jwt_required, get_jwt_identity
+import flask
 
 
 @pytest.fixture(scope='module')
@@ -19,6 +23,16 @@ def test_client():
     yield testing_client
     ctx.pop()
 
+@pytest.fixture(scope='module')
+def admins_user():
+    user = User()
+    user.email = 'abc@gmail.com'
+    user.password = '1q2w3e4r'
+    user.role_id = 2
+    admin = Role("admin")
+    user.role = admin
+    user.email_confirmed = 'True'
+    return user
 
 @pytest.fixture(scope='module')
 def init_database():

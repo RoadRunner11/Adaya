@@ -19,7 +19,6 @@ from pprint import pprint
 from mailin import Mailin
 
 @api_v1.route('/create-payment-intent', methods=['POST'])
-#@user_only
 def create_customer_intent():
     json_dict = request.json
     item = Order()
@@ -65,7 +64,6 @@ def create_customer_intent():
     #return generate_response(intent)
 
 @api_v1.route('/create-payment-intent-late-fee', methods=['POST'])
-#@user_only
 def create_customer_intent_late_payment():
     json_dict = request.json
     user_id = json_dict['user_id']
@@ -100,7 +98,6 @@ def create_customer_intent_late_payment():
     #return generate_response(intent)
 
 @api_v1.route('/create-customer', methods=['POST'])
-#@user_only
 def create_customer_for_subscription():
     json_dict = request.json
     user_id = json_dict['user_id']
@@ -122,7 +119,6 @@ def create_customer_for_subscription():
         return jsonify(error=str(e)), 403
 
 @api_v1.route('/create-subscription', methods=['POST'])
-#@user_only
 def create_subscription():
     json_dict = request.json
     subscription_type = json_dict['subscription_type']
@@ -158,9 +154,6 @@ def create_subscription():
             expand=['latest_invoice.payment_intent'],
         )
         print("Subscription object")
-        print(subscription)
-        print("Subscription object invoice")
-        print(subscription.latest_invoice.payment_intent.status)
         
         user_subscription_dict = {}
         if(subscription.latest_invoice.payment_intent.status == 'succeeded'):
@@ -250,7 +243,6 @@ def cancel_subscription():
 
 @api_v1.route('/late-payment', methods=['POST'])
 @api_v1.route('/late-payment/<int:id>', methods=['POST'])
-#@user_only
 def charge_customer_offline():
     json_dict = request.json
     user_id = json_dict['user_id']

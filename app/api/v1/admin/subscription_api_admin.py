@@ -9,7 +9,7 @@ from app.decorators.authorisation import admin_only
 
 @api_v1.route('/connect/subscribe', methods=['GET'])
 @api_v1.route('/connect/subscribe/<string:name>', methods=['GET'])
-#@admin_only
+@admin_only
 def get_subscriptions(id=None):
     """
     get_subscriptions gets all user subscriptions
@@ -40,7 +40,7 @@ def get_subscription_pages(id=None): # pagination details for all products
 
 
 @api_v1.route('/connect/subscribe/<int:id>', methods=['PUT'])
-#@admin_only
+@admin_only
 def update_subscription(id):
     """
     update_subscription updates user subscription by using id
@@ -61,7 +61,7 @@ def update_subscription(id):
 
 
 @api_v1.route('/connect/subscribe', methods=['POST'])
-#@admin_only
+@admin_only
 def add_subscription():
     json_dict = request.json
 

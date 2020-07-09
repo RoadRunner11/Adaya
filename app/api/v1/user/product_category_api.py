@@ -8,7 +8,6 @@ from app.decorators.authorisation import user_only
 
 @api_v1.route('/product_categories', methods=['GET'])
 @api_v1.route('/product_categories/<int:id>', methods=['GET'])
-#@user_only
 def user_get_product_categories(id=None):
     page, per_page = get_page_from_args()
     name = request.args.get('name')

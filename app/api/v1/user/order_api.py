@@ -6,7 +6,7 @@ from flask import jsonify, request
 from app.decorators.authorisation import user_only
 
 @api_v1.route('/orders', methods=['POST'])
-#@user_only
+@user_only
 def create_order():
     json_dict = request.json
     item = Order()
@@ -57,7 +57,6 @@ def create_order():
     return res(item.as_dict())
 
 @api_v1.route('/orders/valid', methods=['POST'])
-#@user_only
 def validate_order():
     json_dict = request.json
     item = Order()
@@ -180,7 +179,6 @@ def update_confirmed_user_order(id):
 
 # needed incase design is changed to create order before payment is confirmed in customer UI
 @api_v1.route('/orders/unconfirmed/<int:id>', methods=['DELETE'])
-#@user_only
 def remove_unconfirmed_user_order(id):
     item = Order.query.get(id)
     if not item:
@@ -219,7 +217,7 @@ def calculate_order_discount():
 
 @api_v1.route('/orders', methods=['GET'])
 @api_v1.route('/orders/<int:id>', methods=['GET'])
-#@user_only
+@user_only
 def get_user_orders(id=None):
     page, per_page = get_page_from_args()
     sort_by = request.args.get('sort_by')
@@ -255,9 +253,9 @@ def get_order_with_id(id=None):
         user_id=user_id, status_id=status_id, page=page, per_page=per_page, sort_by=sort_by, is_desc=is_desc)
     return res([item.as_dict() for item in items][0])
   
-
+# this shows the order detail when an order is clicked on users my accounts page
 @api_v1.route('/order/my_account/<int:id>', methods=['GET'])
-#@user_only
+@user_only
 def get_order_with_product(id=None):
     item = Order.query.get(id)
     
