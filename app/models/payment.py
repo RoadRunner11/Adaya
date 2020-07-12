@@ -25,7 +25,7 @@ class Payment(object):
        
     @classmethod
     def send_payment_request_authorisation_email(cls, user_email): 
-        my_account_link = 'http://localhost:8010/my-account'
+        my_account_link = 'http://adayahouse.netlify.app/my-account'
 
         payment_authentication_html = render_template('offline_payment_authentication.html', my_accountr_url=my_account_link)
 
@@ -35,7 +35,7 @@ class Payment(object):
     
     @classmethod
     def send_payment_failed_email(cls, user_email): 
-        my_account_link = 'http://localhost:8010/my-account'
+        my_account_link = 'http://adayahouse.netlify.app/my-account'
 
         payment_failed_html = render_template('payment_failed.html', my_accountr_url=my_account_link)
 

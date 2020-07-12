@@ -118,8 +118,8 @@ def password_reset():
     
 @api_v1.route('/users/password_reset/<token>')
 def password_reset_with_token(token):
-    passwordnewurl = '/user-new-password'
-    passwordfailureurl = '/user-password-reset-failure'
+    passwordnewurl = 'https://adayahouse.netlify.app/user-new-password'
+    passwordfailureurl = 'https://adayahouse.netlify.app/user-password-reset-failure'
 
     secret_key = ConfigValues.get_config_value('EMAIL_PASSWORD_RESET_SECRET_KEY')
 
@@ -138,24 +138,19 @@ def password_reset_with_token(token):
 def password_update():
     json_dict = request.json
     user = User.get_user_by_email(json_dict['email'])
-    
-    #passwordurlsuccess = 'http://localhost:8010/user-password-reset-confirmation'
-    #passwordurlfailure = 'http://localhost:8010/user-password-reset-failure'
 
     error = user.update(json_dict['password'])
 
     if len(error) > 0:
-        #webbrowser.open_new_tab(passwordurlfailure + 'doc/')
         return Responses.OPERATION_FAILED()
     else:
-        #webbrowser.open_new_tab(passwordurlsuccess + 'doc/')
         return Responses.SUCCESS()
 
 @api_v1.route('/users/confirm_email/<token>')
 def confirm_email(token):
     # Open email confirmation URL in a new tab, if a browser window is already open.
-    urlsuccess = '/user-email-confirmation'
-    urlfailure = '/user-email-failure'
+    urlsuccess = 'https://adayahouse.netlify.app/user-email-confirmation'
+    urlfailure = 'https://adayahouse.netlify.app/user-email-failure'
 
 
     secret_key = ConfigValues.get_config_value('EMAIL_PASSWORD_RESET_SECRET_KEY')
