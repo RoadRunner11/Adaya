@@ -11,6 +11,7 @@ from app.api.v1.user import subscription_api
 from app.api.v1.user import product_category_api
 from app.api.v1.user import payment_api
 from app.api.v1.user import variation_api
+from app.api.v1.user import config_settings_api
 from app.api.v1.admin import *
 from app.api.v1 import heartbeat
 import flask
@@ -40,18 +41,6 @@ def after_request(response):
     Returns:
         [type]: [description]
     """    
-
-    # request_origin = request.environ.get('HTTP_ORIGIN', 'https://adayahouse.netlify.app')
-    # if request_origin in flask.current_app.config['ALLOW_ORIGIN']:
-    # request_origin = request.environ.get('HTTP_ORIGIN', 'https://adayahouse.netlify.app')
-    # if request_origin in flask.current_app.config['ALLOW_ORIGIN']:
-    #     header = response.headers
-    #     header['Access-Control-Allow-Origin'] = request_origin
-    #     header['Access-Control-Allow-Credentials'] = 'true'
-    #     header['Access-Control-Allow-Headers'] = 'content-type'
-    #     header['Access-Control-Allow-Methods']='GET, PUT, POST, DELETE, HEAD'
-    
-    # return response
 
     request_origin = request.environ.get('HTTP_ORIGIN')
     if request_origin in flask.current_app.config['ALLOW_ORIGIN']:

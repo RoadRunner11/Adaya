@@ -225,7 +225,7 @@ class Order(db.Model, DBMixin):
                         while(index < no_uncharged_items_left):
                             variation = Variation.get_variation_from_id(order_items_sorted[index].variation_id)
                             duration = order_items_sorted[index].end_date - order_items_sorted[index].start_date
-                            if(duration.days == 7):
+                            if(duration.days == 6): # 7 days including selected date
                                 total_cost -= float(variation.price + 10)
                             else:
                                 total_cost -= float(variation.price)   
@@ -280,7 +280,7 @@ class Order(db.Model, DBMixin):
         for order_item in order_items:
             variation = Variation.get_variation_from_id(order_item.variation_id)
             duration = order_item.end_date - order_item.start_date
-            if(duration.days == 7):
+            if(duration.days == 6):
                 total += float((variation.price + 10))
             else:
                 total += float(variation.price)
@@ -307,7 +307,7 @@ class Order(db.Model, DBMixin):
             order_item_with_price =  Order_Item_With_Price()
             
             duration = order_item.end_date - order_item.start_date
-            if duration.days == 7:
+            if duration.days == 6:
                 order_item_with_price.price = float(variation.price + 10)
             else:
                 order_item_with_price.price = float(variation.price)
