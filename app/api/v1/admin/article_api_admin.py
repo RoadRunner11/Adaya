@@ -5,7 +5,7 @@ from app.helpers.utility import res, parse_int, get_page_from_args
 from flask import jsonify, request
 from app.decorators.authorisation import admin_only
 
-
+# this api not currently being used
 @api_v1.route('/connect/articles', methods=['GET'])
 @api_v1.route('/connect/articles/<int:id>', methods=['GET'])
 @admin_only
