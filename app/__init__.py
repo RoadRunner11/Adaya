@@ -2,6 +2,7 @@ from flask import Flask
 from app.helpers.app_context import AppContext as AC
 from flask_jwt_extended import JWTManager
 from flask_mail import Mail
+from flask_cors import CORS
 
 mail = Mail()
 
@@ -15,6 +16,7 @@ def create_app(config_object):
     """
     app = Flask(__name__)
 
+    cors = CORS(app, support_credentials=True)
     # Load config profile
     app.config.from_object(config_object)
     mail.init_app(app)

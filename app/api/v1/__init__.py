@@ -42,8 +42,11 @@ def after_request(response):
         [type]: [description]
     """    
 
-    request_origin = request.environ.get('HTTP_ORIGIN')
+    request_origin = request.environ.get('HTTP_ORIGIN', "http://localhost:5000")
+    # print(request_origin)
+    # print(flask.current_app.config['ALLOW_ORIGIN'])
     if request_origin in flask.current_app.config['ALLOW_ORIGIN']:
+        # print("hello")
         header = response.headers
         header['Access-Control-Allow-Origin'] = request_origin
         header['Access-Control-Allow-Credentials'] = 'true'

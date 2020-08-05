@@ -12,9 +12,11 @@ from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 from app import mail
 from app import templates
 from datetime import datetime
+from flask_cors import cross_origin
 import webbrowser
 
 @api_v1.route('/users/token', methods=['POST'])
+# @cross_origin(origin='*',headers=['Content-Type','Authorization'], supports_credentials=True)
 def request_token():
     """
     request_token takes in email and password, returns the authentication token 
@@ -35,6 +37,7 @@ def request_token():
     if user:
         token = create_access_token(identity=user.token_identity())
         response, status = res()
+        print(token)
         set_access_cookies(response, token)
         # set token to httponly cookies
         return response, status
@@ -42,6 +45,7 @@ def request_token():
 
 
 @api_v1.route('/users/token', methods=['DELETE'])
+@cross_origin(origin='*',headers=['Content-Type','Authorization'], supports_credentials=True)
 def remove_token():
     response, status = res()
     unset_jwt_cookies(response)

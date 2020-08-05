@@ -6,6 +6,7 @@ from flask import jsonify, request
 from app.decorators.authorisation import user_only
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
+from flask_cors import CORS, cross_origin
 
 @api_v1.route('/products', methods=['GET'])
 @api_v1.route('/products/<int:id>', methods=['GET'])
@@ -128,6 +129,7 @@ def user_get_quicksearch(name=None):
 @api_v1.route('/products/category/<string:category>', methods=['GET'])
 @api_v1.route('/products/category', methods=['GET'])
 #@user_only
+@cross_origin(origins="http://localhost:5000")
 def user_get_productcategories(category=None):
     """
     get_products meeting criteria
@@ -147,6 +149,7 @@ def user_get_productcategories(category=None):
         category_details = ProductCategory.get_category_from_name(category)
     else:
         category_details = ProductCategory.get_category_from_name(request.args.get('category'))
+    print(category)
     cat_id = category_details[0].id
 
     # category_details = ProductCategory.get_category_from_name(category)
