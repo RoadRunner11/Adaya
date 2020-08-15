@@ -10,7 +10,7 @@ import datetime
 
 @api_v1.route('/connect/orders', methods=['GET'])
 @api_v1.route('/connect/orders/<int:id>', methods=['GET'])
-@admin_only
+# @admin_only
 def get_orders(id=None):
     page, per_page = get_page_from_args()
     sort_by = request.args.get('sort_by')
@@ -51,7 +51,7 @@ def get_order_pages(name=None): # pagination details for all orders
 
 
 @api_v1.route('/connect/orders/<int:id>', methods=['PUT'])
-@admin_only
+# @admin_only
 def update_order(id):
     item = Order.query.get(id)
     if not item:
@@ -87,7 +87,7 @@ def update_order(id):
 
 
 @api_v1.route('/connect/orders', methods=['POST'])
-@admin_only
+# @admin_only
 def add_order():
     json_dict = request.json
     item = Order()

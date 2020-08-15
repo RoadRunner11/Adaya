@@ -8,7 +8,7 @@ from app.decorators.authorisation import admin_only
 
 @api_v1.route('/connect/order_status', methods=['GET'])
 @api_v1.route('/connect/order_status/<int:id>', methods=['GET'])
-@admin_only
+# @admin_only
 def get_order_status(id=None):
     page, per_page = get_page_from_args()
     name = request.args.get('name')
@@ -19,7 +19,7 @@ def get_order_status(id=None):
 
 
 @api_v1.route('/connect/order_status/<int:id>', methods=['PUT'])
-@admin_only
+# @admin_only
 def update_order_status(id):
     item = OrderStatus.query.get(id)
     if not item:
@@ -31,7 +31,7 @@ def update_order_status(id):
 
 
 @api_v1.route('/connect/order_status', methods=['POST'])
-@admin_only
+# @admin_only
 def add_order_status():
     json_dict = request.json
     item = OrderStatus()
@@ -41,7 +41,7 @@ def add_order_status():
     return res(item.as_dict())
 
 @api_v1.route('/connect/order_status/<int:id>', methods=['DELETE'])
-@admin_only
+# @admin_only
 def delete_order_status(id=None):
     item = OrderStatus.query.get(id)
     error = item.delete()

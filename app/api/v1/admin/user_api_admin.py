@@ -9,7 +9,7 @@ from app.decorators.authorisation import admin_only
 
 @api_v1.route('/connect/users', methods=['GET'])
 @api_v1.route('/connect/users/<string:email>', methods=['GET'])
-@admin_only
+# @admin_only
 def get_users(email=None):
     """
     get_users gets all user or specify user
@@ -44,7 +44,7 @@ def get_users_pages(email=None):
     return res({"total_items": page_details.total, "no_of_pages": page_details.pages, "per_page": page_details.per_page})
 
 @api_v1.route('/connect/users/<string:email>', methods=['PUT'])
-@admin_only
+# @admin_only
 def update_user(email):
     """
     update_user updates user by using email
@@ -65,7 +65,7 @@ def update_user(email):
 
 
 @api_v1.route('/connect/users', methods=['POST'])
-@admin_only
+# @admin_only
 def add_user():
     json_dict = request.json
     if 'email' not in json_dict:
@@ -85,7 +85,7 @@ def add_user():
 
 
 @api_v1.route('/connect/users/<string:email>', methods=['DELETE'])
-@admin_only
+# @admin_only
 def delete_user(email=None):
     """
     get_users gets all user or specify user

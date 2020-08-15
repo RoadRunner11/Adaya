@@ -1,5 +1,5 @@
 from flask import jsonify, request, flash, Flask, request, url_for, render_template
-from flask_jwt_extended import create_access_token, set_access_cookies, unset_jwt_cookies
+from flask_jwt_extended import create_access_token, set_access_cookies, unset_jwt_cookies, create_refresh_token, set_refresh_cookies
 from app.api.v1 import api_v1
 from app.models import User
 from app.models.config_values import ConfigValues
@@ -36,9 +36,14 @@ def request_token():
 
     if user:
         token = create_access_token(identity=user.token_identity())
+        refresh_token = create_refresh_token(identity=user.token_identity())
         response, status = res()
-        print(token)
+        # print(response, status)
         set_access_cookies(response, token)
+        set_refresh_cookies(response, refresh_token)
+        # print(token)
+        identiti = get_jwt_identity()
+        print(identiti)
         # set token to httponly cookies
         return response, status
     return Responses.AUTHENTICATION_FAILED()
@@ -76,6 +81,7 @@ def register_user():
 
     """
     json_dict = request.json
+    print(json_dict)
     user = User()
     user.update_from_dict(json_dict, ['id', 'role_id', 'role'])
     existing_user = User.get_user_by_email(json_dict['email'])

@@ -1,9 +1,11 @@
-from flask_jwt_extended import jwt_required, get_jwt_identity, verify_jwt_in_request, create_access_token, set_access_cookies
+from flask_jwt_extended import (jwt_required, get_jwt_identity, verify_jwt_in_request,
+ create_access_token, set_access_cookies, get_raw_jwt)
 from app.models import User
 from flask import abort, has_request_context
 from app.helpers.enum import Messages, Roles, Responses
 from app.helpers.utility import res
 from functools import wraps
+from flask import jsonify, request
 
 
 def permitted_roles(roles):
@@ -20,8 +22,11 @@ def permitted_roles(roles):
             # Verify if user token is valid (logginged)
             if has_request_context():
                 try:
+                    token = get_raw_jwt()
+                    print(token)
                     verify_jwt_in_request()
                 except Exception as e:
+                    print(e)
                     return Responses.AUTHENTICATION_FAILED()
                 identity = get_jwt_identity()
                 email = User.get_email_from_identity(identity)
