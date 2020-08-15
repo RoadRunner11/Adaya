@@ -5,7 +5,7 @@ from flask_mail import Mail
 from flask_cors import CORS
 
 mail = Mail()
-
+print("hello")
 def create_app(config_object):
     """
     create_app   creates an instance of the flask app
@@ -26,6 +26,7 @@ def create_app(config_object):
     ac.db.init_app(app)
     ac.bcrypt.init_app(app)
     ac.jwt.init_app(app)
+    ac.migrate.init_app(app, ac.db)
     # register blueprints
     from app.api import API
     for name in API:
@@ -33,3 +34,4 @@ def create_app(config_object):
         app.register_blueprint(
             BP['route'], url_prefix=BP['url_prefix'])
     return app
+

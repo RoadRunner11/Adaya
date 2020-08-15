@@ -3,6 +3,7 @@ from app.helpers import SingletonMetaClass
 from flask_sqlalchemy import SQLAlchemy
 import logging
 from flask_jwt_extended import JWTManager
+from flask_migrate import Migrate
 
 
 class AppContext(metaclass=SingletonMetaClass):
@@ -20,3 +21,4 @@ class AppContext(metaclass=SingletonMetaClass):
         self.db = SQLAlchemy()
         self.bcrypt = Bcrypt()
         self.jwt = JWTManager()
+        self.migrate = Migrate()
