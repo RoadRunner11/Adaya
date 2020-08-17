@@ -5,7 +5,6 @@ from flask_mail import Mail
 from flask_cors import CORS
 
 mail = Mail()
-print("hello")
 def create_app(config_object):
     """
     create_app   creates an instance of the flask app

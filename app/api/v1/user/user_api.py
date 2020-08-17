@@ -1,7 +1,8 @@
-from flask import jsonify, request, flash, Flask, request, url_for, render_template
+from flask import jsonify, request, flash, Flask, request, url_for, render_template,redirect, make_response
 from flask_jwt_extended import create_access_token, set_access_cookies, unset_jwt_cookies, create_refresh_token, set_refresh_cookies
 from app.api.v1 import api_v1
 from app.models import User
+from app.models import QuizForm
 from app.models.config_values import ConfigValues
 from app.helpers.enum import Messages, Roles, Responses
 from app.helpers.utility import res
@@ -38,14 +39,11 @@ def request_token():
         token = create_access_token(identity=user.token_identity())
         refresh_token = create_refresh_token(identity=user.token_identity())
         response, status = res()
-        # print(response, status)
         set_access_cookies(response, token)
         set_refresh_cookies(response, refresh_token)
-        # print(token)
         identiti = get_jwt_identity()
-        print(identiti)
         # set token to httponly cookies
-        return response, status
+        return {"token":token}
     return Responses.AUTHENTICATION_FAILED()
 
 
@@ -203,3 +201,14 @@ def contact_us():
     User.contact_us_email(email, subject, name, message)
     
     return Responses.SUCCESS()
+
+@api_v1.route('/users/quiz_form', methods=['POST'])
+def quiz_form():
+    json_dict = request.json
+    quiz = QuizForm()
+    error = quiz.update(json_dict)
+    print(request.json)
+    # print(error)
+    if len(error)>0:
+        return Responses.OPERATION_FAILED()
+    return res(quiz.as_dict())

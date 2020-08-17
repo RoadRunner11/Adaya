@@ -40,14 +40,7 @@ class User(db.Model, DBMixin):
     number_of_items_ordered_this_month = db.Column(db.Integer, default=0)
     month_first_order = db.Column(db.DateTime, nullable=True)
     blacklist = db.Column(db.Boolean, nullable=True, default=0)
-    birthday = db.Column(db.String(255))
-    occupation = db.Column(db.String(255))
-    size = db.Column(db.String(255))
-    fav_brands = db.Column(db.String(255))
-    instagram_handle = db.Column(db.String(255))
-    interest = db.Column(db.String(255))
-    style = db.Column(db.String(255))
-
+    
     articles = db.relationship('Article', lazy='dynamic')
     orders = db.relationship('Order', lazy='dynamic')
     

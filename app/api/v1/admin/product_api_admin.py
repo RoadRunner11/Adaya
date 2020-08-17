@@ -10,7 +10,7 @@ from dateutil.parser import parse
 
 @api_v1.route('/connect/products', methods=['GET'])
 @api_v1.route('/connect/products/<int:id>', methods=['GET'])
-# @admin_only
+@admin_only
 def get_products(id=None):
     """
     get_products returns all product or the product with specific id

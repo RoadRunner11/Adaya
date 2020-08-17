@@ -10,10 +10,11 @@ SQLALCHEMY_TRACK_MODIFICATIONS = False
 SQLALCHEMY_POOL_RECYCLE=60
 JWT_ACCESS_TOKEN_EXPIRES = datetime.timedelta(days=365)
 JWT_TOKEN_LOCATION = ['cookies']
-JWT_SESSION_COOKIE = False
+JWT_SESSION_COOKIE = True
 JWT_COOKIE_CSRF_PROTECT = False
-JWT_ACCESS_COOKIE_PATH = '/api/'
-JWT_REFRESH_COOKIE_PATH = '/token/refresh'
+# JWT_ACCESS_COOKIE_PATH = '/connect/'
+# JWT_REFRESH_COOKIE_PATH = '/token/refresh'
+JWT_SECRET_KEY = 'super-secret'
 ALLOW_ORIGIN = ['http://localhost:8010', 'http://localhost:8000' ]#'https://adayahouse.netlify.app' 
 # ALLOW_ORIGIN = ['https://adaya.netlify.app', 'https://adayahouse.netlify.app']
 MAIL_SERVER='smtp-relay.sendinblue.com'
@@ -22,3 +23,4 @@ MAIL_PASSWORD='gzryVUPZHa1GW7n6'
 MAIL_PORT=587
 MAIL_USE_TLS=False
 ENV= 'development'
+# print("ehllo")

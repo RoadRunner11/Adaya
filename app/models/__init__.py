@@ -21,3 +21,4 @@ from app.models.order_item_with_price import Order_Item_With_Price
 from app.models.order_products import OrderProducts
 from app.models.order_item_with_product import Order_Item_With_Product
 from app.models.product_skeleton import ProductSkeleton
+from app.models.quiz_form import QuizForm
