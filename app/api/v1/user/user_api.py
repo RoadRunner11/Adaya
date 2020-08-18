@@ -42,6 +42,7 @@ def request_token():
         set_access_cookies(response, token)
         set_refresh_cookies(response, refresh_token)
         identiti = get_jwt_identity()
+        print(identiti)
         # set token to httponly cookies
         return {"token":token}
     return Responses.AUTHENTICATION_FAILED()
