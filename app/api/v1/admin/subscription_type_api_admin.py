@@ -9,7 +9,7 @@ from app.decorators.authorisation import admin_only
 
 @api_v1.route('/connect/subscribetype', methods=['GET'])
 @api_v1.route('/connect/subscribetype/<string:plan>', methods=['GET'])
-# @admin_only
+@admin_only
 def get_subscription_types(plan=None):
     """
     get_subscription_types gets all subscription types
@@ -23,7 +23,7 @@ def get_subscription_types(plan=None):
 
 
 @api_v1.route('/connect/subscribetype/<string:plan>', methods=['PUT'])
-# @admin_only
+@admin_only
 def update_subscription_type(plan):
     """
     update_subscription_type updates subscription type by using duration in months
@@ -44,7 +44,7 @@ def update_subscription_type(plan):
 
 
 @api_v1.route('/connect/subscribetype', methods=['POST'])
-# @admin_only
+@admin_only
 def add_subscription_type():
     json_dict = request.json
     if 'plan' not in json_dict:
@@ -61,7 +61,7 @@ def add_subscription_type():
     return res(item.as_dict())
 
 @api_v1.route('/connect/subscribetype/<string:plan>', methods=['DELETE'])
-# @admin_only
+@admin_only
 def delete_subscription_types(plan=None):
     """
     get_subscription_types gets all subscription types

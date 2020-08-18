@@ -22,8 +22,8 @@ def permitted_roles(roles):
             # Verify if user token is valid (logginged)
             if has_request_context():
                 try:
-                    token = get_jwt_identity()
-                    print(token)
+                    # token = get_jwt_identity()
+                    # print(token)
                     verify_jwt_in_request()
                 except Exception as e:
                     print(e)

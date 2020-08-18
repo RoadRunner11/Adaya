@@ -71,7 +71,7 @@ def get_product_pages(name=None): # pagination details for all products
     return res({"total_items": page_details.total, "no_of_pages": page_details.pages, "per_page": page_details.per_page})
 
 @api_v1.route('/connect/products/<int:id>', methods=['PUT'])
-# @admin_only
+@admin_only
 def update_product(id):
     item = Product.query.get(id)
     if not item:
@@ -104,7 +104,7 @@ def update_product(id):
     return Responses.SUCCESS()
 
 @api_v1.route('/connect/products', methods=['POST'])
-# @admin_only
+@admin_only
 def add_product():
     json_dict = request.json
     item = Product()
@@ -132,7 +132,7 @@ def add_product():
 
 
 @api_v1.route('/connect/products/<int:id>', methods=['DELETE'])
-# @admin_only
+@admin_only
 def delete_product(id=None):
     """
     get_products returns all product or the product with specific id
@@ -160,7 +160,7 @@ def delete_product(id=None):
     return Responses.SUCCESS()
 
 @api_v1.route('/connect/products/variation/<int:id>', methods=['DELETE'])
-# @admin_only
+@admin_only
 def delete_variation(id=None):
     """
     get_products returns all product or the product with specific id

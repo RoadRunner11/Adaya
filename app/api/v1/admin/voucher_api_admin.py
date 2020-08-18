@@ -9,7 +9,7 @@ from app.decorators.authorisation import admin_only
 
 @api_v1.route('/connect/vouchers', methods=['GET'])
 @api_v1.route('/connect/vouchers/<string:name>', methods=['GET'])
-# @admin_only
+@admin_only
 def get_vouchers(name=None):
     """
     get_vouchers gets all vouchers
@@ -24,7 +24,7 @@ def get_vouchers(name=None):
     return res([item.as_dict() for item in items])
 
 @api_v1.route('/connect/vouchers/pagination', methods=['GET'])
-# @admin_only
+@admin_only
 def get_vouchers_pages(name=None):
     """
     get_vouchers gets all vouchers
@@ -40,7 +40,7 @@ def get_vouchers_pages(name=None):
 
 
 @api_v1.route('/connect/vouchers/<string:name>', methods=['PUT'])
-# @admin_only
+@admin_only
 def update_vouchers(name):
     """
     update_voucher updates voucher by using name
@@ -65,7 +65,7 @@ def update_vouchers(name):
 
 
 @api_v1.route('/connect/vouchers', methods=['POST'])
-# @admin_only
+@admin_only
 def add_voucher():
     json_dict = request.json
     if 'name' not in json_dict:
@@ -84,7 +84,7 @@ def add_voucher():
 
 
 @api_v1.route('/connect/vouchers/<int:id>', methods=['DELETE'])
-# @admin_only
+@admin_only
 def delete_vouchers(id=None):
     """
    delete voucher

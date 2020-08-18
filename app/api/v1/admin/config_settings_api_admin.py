@@ -9,7 +9,7 @@ from app.decorators.authorisation import admin_only
 
 @api_v1.route('/connect/configuration', methods=['GET'])
 @api_v1.route('/connect/configuration/<string:name>', methods=['GET'])
-# @admin_only
+@admin_only
 def get_config_value(name=None):
     """
     get_config_value for setting
@@ -21,7 +21,7 @@ def get_config_value(name=None):
 
 
 @api_v1.route('/connect/configuration/<string:name>', methods=['PUT'])
-# @admin_only
+@admin_only
 def update_config_value(name):
     """
     update_config_value updates setting by using name

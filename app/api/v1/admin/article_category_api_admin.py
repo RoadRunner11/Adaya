@@ -8,7 +8,7 @@ from app.decorators.authorisation import admin_only
 # this api not currently being used
 @api_v1.route('/connect/article_categories', methods=['GET'])
 @api_v1.route('/connect/article_categories/<int:id>', methods=['GET'])
-# @admin_only
+@admin_only
 def get_article_categories(id=None):
     page, per_page = get_page_from_args()
     name = request.args.get('name')
@@ -18,7 +18,7 @@ def get_article_categories(id=None):
 
 
 @api_v1.route('/connect/article_categories/<int:id>', methods=['PUT'])
-# @admin_only
+@admin_only
 def update_article_categories(id):
     item = ArticleCategory.query.get(id)
     if not item:
@@ -30,7 +30,7 @@ def update_article_categories(id):
 
 
 @api_v1.route('/connect/article_categories', methods=['POST'])
-# @admin_only
+@admin_only
 def add_article_category():
     json_dict = request.json
     item = ArticleCategory()

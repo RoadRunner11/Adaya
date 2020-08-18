@@ -8,7 +8,7 @@ from app.decorators.authorisation import admin_only
 
 @api_v1.route('/connect/product_categories', methods=['GET'])
 @api_v1.route('/connect/product_categories/<int:id>', methods=['GET'])
-# @admin_only
+@admin_only
 def get_product_categories(id=None):
     page, per_page = get_page_from_args()
     per_page_for_cat = 50 # not many catgeories
@@ -19,7 +19,7 @@ def get_product_categories(id=None):
 
 
 @api_v1.route('/connect/product_categories/<int:id>', methods=['PUT'])
-# @admin_only
+@admin_only
 def update_product_category(id):
     item = ProductCategory.query.get(id)
     if not item:
@@ -31,7 +31,7 @@ def update_product_category(id):
 
 
 @api_v1.route('/connect/product_categories', methods=['POST'])
-# @admin_only
+@admin_only
 def add_product_category():
     json_dict = request.json
     item = ProductCategory()
@@ -41,7 +41,7 @@ def add_product_category():
     return res(item.as_dict())
 
 @api_v1.route('/connect/product_categories/<int:id>', methods=['DELETE'])
-# @admin_only
+@admin_only
 def delete_product_categories(id=None):
     item = ProductCategory.query.get(id)
     error = item.delete()
