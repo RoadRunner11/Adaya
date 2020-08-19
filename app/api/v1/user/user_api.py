@@ -13,11 +13,11 @@ from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 from app import mail
 from app import templates
 from datetime import datetime
-from flask_cors import cross_origin
+from flask_cors import CORS, cross_origin
 import webbrowser
 
 @api_v1.route('/users/token', methods=['POST'])
-# @cross_origin(origin='*',headers=['Content-Type','Authorization'], supports_credentials=True)
+# @cross_origin(origin='http://localhost:8010',headers=['Content-Type','Authorization'], supports_credentials=True)
 def request_token():
     """
     request_token takes in email and password, returns the authentication token 
