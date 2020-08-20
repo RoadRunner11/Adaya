@@ -10,7 +10,7 @@ import datetime
 
 @api_v1.route('/connect/orders', methods=['GET'])
 @api_v1.route('/connect/orders/<int:id>', methods=['GET'])
-@admin_only
+# @admin_only
 def get_orders(id=None):
     page, per_page = get_page_from_args()
     sort_by = request.args.get('sort_by')
@@ -22,7 +22,7 @@ def get_orders(id=None):
     return res([item.as_dict() for item in items])
 
 @api_v1.route('/connect/orders/pagination', methods=['GET'])
-@admin_only
+# @admin_only
 def get_order_pages(name=None): # pagination details for all orders
 
     """

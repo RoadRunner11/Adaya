@@ -7,7 +7,7 @@ from app.decorators.authorisation import admin_only
 
 
 @api_v1.route('/connect/roles', methods=['GET'])
-@admin_only
+# @admin_only
 def get_roles():
     items = Role.get(per_page=100)
     return res([item.as_dict() for item in items])
